@@ -1,0 +1,26 @@
+{
+  "name": "intelligent-logistics",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "turbo run lint:script",
+    "lint:script": "eslint . --fix --cache --cache-location ./node_modules/.cache/eslint/.eslintcache",
+    "format": "turbo run format:script",
+    "format:script": "prettier . --write --cache",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "commitlint": "^17.4.4",
+    "commitlint-config-custom": "workspace:^0.0.0",
+    "eslint": "^8.35.0",
+    "eslint-config-custom": "workspace:^0.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.1.2",
+    "prettier": "^2.8.4",
+    "turbo": "^1.8.3",
+    "typescript": "^4.9.5"
+  }
+}
