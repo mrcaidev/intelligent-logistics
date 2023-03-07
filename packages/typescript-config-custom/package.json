@@ -1,0 +1,14 @@
+{
+  "name": "typescript-config-custom",
+  "version": "0.0.0",
+  "private": true,
+  "exports": {
+    "./*": "./*.json"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.5"
+  },
+  "peerDependencies": {
+    "typescript": "^4.9.5"
+  }
+}
