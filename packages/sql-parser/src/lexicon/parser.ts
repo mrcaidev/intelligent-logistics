@@ -69,21 +69,20 @@ export class LexicalParser {
   }
 
   private parseOperator() {
-    const value = this.cursor.current();
-    this.cursor.forward();
+    let value = "";
 
-    if (value !== "-") {
-      return { type: "operator", value } as Token;
+    while (Validator.isSymbol(this.cursor.current())) {
+      value += this.cursor.current();
+      this.cursor.forward();
     }
 
-    if (Validator.isDigit(this.cursor.current())) {
+    if (value === "--") {
+      return this.parseComment();
+    }
+
+    if (value === "-" && Validator.isDigit(this.cursor.current())) {
       const { value } = this.parseNumberLiteral();
       return { type: "literal", value: -value } satisfies Token;
-    }
-
-    if (this.cursor.current() === "-") {
-      this.cursor.forward();
-      return this.parseComment();
     }
 
     return { type: "operator", value } as Token;

@@ -149,6 +149,11 @@ describe("operator", () => {
     const result = parseLexicon("-");
     expect(result).toEqual([{ type: "operator", value: "-" }]);
   });
+
+  it("parses <=", () => {
+    const result = parseLexicon("<=");
+    expect(result).toEqual([{ type: "operator", value: "<=" }]);
+  });
 });
 
 describe("comment", () => {
