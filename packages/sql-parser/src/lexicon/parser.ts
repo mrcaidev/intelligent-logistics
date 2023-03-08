@@ -1,12 +1,6 @@
-import { Cursor } from "./cursor";
-import { keywords, type Token } from "./token";
-
-export class LexicalError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name = "LexicalError";
-  }
-}
+import { Cursor } from "src/cursor";
+import { keywords, Token } from "src/token";
+import { LexicalError } from "./error";
 
 export class LexicalParser {
   private cursor: Cursor<string>;
