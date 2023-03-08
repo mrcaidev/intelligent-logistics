@@ -1,6 +1,6 @@
 import { LexicalParser } from "./parser";
 
-export function parseLexicon(sql: string) {
-  const parser = new LexicalParser(sql);
+export function parseLexicon(input: string) {
+  const parser = new LexicalParser(input);
   return parser.parse();
 }
