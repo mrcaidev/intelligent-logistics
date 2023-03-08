@@ -1,5 +1,5 @@
 import { LexicalParser } from "./lexical";
-import { parseSyntax } from "./syntax/parse";
+import { parseSyntax } from "./syntax";
 
 const sql =
   "SELECT * FROM users WHERE price = null AND id = 1 OR salary = 1000;";
