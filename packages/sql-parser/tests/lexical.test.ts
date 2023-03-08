@@ -30,8 +30,8 @@ describe("number literal", () => {
   });
 
   it("throws error on invalid number", () => {
-    const result = parseLexicon("1.1.1");
-    expect(() => result).toThrowError(LexicalError);
+    const result = () => parseLexicon("1.1.1");
+    expect(result).toThrowError(LexicalError);
   });
 });
 
@@ -57,13 +57,13 @@ describe("string literal", () => {
   });
 
   it("throws error on unterminated single quoted string", () => {
-    const result = parseLexicon("'John");
-    expect(() => result).toThrowError(LexicalError);
+    const result = () => parseLexicon("'John");
+    expect(result).toThrowError(LexicalError);
   });
 
   it("throws error on unterminated double quoted string", () => {
-    const result = parseLexicon('"John');
-    expect(() => result).toThrowError(LexicalError);
+    const result = () => parseLexicon('"John');
+    expect(result).toThrowError(LexicalError);
   });
 });
 
