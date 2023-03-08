@@ -1,6 +1,10 @@
 import { LexicalParser } from "./lexical";
+import { parseSyntax } from "./syntax/parse";
 
-const sql = "SELECT * FROM users WHERE price = null;";
+const sql =
+  "SELECT * FROM users WHERE price = null AND id = 1 OR salary = 1000;";
 const parser = new LexicalParser(sql);
 const tokens = parser.parse();
-console.log(tokens);
+
+const tree = parseSyntax(tokens);
+console.log(JSON.stringify(tree, undefined, 2));
