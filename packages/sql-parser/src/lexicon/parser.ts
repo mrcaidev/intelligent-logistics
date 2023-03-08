@@ -62,7 +62,7 @@ export class LexicalParser {
     this.cursor.forward();
 
     if (value !== "-") {
-      return { type: "operator", value } satisfies Token;
+      return { type: "operator", value } as Token;
     }
 
     if (Validator.isDigit(this.cursor.current())) {
@@ -72,10 +72,10 @@ export class LexicalParser {
 
     if (this.cursor.current() === "-") {
       this.cursor.close();
-      return { type: "comment", value: "--" } satisfies Token;
+      return { type: "comment", value: "--" } as Token;
     }
 
-    return { type: "operator", value } satisfies Token;
+    return { type: "operator", value } as Token;
   }
 
   private parseWord() {
@@ -87,7 +87,7 @@ export class LexicalParser {
     }
 
     if (Validator.isKeyword(value)) {
-      return { type: "keyword", value: value.toUpperCase() } satisfies Token;
+      return { type: "keyword", value: value.toUpperCase() } as Token;
     }
 
     if (Validator.isBoolean(value)) {
@@ -99,10 +99,10 @@ export class LexicalParser {
       return { type: "literal", value: null } satisfies Token;
     }
 
-    return { type: "identifier", value } satisfies Token;
+    return { type: "identifier", value } as Token;
   }
 
-  private getNextToken(): Token {
+  private getNextToken() {
     this.skipWhitespaces();
 
     if (Validator.isDigit(this.cursor.current())) {

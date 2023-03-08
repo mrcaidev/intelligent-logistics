@@ -1,12 +1,7 @@
-export type Token =
-  | {
-      type: "literal";
-      value: unknown;
-    }
-  | {
-      type: "keyword" | "identifier" | "operator" | "comment";
-      value: string;
-    };
+export type Token = {
+  type: "literal" | "keyword" | "identifier" | "operator" | "comment";
+  value: unknown;
+};
 
 export type Condition = {
   field: string;
