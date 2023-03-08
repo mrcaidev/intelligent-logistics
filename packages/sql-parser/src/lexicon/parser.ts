@@ -63,7 +63,7 @@ export class LexicalParser {
 
     if (isNaN(numberValue)) {
       throw new LexicalError(
-        `Invalid number ${value} at position ${this.cursor.position}`
+        `Invalid number ${value} at position ${this.cursor.position()}`
       );
     }
 
@@ -79,7 +79,7 @@ export class LexicalParser {
     while (this.cursor.current() !== quote) {
       if (!this.cursor.isOpen()) {
         throw new LexicalError(
-          `Unterminated string ${quote}${value} at position ${this.cursor.position}`
+          `Unterminated string ${quote}${value} at position ${this.cursor.position()}`
         );
       }
 
@@ -157,9 +157,7 @@ export class LexicalParser {
     }
 
     throw new LexicalError(
-      `Unexpected character ${this.cursor.current()} at position ${
-        this.cursor.position
-      }`
+      `Unexpected character ${this.cursor.current()} at position ${this.cursor.position()}`
     );
   }
 
