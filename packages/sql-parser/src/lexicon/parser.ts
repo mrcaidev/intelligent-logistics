@@ -57,6 +57,17 @@ export class LexicalParser {
     return { type: "literal", value } satisfies Token;
   }
 
+  private parseComment() {
+    let value = "";
+
+    while (this.cursor.isOpen()) {
+      value += this.cursor.current();
+      this.cursor.forward();
+    }
+
+    return { type: "comment", value: value.trim() } as Token;
+  }
+
   private parseOperator() {
     const value = this.cursor.current();
     this.cursor.forward();
@@ -71,8 +82,8 @@ export class LexicalParser {
     }
 
     if (this.cursor.current() === "-") {
-      this.cursor.close();
-      return { type: "comment", value: "--" } as Token;
+      this.cursor.forward();
+      return this.parseComment();
     }
 
     return { type: "operator", value } as Token;

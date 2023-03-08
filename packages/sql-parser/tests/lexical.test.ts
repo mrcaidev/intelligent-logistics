@@ -152,9 +152,14 @@ describe("operator", () => {
 });
 
 describe("comment", () => {
-  it("parses --", () => {
-    const result = parseLexicon("-- comment");
-    expect(result).toEqual([{ type: "comment", value: "--" }]);
+  it("parses empty comment", () => {
+    const result = parseLexicon("--");
+    expect(result).toEqual([{ type: "comment", value: "" }]);
+  });
+
+  it("parses normal comment", () => {
+    const result = parseLexicon("-- a b c ");
+    expect(result).toEqual([{ type: "comment", value: "a b c" }]);
   });
 });
 
