@@ -29,12 +29,11 @@ export class SelectParser {
   }
 
   private checkSelect() {
-    if (this.cursor.current().value === "SELECT") {
-      this.cursor.forward();
-      return;
+    if (this.cursor.current().value !== "SELECT") {
+      throw new SyntacticError("Expect SELECT at the beginning");
     }
 
-    throw new SyntacticError("Expect SELECT at the beginning");
+    this.cursor.forward();
   }
 
   private parseFields() {
@@ -55,9 +54,7 @@ export class SelectParser {
       }
 
       if (this.cursor.current().type === "identifier") {
-        throw new SyntacticError(
-          `Expect comma before ${this.cursor.current()}`
-        );
+        throw new SyntacticError(`Expect ',' before ${this.cursor.current()}`);
       }
     }
 
@@ -69,31 +66,30 @@ export class SelectParser {
   }
 
   private checkFrom() {
-    if (this.cursor.current().value === "FROM") {
-      this.cursor.forward();
-      return;
+    if (this.cursor.current().value !== "FROM") {
+      throw new SyntacticError("Expect FROM after column names");
     }
 
-    throw new SyntacticError("Expect FROM after column names");
+    this.cursor.forward();
   }
 
   private parseTable() {
-    if (this.cursor.current().type === "identifier") {
-      const value = this.cursor.current().value as string;
-      this.cursor.forward();
-      return value;
+    if (this.cursor.current().type !== "identifier") {
+      throw new SyntacticError("Expect table name after FROM");
     }
 
-    throw new SyntacticError("Expect table name after FROM");
+    const value = this.cursor.current().value as string;
+    this.cursor.forward();
+    return value;
   }
 
   private hasWhere() {
-    if (this.cursor.current().value === "WHERE") {
-      this.cursor.forward();
-      return true;
+    if (this.cursor.current().value !== "WHERE") {
+      return false;
     }
 
-    return false;
+    this.cursor.forward();
+    return true;
   }
 
   private parseConditions() {

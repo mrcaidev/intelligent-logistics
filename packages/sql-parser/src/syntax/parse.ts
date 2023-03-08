@@ -8,6 +8,7 @@ export function parseSyntax(tokens: Token[]) {
   }
 
   const keyword = tokens[0].value;
+
   switch (keyword) {
     case "SELECT": {
       const parser = new SelectParser(tokens);
@@ -30,6 +31,6 @@ export function parseSyntax(tokens: Token[]) {
       return;
     }
     default:
-      throw new SyntacticError(`Unknown keyword ${keyword} at position 0`);
+      throw new SyntacticError(`Unknown keyword ${keyword} at the beginning`);
   }
 }
