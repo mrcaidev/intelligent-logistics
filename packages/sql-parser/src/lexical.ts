@@ -1,6 +1,13 @@
 import { Cursor } from "./cursor";
 import { keywords, type Token } from "./token";
 
+export class LexicalError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "LexicalError";
+  }
+}
+
 export class LexicalParser {
   private cursor: Cursor<string>;
 
@@ -61,7 +68,7 @@ export class LexicalParser {
     const numberValue = Number(value);
 
     if (isNaN(numberValue)) {
-      throw new Error(`Lexical parser: Invalid number: ${value}`);
+      throw new LexicalError(`Invalid number: ${value}`);
     }
 
     return { type: "literal", value: numberValue } satisfies Token;
@@ -75,9 +82,7 @@ export class LexicalParser {
 
     while (this.cursor.current() !== quote) {
       if (!this.cursor.isOpen()) {
-        throw new Error(
-          `Lexical parser: Unterminated string: ${quote}${value}`
-        );
+        throw new LexicalError(`Unterminated string: ${quote}${value}`);
       }
 
       value += this.cursor.current();
@@ -153,9 +158,7 @@ export class LexicalParser {
       return this.parseWord();
     }
 
-    throw new Error(
-      `Lexical parser: Unexpected character: ${this.cursor.current()}`
-    );
+    throw new LexicalError(`Unexpected character: ${this.cursor.current()}`);
   }
 
   public parse() {
