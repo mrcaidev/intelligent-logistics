@@ -22,6 +22,10 @@ export class Validator {
     return /^\s$/.test(character);
   }
 
+  public static isSeparator(character: string) {
+    return /^;$/.test(character);
+  }
+
   public static isDigit(character: string) {
     return /^\d$/.test(character);
   }

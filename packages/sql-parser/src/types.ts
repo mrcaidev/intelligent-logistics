@@ -1,5 +1,11 @@
 export type Token = {
-  type: "literal" | "keyword" | "identifier" | "operator" | "comment";
+  type:
+    | "literal"
+    | "keyword"
+    | "identifier"
+    | "operator"
+    | "comment"
+    | "separator";
   value: unknown;
 };
 

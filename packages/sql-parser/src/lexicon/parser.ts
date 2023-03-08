@@ -16,6 +16,11 @@ export class LexicalParser {
     }
   }
 
+  private parseSeparator() {
+    this.cursor.forward();
+    return { type: "separator", value: ";" } as Token;
+  }
+
   private parseNumberLiteral() {
     let value = "";
 
@@ -114,6 +119,10 @@ export class LexicalParser {
 
   private getNextToken() {
     this.skipWhitespaces();
+
+    if (Validator.isSeparator(this.cursor.current())) {
+      return this.parseSeparator();
+    }
 
     if (Validator.isDigit(this.cursor.current())) {
       return this.parseNumberLiteral();

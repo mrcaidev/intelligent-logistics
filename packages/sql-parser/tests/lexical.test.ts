@@ -168,6 +168,13 @@ describe("comment", () => {
   });
 });
 
+describe("separator", () => {
+  it("parses ;", () => {
+    const result = parseLexicon(";");
+    expect(result).toEqual([{ type: "separator", value: ";" }]);
+  });
+});
+
 describe("statements", () => {
   it("parses SELECT * FROM users WHERE salary = 9832.57 AND name = 'John'", () => {
     const result = parseLexicon(
@@ -237,6 +244,21 @@ describe("statements", () => {
       { type: "identifier", value: "id" },
       { type: "operator", value: "=" },
       { type: "literal", value: 1 },
+    ]);
+  });
+
+  it("parses SELECT * FROM a; SELECT * FROM b", () => {
+    const result = parseLexicon("SELECT * FROM a; SELECT * FROM b");
+    expect(result).toEqual([
+      { type: "keyword", value: "SELECT" },
+      { type: "operator", value: "*" },
+      { type: "keyword", value: "FROM" },
+      { type: "identifier", value: "a" },
+      { type: "separator", value: ";" },
+      { type: "keyword", value: "SELECT" },
+      { type: "operator", value: "*" },
+      { type: "keyword", value: "FROM" },
+      { type: "identifier", value: "b" },
     ]);
   });
 });
