@@ -1,5 +1,6 @@
 import type { Token } from "src/types";
 import { SyntacticError } from "./error";
+import { InsertParser } from "./insert";
 import { SelectParser } from "./select";
 
 export function parseSyntax(tokens: Token[]) {
@@ -15,8 +16,8 @@ export function parseSyntax(tokens: Token[]) {
       return parser.parse();
     }
     case "INSERT": {
-      console.log("Not implemented");
-      return;
+      const parser = new InsertParser(tokens);
+      return parser.parse();
     }
     case "UPDATE": {
       console.log("Not implemented");

@@ -1,8 +1,7 @@
 import { parseLexicon } from "./lexicon";
 import { parseSyntax } from "./syntax";
 
-const sql =
-  "SELECT * FROM users WHERE price = null AND id = 1 OR salary = 1000;";
+const sql = "INSERT INTO users(id, name) VALUES (1, 'John')";
 
 const tokens = parseLexicon(sql);
 const tree = parseSyntax(tokens);
