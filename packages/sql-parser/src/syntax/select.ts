@@ -1,6 +1,5 @@
 import { Cursor } from "src/cursor";
-import type { Token } from "src/token";
-import type { Condition } from "src/types";
+import type { Condition, Token } from "src/types";
 import { SyntacticError } from "./error";
 
 export class SelectParser {

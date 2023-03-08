@@ -1,4 +1,4 @@
-import type { Token } from "src/token";
+import type { Token } from "src/types";
 import { SyntacticError } from "./error";
 import { SelectParser } from "./select";
 
