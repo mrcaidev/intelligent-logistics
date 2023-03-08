@@ -68,7 +68,9 @@ export class LexicalParser {
     const numberValue = Number(value);
 
     if (isNaN(numberValue)) {
-      throw new LexicalError(`Invalid number: ${value}`);
+      throw new LexicalError(
+        `Invalid number ${value} at position ${this.cursor.position}`
+      );
     }
 
     return { type: "literal", value: numberValue } satisfies Token;
@@ -82,7 +84,9 @@ export class LexicalParser {
 
     while (this.cursor.current() !== quote) {
       if (!this.cursor.isOpen()) {
-        throw new LexicalError(`Unterminated string: ${quote}${value}`);
+        throw new LexicalError(
+          `Unterminated string ${quote}${value} at position ${this.cursor.position}`
+        );
       }
 
       value += this.cursor.current();
@@ -158,7 +162,11 @@ export class LexicalParser {
       return this.parseWord();
     }
 
-    throw new LexicalError(`Unexpected character: ${this.cursor.current()}`);
+    throw new LexicalError(
+      `Unexpected character ${this.cursor.current()} at position ${
+        this.cursor.position
+      }`
+    );
   }
 
   public parse() {

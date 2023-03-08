@@ -1,4 +1,4 @@
-import { LexicalParser } from "src/lexical";
+import { LexicalError, LexicalParser } from "src/lexical";
 import { describe, expect, it } from "vitest";
 
 describe("empty input", () => {
@@ -31,7 +31,7 @@ describe("number literal", () => {
 
   it("throws error on invalid number", () => {
     const parser = new LexicalParser("1.1.1");
-    expect(() => parser.parse()).toThrowError("Invalid number: 1.1.1");
+    expect(() => parser.parse()).toThrowError(LexicalError);
   });
 });
 
@@ -58,12 +58,12 @@ describe("string literal", () => {
 
   it("throws error on unterminated single quoted string", () => {
     const parser = new LexicalParser("'John");
-    expect(() => parser.parse()).toThrowError("Unterminated string: 'John");
+    expect(() => parser.parse()).toThrowError(LexicalError);
   });
 
   it("throws error on unterminated double quoted string", () => {
     const parser = new LexicalParser('"John');
-    expect(() => parser.parse()).toThrowError('Unterminated string: "John');
+    expect(() => parser.parse()).toThrowError(LexicalError);
   });
 });
 
