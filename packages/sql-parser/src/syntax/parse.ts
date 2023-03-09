@@ -1,6 +1,11 @@
 import type { Token } from "src/types";
 import { SyntacticError } from "./error";
-import { InsertParser, SelectParser, UpdateParser } from "./parsers";
+import {
+  DeleteParser,
+  InsertParser,
+  SelectParser,
+  UpdateParser,
+} from "./parsers";
 
 export function parseSyntax(tokens: Token[]) {
   if (!tokens[0] || tokens[0].type !== "keyword") {
@@ -23,8 +28,8 @@ export function parseSyntax(tokens: Token[]) {
       return parser.parse();
     }
     case "DELETE": {
-      console.log("Not implemented");
-      return;
+      const parser = new DeleteParser(tokens);
+      return parser.parse();
     }
     case "CREATE": {
       console.log("Not implemented");
