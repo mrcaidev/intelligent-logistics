@@ -1,5 +1,5 @@
 import { Cursor } from "src/cursor";
-import type { Condition, Token, TokenType } from "src/types";
+import type { Assignments, Condition, Token, TokenType } from "src/types";
 import { SyntacticError } from "./error";
 
 export class SyntacticCursor extends Cursor<Token> {
@@ -98,5 +98,36 @@ export class SyntacticCursor extends Cursor<Token> {
     }
 
     return conditionGroups;
+  }
+
+  public consumeManyAssignments() {
+    const assignments: Assignments[] = [];
+
+    while (this.hasType("identifier")) {
+      const { field, operator, value } = this.consumeCondition();
+
+      if (operator !== "=") {
+        throw new SyntacticError(`Expect '=' at '${operator}'`);
+      }
+
+      assignments.push({ field, value });
+
+      if (this.hasValue(",")) {
+        this.consume();
+        continue;
+      }
+
+      if (this.hasType("identifier")) {
+        throw new SyntacticError(`Expect ',' before ${this.current.value}`);
+      }
+    }
+
+    if (assignments.length === 0) {
+      throw new SyntacticError(
+        `Expect identifier before ${this.current.value}`
+      );
+    }
+
+    return assignments;
   }
 }

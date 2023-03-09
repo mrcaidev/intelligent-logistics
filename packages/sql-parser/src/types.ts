@@ -16,3 +16,8 @@ export type Condition = {
   operator: string;
   value: unknown;
 };
+
+export type Assignments = {
+  field: string;
+  value: unknown;
+};
