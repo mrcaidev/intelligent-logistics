@@ -8,35 +8,29 @@ import {
   UpdateParser,
 } from "./parsers";
 
+type Parser = {
+  parse: () => unknown;
+};
+
+const getParserMap: Record<string, (tokens: Token[]) => Parser> = {
+  SELECT: (tokens) => new SelectParser(tokens),
+  INSERT: (tokens) => new InsertParser(tokens),
+  UPDATE: (tokens) => new UpdateParser(tokens),
+  DELETE: (tokens) => new DeleteParser(tokens),
+  CREATE: (tokens) => new CreateParser(tokens),
+};
+
 export function parseSyntax(tokens: Token[]) {
   if (!tokens[0] || tokens[0].type !== "keyword") {
     throw new SyntacticError("Expect keyword at the beginning");
   }
 
-  const keyword = tokens[0].value;
+  const keyword = tokens[0].value as string;
+  const parser = getParserMap[keyword];
 
-  switch (keyword) {
-    case "SELECT": {
-      const parser = new SelectParser(tokens);
-      return parser.parse();
-    }
-    case "INSERT": {
-      const parser = new InsertParser(tokens);
-      return parser.parse();
-    }
-    case "UPDATE": {
-      const parser = new UpdateParser(tokens);
-      return parser.parse();
-    }
-    case "DELETE": {
-      const parser = new DeleteParser(tokens);
-      return parser.parse();
-    }
-    case "CREATE": {
-      const parser = new CreateParser(tokens);
-      return parser.parse();
-    }
-    default:
-      throw new SyntacticError(`Unknown keyword ${keyword} at the beginning`);
+  if (!parser) {
+    throw new SyntacticError(`Unknown keyword ${keyword} at the beginning`);
   }
+
+  return parser(tokens).parse();
 }
