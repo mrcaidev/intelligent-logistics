@@ -1,63 +1,92 @@
-import { Cursor } from "src/cursor";
 import type { Token } from "src/types";
+import { LexicalCursor } from "./cursor";
 import { LexicalError } from "./error";
 import { Validator } from "./validator";
 
 export class LexicalParser {
-  private cursor: Cursor<string>;
+  private cursor: LexicalCursor;
 
   constructor(input: string) {
-    this.cursor = new Cursor(input.trim().split(""));
+    this.cursor = new LexicalCursor(input);
+  }
+
+  public parse() {
+    const tokens: Token[] = [];
+
+    while (this.cursor.isOpen()) {
+      tokens.push(this.getNextToken());
+    }
+
+    return tokens;
+  }
+
+  private getNextToken() {
+    this.skipWhitespaces();
+
+    if (Validator.isSeparator(this.cursor.current)) {
+      return this.parseSeparator();
+    }
+
+    if (Validator.isDigit(this.cursor.current)) {
+      return this.parseNumberLiteral();
+    }
+
+    if (Validator.isQuote(this.cursor.current)) {
+      return this.parseStringLiteral();
+    }
+
+    if (Validator.isSymbol(this.cursor.current)) {
+      return this.parseOperator();
+    }
+
+    if (Validator.isLetter(this.cursor.current)) {
+      return this.parseWord();
+    }
+
+    throw new LexicalError(`Unexpected character ${this.cursor.current}`);
   }
 
   private skipWhitespaces() {
-    while (Validator.isWhitespace(this.cursor.current())) {
-      this.cursor.forward();
+    while (Validator.isWhitespace(this.cursor.current)) {
+      this.cursor.consume();
     }
   }
 
   private parseSeparator() {
-    this.cursor.forward();
+    this.cursor.consume();
     return { type: "separator", value: ";" } as Token;
   }
 
   private parseNumberLiteral() {
     let value = "";
 
-    while (Validator.isDigitOrDot(this.cursor.current())) {
-      value += this.cursor.current();
-      this.cursor.forward();
+    while (Validator.isDigitOrDot(this.cursor.current)) {
+      value += this.cursor.consume();
     }
 
     const numberValue = Number(value);
 
     if (isNaN(numberValue)) {
-      throw new LexicalError(
-        `Invalid number ${value} at position ${this.cursor.position()}`
-      );
+      throw new LexicalError(`Invalid number ${value}`);
     }
 
     return { type: "literal", value: numberValue } satisfies Token;
   }
 
   private parseStringLiteral() {
-    const quote = this.cursor.current();
-    this.cursor.forward();
+    const quote = this.cursor.consume();
 
     let value = "";
 
-    while (this.cursor.current() !== quote) {
-      if (!this.cursor.isOpen()) {
-        throw new LexicalError(
-          `Unterminated string ${quote}${value} at position ${this.cursor.position()}`
-        );
+    while (this.cursor.current !== quote) {
+      if (this.cursor.isClosed()) {
+        throw new LexicalError(`Unterminated string ${quote}${value}`);
       }
 
-      value += this.cursor.current();
-      this.cursor.forward();
+      value += this.cursor.consume();
     }
 
-    this.cursor.forward();
+    this.cursor.consume();
 
     return { type: "literal", value } satisfies Token;
   }
@@ -66,8 +95,7 @@ export class LexicalParser {
     let value = "";
 
     while (this.cursor.isOpen()) {
-      value += this.cursor.current();
-      this.cursor.forward();
+      value += this.cursor.consume();
     }
 
     return { type: "comment", value: value.trim() } as Token;
@@ -76,16 +104,15 @@ export class LexicalParser {
   private parseOperator() {
     let value = "";
 
-    while (Validator.isSymbol(this.cursor.current())) {
-      value += this.cursor.current();
-      this.cursor.forward();
+    while (Validator.isSymbol(this.cursor.current)) {
+      value += this.cursor.consume();
     }
 
     if (value === "--") {
       return this.parseComment();
     }
 
-    if (value === "-" && Validator.isDigit(this.cursor.current())) {
+    if (value === "-" && Validator.isDigit(this.cursor.current)) {
       const { value } = this.parseNumberLiteral();
       return { type: "literal", value: -value } satisfies Token;
     }
@@ -96,9 +123,8 @@ export class LexicalParser {
   private parseWord() {
     let value = "";
 
-    while (Validator.isLetter(this.cursor.current())) {
-      value += this.cursor.current();
-      this.cursor.forward();
+    while (Validator.isLetter(this.cursor.current)) {
+      value += this.cursor.consume();
     }
 
     if (Validator.isKeyword(value)) {
@@ -115,43 +141,5 @@ export class LexicalParser {
     }
 
     return { type: "identifier", value } as Token;
-  }
-
-  private getNextToken() {
-    this.skipWhitespaces();
-
-    if (Validator.isSeparator(this.cursor.current())) {
-      return this.parseSeparator();
-    }
-
-    if (Validator.isDigit(this.cursor.current())) {
-      return this.parseNumberLiteral();
-    }
-
-    if (Validator.isQuote(this.cursor.current())) {
-      return this.parseStringLiteral();
-    }
-
-    if (Validator.isSymbol(this.cursor.current())) {
-      return this.parseOperator();
-    }
-
-    if (Validator.isLetter(this.cursor.current())) {
-      return this.parseWord();
-    }
-
-    throw new LexicalError(
-      `Unexpected character ${this.cursor.current()} at position ${this.cursor.position()}`
-    );
-  }
-
-  public parse() {
-    const tokens: Token[] = [];
-
-    while (this.cursor.isOpen()) {
-      tokens.push(this.getNextToken());
-    }
-
-    return tokens;
   }
 }

@@ -3,40 +3,24 @@ import { expect, it } from "vitest";
 
 it("starts at first item", () => {
   const cursor = new Cursor(["a", "b", "c"]);
-  expect(cursor.position()).toEqual(0);
-  expect(cursor.current()).toEqual("a");
+  expect(cursor.current).toEqual("a");
 });
 
-it("can move around", () => {
+it("can consume items", () => {
   const cursor = new Cursor(["a", "b", "c"]);
-  expect(cursor.position()).toEqual(0);
-  expect(cursor.current()).toEqual("a");
+  expect(cursor.current).toEqual("a");
 
-  cursor.forward();
-  expect(cursor.position()).toEqual(1);
-  expect(cursor.current()).toEqual("b");
-
-  cursor.backward();
-  expect(cursor.position()).toEqual(0);
-  expect(cursor.current()).toEqual("a");
+  const result = cursor.consume();
+  expect(result).toEqual("a");
+  expect(cursor.current).toEqual("b");
 });
 
 it("manages open/closed state correctly", () => {
   const cursor = new Cursor(["a"]);
-  expect(cursor.position()).toEqual(0);
   expect(cursor.isOpen()).toEqual(true);
+  expect(cursor.isClosed()).toEqual(false);
 
-  cursor.forward();
-  expect(cursor.position()).toEqual(1);
+  cursor.consume();
   expect(cursor.isOpen()).toEqual(false);
-});
-
-it("can close", () => {
-  const cursor = new Cursor(["a", "b", "c"]);
-  expect(cursor.position()).toEqual(0);
-  expect(cursor.isOpen()).toEqual(true);
-
-  cursor.close();
-  expect(cursor.position()).toEqual(3);
-  expect(cursor.isOpen()).toEqual(false);
+  expect(cursor.isClosed()).toEqual(true);
 });

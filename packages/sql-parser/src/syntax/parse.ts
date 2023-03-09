@@ -1,7 +1,6 @@
 import type { Token } from "src/types";
 import { SyntacticError } from "./error";
-import { InsertParser } from "./insert";
-import { SelectParser } from "./select";
+import { InsertParser, SelectParser } from "./parsers";
 
 export function parseSyntax(tokens: Token[]) {
   if (!tokens[0] || tokens[0].type !== "keyword") {
