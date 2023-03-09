@@ -17,6 +17,8 @@ const keywords = [
   "DROP",
 ];
 
+const dataTypes = ["NUMERIC", "TEXT", "BOOLEAN"];
+
 export class Validator {
   public static isWhitespace(character: string) {
     return /^\s$/.test(character);
@@ -56,5 +58,9 @@ export class Validator {
 
   public static isKeyword(sequence: string) {
     return keywords.includes(sequence.toUpperCase());
+  }
+
+  public static isDataType(sequence: string) {
+    return dataTypes.includes(sequence.toUpperCase());
   }
 }

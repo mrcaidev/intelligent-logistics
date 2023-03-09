@@ -1,6 +1,7 @@
 export type TokenType =
   | "literal"
   | "keyword"
+  | "dataType"
   | "identifier"
   | "operator"
   | "comment"

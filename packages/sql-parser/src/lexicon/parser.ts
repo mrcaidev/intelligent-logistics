@@ -131,6 +131,10 @@ export class LexicalParser {
       return { type: "keyword", value: value.toUpperCase() } as Token;
     }
 
+    if (Validator.isDataType(value)) {
+      return { type: "dataType", value: value.toUpperCase() } as Token;
+    }
+
     if (Validator.isBoolean(value)) {
       const booleanValue = value.toUpperCase() === "TRUE";
       return { type: "literal", value: booleanValue } satisfies Token;

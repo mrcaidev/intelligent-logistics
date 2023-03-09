@@ -123,6 +123,28 @@ describe("keyword", () => {
   });
 });
 
+describe("data type", () => {
+  it("parses NUMERIC", () => {
+    const result = parseLexicon("NUMERIC");
+    expect(result).toEqual([{ type: "dataType", value: "NUMERIC" }]);
+  });
+
+  it("parses TEXT", () => {
+    const result = parseLexicon("TEXT");
+    expect(result).toEqual([{ type: "dataType", value: "TEXT" }]);
+  });
+
+  it("parses BOOLEAN", () => {
+    const result = parseLexicon("BOOLEAN");
+    expect(result).toEqual([{ type: "dataType", value: "BOOLEAN" }]);
+  });
+
+  it("ignores case", () => {
+    const result = parseLexicon("NuMeRiC");
+    expect(result).toEqual([{ type: "dataType", value: "NUMERIC" }]);
+  });
+});
+
 describe("identifier", () => {
   it("parses single word", () => {
     const result = parseLexicon("users");
@@ -259,6 +281,22 @@ describe("statements", () => {
       { type: "operator", value: "*" },
       { type: "keyword", value: "FROM" },
       { type: "identifier", value: "b" },
+    ]);
+  });
+
+  it("parses CREATE TABLE users (id NUMERIC, name TEXT)", () => {
+    const result = parseLexicon("CREATE TABLE users (id NUMERIC, name TEXT)");
+    expect(result).toEqual([
+      { type: "keyword", value: "CREATE" },
+      { type: "keyword", value: "TABLE" },
+      { type: "identifier", value: "users" },
+      { type: "operator", value: "(" },
+      { type: "identifier", value: "id" },
+      { type: "dataType", value: "NUMERIC" },
+      { type: "operator", value: "," },
+      { type: "identifier", value: "name" },
+      { type: "dataType", value: "TEXT" },
+      { type: "operator", value: ")" },
     ]);
   });
 });
