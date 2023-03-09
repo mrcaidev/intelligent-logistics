@@ -129,9 +129,7 @@ export class SyntacticCursor extends Cursor<Token> {
     }
 
     if (assignments.length === 0) {
-      throw new SyntacticError(
-        `Expect assignments before ${this.current.value}`
-      );
+      throw new SyntacticError("Expect assignments after SET");
     }
 
     return assignments;

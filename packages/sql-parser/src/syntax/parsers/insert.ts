@@ -1,5 +1,6 @@
 import type { Token } from "src/types";
 import { SyntacticCursor } from "../cursor";
+import { SyntacticError } from "../error";
 
 export class InsertParser {
   private cursor: SyntacticCursor;
@@ -17,6 +18,12 @@ export class InsertParser {
     this.cursor.consumeByValue("(");
     const values = this.cursor.consumeManyByType("literal") as unknown[];
     this.cursor.consumeByValue(")");
+
+    if (fields !== "*" && fields.length !== values.length) {
+      throw new SyntacticError(
+        `Cannot insert ${values.length} values into ${fields.length} fields`
+      );
+    }
 
     return {
       type: "insert",
