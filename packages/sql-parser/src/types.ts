@@ -22,3 +22,8 @@ export type Assignments = {
   field: string;
   value: unknown;
 };
+
+export type Definition = {
+  field: string;
+  type: string;
+};

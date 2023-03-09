@@ -1,6 +1,7 @@
 import type { Token } from "src/types";
 import { SyntacticError } from "./error";
 import {
+  CreateParser,
   DeleteParser,
   InsertParser,
   SelectParser,
@@ -32,8 +33,8 @@ export function parseSyntax(tokens: Token[]) {
       return parser.parse();
     }
     case "CREATE": {
-      console.log("Not implemented");
-      return;
+      const parser = new CreateParser(tokens);
+      return parser.parse();
     }
     default:
       throw new SyntacticError(`Unknown keyword ${keyword} at the beginning`);

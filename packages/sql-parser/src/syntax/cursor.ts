@@ -1,5 +1,11 @@
 import { Cursor } from "src/cursor";
-import type { Assignments, Condition, Token, TokenType } from "src/types";
+import type {
+  Assignments,
+  Condition,
+  Definition,
+  Token,
+  TokenType,
+} from "src/types";
 import { SyntacticError } from "./error";
 
 export class SyntacticCursor extends Cursor<Token> {
@@ -124,10 +130,39 @@ export class SyntacticCursor extends Cursor<Token> {
 
     if (assignments.length === 0) {
       throw new SyntacticError(
-        `Expect identifier before ${this.current.value}`
+        `Expect assignments before ${this.current.value}`
       );
     }
 
     return assignments;
+  }
+
+  public consumeDefinition() {
+    const field = this.consumeByType("identifier");
+    const type = this.consumeByType("dataType");
+
+    return { field, type } as Definition;
+  }
+
+  public consumeManyDefinitions() {
+    const definitions: Definition[] = [];
+
+    while (this.hasType("identifier")) {
+      const definition = this.consumeDefinition();
+      definitions.push(definition);
+
+      if (this.hasValue(",")) {
+        this.consumeByValue(",");
+        continue;
+      }
+    }
+
+    if (definitions.length === 0) {
+      throw new SyntacticError(
+        `Expect definitions before ${this.current.value}`
+      );
+    }
+
+    return definitions;
   }
 }
