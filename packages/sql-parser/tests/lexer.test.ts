@@ -135,6 +135,11 @@ describe("operator", () => {
     const result = new Lexer("-").tokenize();
     expect(result).toEqual([{ type: TokenType.OPERATOR, value: "-" }]);
   });
+
+  it("throws error on invalid operator", () => {
+    const result = () => new Lexer("==").tokenize();
+    expect(result).toThrowError(LexerError);
+  });
 });
 
 describe("identifier", () => {

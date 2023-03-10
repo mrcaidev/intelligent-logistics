@@ -23,12 +23,9 @@ export class Parser {
   /**
    * Parse tokens into an AST.
    * @returns AST of the statement.
+   * @throws When the keyword is invalid.
    */
   public parse(): AST {
-    if (!this.cursor.hasType(TokenType.KEYWORD)) {
-      throw new ParserError("Expect keyword at the beginning");
-    }
-
     const { value: keyword } = this.cursor.consume();
 
     switch (keyword) {
@@ -43,7 +40,7 @@ export class Parser {
       case "CREATE":
         return this.parseCreate();
       default:
-        throw new ParserError(`Unknown keyword: ${keyword}`);
+        throw new ParserError(`Invalid keyword: ${keyword}`);
     }
   }
 

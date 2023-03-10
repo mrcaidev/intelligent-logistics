@@ -126,8 +126,7 @@ export class ParserCursor extends Cursor<Token> {
     const conditionGroups: Condition[][] = [];
     let currentGroup: Condition[] = [];
 
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
+    while (this.hasType(TokenType.IDENTIFIER)) {
       const condition = this.consumeCondition();
       currentGroup.push(condition);
 

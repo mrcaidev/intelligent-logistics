@@ -20,7 +20,7 @@ describe("invalid keyword", () => {
   });
 });
 
-describe("SELECT statements", () => {
+describe("SELECT statement", () => {
   it("parses simple SELECT", () => {
     const result = parse("SELECT * FROM users");
     expect(result).toEqual({
@@ -137,7 +137,7 @@ describe("SELECT statements", () => {
   });
 });
 
-describe("INSERT statements", () => {
+describe("INSERT statement", () => {
   it("parses simple INSERT", () => {
     const result = parse("INSERT INTO users VALUES (1, 'John')");
     expect(result).toEqual({
@@ -198,7 +198,7 @@ describe("INSERT statements", () => {
   });
 });
 
-describe("UPDATE statements", () => {
+describe("UPDATE statement", () => {
   it("parses simple UPDATE", () => {
     const result = parse("UPDATE users SET name = 'John'");
     expect(result).toEqual({
@@ -263,9 +263,14 @@ describe("UPDATE statements", () => {
     const result = () => parse("UPDATE users SET name = SELECT");
     expect(result).toThrowError(ParserError);
   });
+
+  it("throws error when assignments are not separated by comma", () => {
+    const result = () => parse("UPDATE users SET name = 'John' age = 30");
+    expect(result).toThrowError(ParserError);
+  });
 });
 
-describe("DELETE statements", () => {
+describe("DELETE statement", () => {
   it("parses simple DELETE", () => {
     const result = parse("DELETE FROM users");
     expect(result).toEqual({
@@ -301,6 +306,50 @@ describe("DELETE statements", () => {
 
   it("throws error with incomplete condition", () => {
     const result = () => parse("DELETE FROM users WHERE id =");
+    expect(result).toThrowError(ParserError);
+  });
+});
+
+describe("CREATE statement", () => {
+  it("parses simple CREATE", () => {
+    const result = parse("CREATE TABLE users (id NUMERIC, name TEXT)");
+    expect(result).toEqual({
+      type: "create",
+      table: "users",
+      definitions: [
+        { field: "id", type: "NUMERIC" },
+        { field: "name", type: "TEXT" },
+      ],
+    });
+  });
+
+  it("throws error when missing TABLE", () => {
+    const result = () => parse("CREATE users (id NUMERIC, name TEXT)");
+    expect(result).toThrowError(ParserError);
+  });
+
+  it("throws error when missing table name", () => {
+    const result = () => parse("CREATE TABLE (id NUMERIC, name TEXT)");
+    expect(result).toThrowError(ParserError);
+  });
+
+  it("throws error when missing fields", () => {
+    const result = () => parse("CREATE TABLE users");
+    expect(result).toThrowError(ParserError);
+  });
+
+  it("throws error when missing field name", () => {
+    const result = () => parse("CREATE TABLE users (NUMERIC, name TEXT)");
+    expect(result).toThrowError(ParserError);
+  });
+
+  it("throws error when missing field type", () => {
+    const result = () => parse("CREATE TABLE users (id, name TEXT)");
+    expect(result).toThrowError(ParserError);
+  });
+
+  it("throws error when fields are not separated by comma", () => {
+    const result = () => parse("CREATE TABLE users (id NUMERIC name TEXT)");
     expect(result).toThrowError(ParserError);
   });
 });
