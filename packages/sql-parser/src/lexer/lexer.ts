@@ -151,12 +151,6 @@ export class Lexer {
       return { type: TokenType.LITERAL, value: negativeNumber };
     }
 
-    if (Validator.isMinus(this.cursor.current)) {
-      this.cursor.consume();
-      const comment = this.cursor.consumeAsLongAs(() => true).trim();
-      return { type: TokenType.COMMENT, value: comment };
-    }
-
     return { type: TokenType.OPERATOR, value };
   }
 

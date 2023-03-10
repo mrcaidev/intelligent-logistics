@@ -158,18 +158,6 @@ describe("identifier", () => {
   });
 });
 
-describe("comment", () => {
-  it("parses empty comment", () => {
-    const result = new Lexer("--").tokenize();
-    expect(result).toEqual([{ type: TokenType.COMMENT, value: "" }]);
-  });
-
-  it("parses normal comment", () => {
-    const result = new Lexer("-- a b c ").tokenize();
-    expect(result).toEqual([{ type: TokenType.COMMENT, value: "a b c" }]);
-  });
-});
-
 describe("symbol", () => {
   it("parses symbols", () => {
     const result = new Lexer("()").tokenize();

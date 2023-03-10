@@ -7,7 +7,6 @@ export enum TokenType {
   DATA_TYPE = "data type",
   OPERATOR = "operator",
   IDENTIFIER = "identifier",
-  COMMENT = "comment",
   SYMBOL = "symbol",
 }
 

@@ -1,5 +1,5 @@
 /**
- * Preprocess input into a list of statements.
+ * Preprocesses input into a list of statements.
  */
 export class Preprocessor {
   /**
@@ -8,13 +8,18 @@ export class Preprocessor {
   constructor(private input: string) {}
 
   /**
-   * Breaks down the input by ";", and discard empty statements.
+   * Split statements by ";", and strip comments and line breaks.
    * @returns A list of SQL statements.
    */
-  public preprocess() {
+  public process() {
     return this.input
       .split(";")
-      .map((sentence) => sentence.trim())
-      .filter((sentence) => sentence.length > 0);
+      .map((statement) =>
+        statement
+          .replaceAll(/--.*/g, "")
+          .replaceAll(/\s*\n\s*/g, " ")
+          .trim()
+      )
+      .filter((statement) => statement.length > 0);
   }
 }
