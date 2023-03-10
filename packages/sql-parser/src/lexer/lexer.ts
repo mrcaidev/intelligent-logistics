@@ -14,14 +14,14 @@ export class Lexer {
 
   /**
    * Point the cursor to the first character.
-   * @param input Input string.
+   * @param statement A SQL statement.
    */
-  constructor(input: string) {
-    this.cursor = new LexerCursor(input);
+  constructor(statement: string) {
+    this.cursor = new LexerCursor(statement);
   }
 
   /**
-   * Parse the input into a list of tokens.
+   * Parse the statement into a list of tokens.
    * @returns List of tokens.
    */
   public tokenize() {

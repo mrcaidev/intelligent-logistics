@@ -1,10 +1,10 @@
 import { Lexer } from "./lexer";
 import { Parser } from "./parser";
+import { Preprocessor } from "./preprocessor";
 
-export function parse(sql: string) {
-  const lexer = new Lexer(sql);
-  const tokens = lexer.tokenize();
-  const parser = new Parser(tokens);
-  const ast = parser.parse();
-  return ast;
+export function parse(input: string) {
+  return new Preprocessor(input)
+    .preprocess()
+    .map((statement) => new Lexer(statement).tokenize())
+    .map((tokens) => new Parser(tokens).parse());
 }

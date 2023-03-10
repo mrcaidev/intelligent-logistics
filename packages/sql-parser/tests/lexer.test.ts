@@ -1,7 +1,7 @@
 import { Lexer, LexerError, TokenType } from "src/lexer";
 import { describe, expect, it } from "vitest";
 
-describe("empty input", () => {
+describe("empty statement", () => {
   it("returns empty list", () => {
     const result = new Lexer("   ").tokenize();
     expect(result).toEqual([]);

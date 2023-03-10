@@ -5,12 +5,12 @@ import { Cursor } from "src/cursor";
  */
 export class LexerCursor extends Cursor<string> {
   /**
-   * Trim the input and split it into single characters,
+   * Split the statement into single characters,
    * so that the cursor can iterate over each character.
-   * @param input Input string.
+   * @param statement A SQL statement.
    */
-  constructor(input: string) {
-    super(input.trim().split(""));
+  constructor(statement: string) {
+    super(statement.split(""));
   }
 
   /**

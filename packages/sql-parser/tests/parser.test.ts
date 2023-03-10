@@ -2,8 +2,8 @@ import { Lexer } from "src/lexer";
 import { Parser, ParserError } from "src/parser";
 import { describe, expect, it } from "vitest";
 
-function parse(input: string) {
-  const tokens = new Lexer(input).tokenize();
+function parse(statement: string) {
+  const tokens = new Lexer(statement).tokenize();
   const ast = new Parser(tokens).parse();
   return ast;
 }

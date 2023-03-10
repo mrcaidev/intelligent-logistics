@@ -32,7 +32,7 @@ export class ParserCursor extends Cursor<Token> {
    */
   public override consume() {
     if (this.isClosed()) {
-      throw new ParserError("Unexpected end of input");
+      throw new ParserError("Unexpected end of statement");
     }
 
     return super.consume();
