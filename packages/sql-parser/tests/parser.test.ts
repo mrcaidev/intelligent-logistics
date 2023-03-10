@@ -1,17 +1,22 @@
-import { parseLexicon } from "src/lexicon";
-import { parseSyntax, SyntacticError } from "src/syntax";
+import { Lexer } from "src/lexer";
+import { Parser, ParserError } from "src/parser";
 import { describe, expect, it } from "vitest";
 
 function parse(input: string) {
-  const tokens = parseLexicon(input);
-  const syntaxTree = parseSyntax(tokens);
-  return syntaxTree;
+  const tokens = new Lexer(input).tokenize();
+  const ast = new Parser(tokens).parse();
+  return ast;
 }
 
-describe("invalid keywords", () => {
-  it("throws error", () => {
+describe("invalid keyword", () => {
+  it("throws error with no keyword", () => {
+    const result = () => parse("id FROM users");
+    expect(result).toThrowError(ParserError);
+  });
+
+  it("throws error with invalid keyword", () => {
     const result = () => parse("UNKNOWN id FROM users");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 });
 
@@ -47,29 +52,33 @@ describe("SELECT statements", () => {
   });
 
   it("parses SELECT with AND condition", () => {
-    const result = parse("SELECT * FROM users WHERE id = 1 AND name = 'John'");
+    const result = parse(
+      "SELECT * FROM users WHERE name = 'John' AND age <= 30"
+    );
     expect(result).toEqual({
       type: "select",
       table: "users",
       fields: "*",
       conditions: [
         [
-          { field: "id", operator: "=", value: 1 },
           { field: "name", operator: "=", value: "John" },
+          { field: "age", operator: "<=", value: 30 },
         ],
       ],
     });
   });
 
   it("parses SELECT with OR condition", () => {
-    const result = parse("SELECT * FROM users WHERE id = 1 OR name = 'John'");
+    const result = parse(
+      "SELECT * FROM users WHERE name = 'John' OR age <= 30"
+    );
     expect(result).toEqual({
       type: "select",
       table: "users",
       fields: "*",
       conditions: [
-        [{ field: "id", operator: "=", value: 1 }],
         [{ field: "name", operator: "=", value: "John" }],
+        [{ field: "age", operator: "<=", value: 30 }],
       ],
     });
   });
@@ -94,32 +103,37 @@ describe("SELECT statements", () => {
 
   it("throws error when missing fields", () => {
     const result = () => parse("SELECT FROM users");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
+  });
+
+  it("throws error when fields are not separated by comma", () => {
+    const result = () => parse("SELECT id name FROM users");
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error when missing FROM", () => {
     const result = () => parse("SELECT * users");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error when missing table name", () => {
     const result = () => parse("SELECT * FROM");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error when no condition follows WHERE", () => {
     const result = () => parse("SELECT * FROM users WHERE");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error with incomplete condition", () => {
     const result = () => parse("SELECT * FROM users WHERE id =");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error with incorrect condition", () => {
     const result = () => parse("SELECT * FROM users WHERE id = SELECT");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 });
 
@@ -129,8 +143,10 @@ describe("INSERT statements", () => {
     expect(result).toEqual({
       type: "insert",
       table: "users",
-      fields: "*",
-      values: [1, "John"],
+      assignments: [
+        { field: "*", value: 1 },
+        { field: "*", value: "John" },
+      ],
     });
   });
 
@@ -139,39 +155,46 @@ describe("INSERT statements", () => {
     expect(result).toEqual({
       type: "insert",
       table: "users",
-      fields: ["id", "name"],
-      values: [1, "John"],
+      assignments: [
+        { field: "id", value: 1 },
+        { field: "name", value: "John" },
+      ],
     });
   });
 
   it("throws error when missing INTO", () => {
     const result = () => parse("INSERT users VALUES (1, 'John')");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error when missing table name", () => {
     const result = () => parse("INSERT INTO VALUES (1, 'John')");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error when missing VALUES", () => {
     const result = () => parse("INSERT INTO users (1, 'John')");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error when missing values", () => {
     const result = () => parse("INSERT INTO users VALUES");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
+  });
+
+  it("throws error with empty fields", () => {
+    const result = () => parse("INSERT INTO users () VALUES (1, 'John')");
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error with empty values", () => {
     const result = () => parse("INSERT INTO users VALUES ()");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error when fields and values have different lengths", () => {
     const result = () => parse("INSERT INTO users (id, name) VALUES (1)");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 });
 
@@ -218,27 +241,27 @@ describe("UPDATE statements", () => {
 
   it("throws error when missing table name", () => {
     const result = () => parse("UPDATE SET name = 'John'");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error when missing SET", () => {
     const result = () => parse("UPDATE users name = 'John'");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error when missing fields", () => {
     const result = () => parse("UPDATE users SET");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error with incomplete assignments", () => {
     const result = () => parse("UPDATE users SET name =");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error with incorrect assignments", () => {
     const result = () => parse("UPDATE users SET name = SELECT");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 });
 
@@ -263,21 +286,21 @@ describe("DELETE statements", () => {
 
   it("throws error when missing FROM", () => {
     const result = () => parse("DELETE users");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error when missing table name", () => {
     const result = () => parse("DELETE FROM");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error when no condition follows WHERE", () => {
     const result = () => parse("DELETE FROM users WHERE");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 
   it("throws error with incomplete condition", () => {
     const result = () => parse("DELETE FROM users WHERE id =");
-    expect(result).toThrowError(SyntacticError);
+    expect(result).toThrowError(ParserError);
   });
 });
