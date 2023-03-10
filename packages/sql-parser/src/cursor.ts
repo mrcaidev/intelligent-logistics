@@ -6,14 +6,12 @@ export class Cursor<T> {
   /**
    * Current index of the cursor in the iterable.
    */
-  private position: number;
+  private position = 0;
 
   /**
-   * Store the iterable and point the cursor to the first item.
+   * Store the iterable.
    */
-  constructor(private iterable: T[]) {
-    this.position = 0;
-  }
+  constructor(private iterable: T[]) {}
 
   /**
    * The current item in the iterable.
