@@ -70,12 +70,6 @@ export class Parser {
     const values = this.cursor.consumeManyByType(TokenType.LITERAL);
     this.cursor.consumeByValue(")");
 
-    if (fields !== "*" && fields.length !== values.length) {
-      throw new ParserError(
-        `Cannot insert ${values.length} values into ${fields.length} fields`
-      );
-    }
-
     return { type: "insert", table, fields, values } as AST;
   }
 

@@ -187,11 +187,6 @@ describe("INSERT statement", () => {
     const result = () => parse("INSERT INTO users VALUES ()");
     expect(result).toThrowError(ParserError);
   });
-
-  it("throws error when fields and values have different lengths", () => {
-    const result = () => parse("INSERT INTO users (id, name) VALUES (1)");
-    expect(result).toThrowError(ParserError);
-  });
 });
 
 describe("UPDATE statement", () => {
