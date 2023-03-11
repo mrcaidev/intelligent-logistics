@@ -26,10 +26,13 @@ it("put VIP goods first", () => {
   vi.advanceTimersByTime(86400000);
   queue.push(fakeGood("2"));
   queue.push(fakeGood("3", true));
+  vi.advanceTimersByTime(86400000);
+  queue.push(fakeGood("4", true));
 
   expect(queue.pop()?.name).toEqual("1");
   expect(queue.pop()?.name).toEqual("3");
   expect(queue.pop()?.name).toEqual("2");
+  expect(queue.pop()?.name).toEqual("4");
 
   vi.useRealTimers();
 });
