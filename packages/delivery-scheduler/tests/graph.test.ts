@@ -1,7 +1,7 @@
 import { Graph } from "src/graph";
 import { expect, it } from "vitest";
 
-it("initialize shortest paths", () => {
+it("initializes shortest paths", () => {
   const graph = new Graph([
     { from: "1", to: "2", weight: 3 },
     { from: "1", to: "4", weight: 5 },
