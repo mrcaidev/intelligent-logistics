@@ -12,7 +12,7 @@ type Config = {
 };
 
 /**
- * Goods delivered in the system.
+ * Goods delivered in the logistics system.
  */
 export class Good {
   /**
@@ -61,23 +61,6 @@ export class Good {
     this.destination = config.destination;
     this.isVip = config.isVip ?? false;
     this.strategy = config.strategy;
-  }
-
-  /**
-   * Goods with smaller priority timestamp will be delivered first.
-   * For non-VIP goods, this timestamp is the same as the arrived time.
-   * For VIP goods, this timestamp is 1 day earlier than the arrived time.
-   * @returns The priority timestamp.
-   */
-  public getPriorityTimestamp() {
-    const arrivedTime = this.createdAt.getTime();
-
-    if (!this.isVip) {
-      return arrivedTime;
-    }
-
-    const oneDay = 24 * 60 * 60 * 1000;
-    return arrivedTime - oneDay;
   }
 
   /**
