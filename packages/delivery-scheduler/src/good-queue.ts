@@ -1,17 +1,31 @@
 import type { Good } from "./good";
-import { PriorityQueue } from "./priority-queue";
 
 /**
  * Priority queue for goods.
  * Goods with higher priority are at the front of the queue,
  * which means they will be delivered first.
  */
-export class GoodQueue extends PriorityQueue<Good> {
+export class GoodQueue {
   /**
-   * Create a good queue.
+   * Queue of goods.
    */
-  constructor() {
-    super(GoodQueue.compare);
+  private queue: Good[] = [];
+
+  /**
+   * Push a good to the queue.
+   * @param good The good to be added.
+   */
+  public push(good: Good) {
+    this.queue.push(good);
+    this.queue.sort(GoodQueue.compare);
+  }
+
+  /**
+   * Pop a good from the queue.
+   * @returns The good with the highest priority.
+   */
+  public pop() {
+    return this.queue.shift();
   }
 
   /**
