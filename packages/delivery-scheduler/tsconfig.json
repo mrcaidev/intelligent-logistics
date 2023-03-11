@@ -1,0 +1,7 @@
+{
+  "extends": "typescript-config-custom/library",
+  "compilerOptions": {
+    "baseUrl": "."
+  },
+  "include": ["src", "tests"]
+}
