@@ -143,10 +143,8 @@ describe("INSERT statement", () => {
     expect(result).toEqual({
       type: "insert",
       table: "users",
-      assignments: [
-        { field: "*", value: 1 },
-        { field: "*", value: "John" },
-      ],
+      fields: "*",
+      values: [1, "John"],
     });
   });
 
@@ -155,10 +153,8 @@ describe("INSERT statement", () => {
     expect(result).toEqual({
       type: "insert",
       table: "users",
-      assignments: [
-        { field: "id", value: 1 },
-        { field: "name", value: "John" },
-      ],
+      fields: ["id", "name"],
+      values: [1, "John"],
     });
   });
 

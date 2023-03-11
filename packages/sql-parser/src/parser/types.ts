@@ -40,7 +40,8 @@ export type SelectAST = {
  */
 export type InsertAST = {
   table: string;
-  assignments: Assignment[];
+  fields: "*" | string[];
+  values: unknown[];
 };
 
 /**

@@ -70,9 +70,13 @@ export class Parser {
     const values = this.cursor.consumeManyByType(TokenType.LITERAL);
     this.cursor.consumeByValue(")");
 
-    const assignments = this.composeFieldAndValueAsAssignment(fields, values);
+    if (fields !== "*" && fields.length !== values.length) {
+      throw new ParserError(
+        `Cannot insert ${values.length} values into ${fields.length} fields`
+      );
+    }
 
-    return { type: "insert", table, assignments } as AST;
+    return { type: "insert", table, fields, values } as AST;
   }
 
   /**
@@ -155,37 +159,10 @@ export class Parser {
 
     this.cursor.consume();
 
-    const fields = this.cursor.consumeManyByType(
-      TokenType.IDENTIFIER
-    ) as string[];
+    const fields = this.cursor.consumeManyByType(TokenType.IDENTIFIER);
 
     this.cursor.consumeByValue(")");
 
     return fields;
-  }
-
-  /**
-   * Compose field and value into an assignment.
-   * If fields is "*", then the fields in every assignment will be "*".
-   * @param fields Fields of the statement.
-   * @param values Values of the statement.
-   * @returns Assignments of the statement.
-   * @throws When fields and values does not have the same length.
-   */
-  private composeFieldAndValueAsAssignment(
-    fields: "*" | string[],
-    values: unknown[]
-  ) {
-    if (fields === "*") {
-      return values.map((value) => ({ field: "*", value }));
-    }
-
-    if (fields.length !== values.length) {
-      throw new ParserError(
-        `Cannot insert ${values.length} values into ${fields.length} fields`
-      );
-    }
-
-    return fields.map((field, index) => ({ field, value: values[index] }));
   }
 }
