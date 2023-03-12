@@ -1,5 +1,5 @@
 {
-  "name": "sql-runner",
+  "name": "sql-parser",
   "version": "0.0.0",
   "private": true,
   "type": "module",
