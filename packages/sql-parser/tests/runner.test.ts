@@ -55,9 +55,8 @@ describe("validates conditions", () => {
   it("permits valid conditions", () => {
     expect(() => {
       runner.run({
-        type: "select",
+        type: "delete",
         table: "users",
-        fields: "*",
         conditions: [[{ field: "id", operator: "=", value: 1 }]],
       });
     }).not.toThrowError();
@@ -66,9 +65,8 @@ describe("validates conditions", () => {
   it("throws error on invalid condition fields", () => {
     expect(() => {
       runner.run({
-        type: "select",
+        type: "delete",
         table: "users",
-        fields: "*",
         conditions: [[{ field: "unknown", operator: "=", value: 1 }]],
       });
     }).toThrowError(RunnerError);
@@ -77,9 +75,8 @@ describe("validates conditions", () => {
   it("throws error on invalid condition values", () => {
     expect(() => {
       runner.run({
-        type: "select",
+        type: "delete",
         table: "users",
-        fields: "*",
         conditions: [[{ field: "id", operator: "=", value: "John" }]],
       });
     }).toThrowError(RunnerError);
@@ -151,6 +148,17 @@ describe("validates values with field names", () => {
         table: "users",
         fields: ["id"],
         values: ["1"],
+      });
+    }).toThrowError(RunnerError);
+  });
+
+  it("throws error on inconsistent number of fields and values", () => {
+    expect(() => {
+      runner.run({
+        type: "insert",
+        table: "users",
+        fields: ["id", "name"],
+        values: [1],
       });
     }).toThrowError(RunnerError);
   });
