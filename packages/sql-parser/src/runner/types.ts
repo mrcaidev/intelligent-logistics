@@ -12,13 +12,21 @@ import type {
 export type Schema = { field: string; type: string }[];
 
 /**
+ * Result of running a SQL statement.
+ */
+type Result = {
+  rows: Record<string, unknown>[];
+  rowCount: number;
+};
+
+/**
  * The bridge between the SQL runner and the database file.
  */
 export type ORM = {
   getSchema: (table: string) => Schema;
-  select: (ast: SelectAST) => Record<string, unknown>[];
-  insert: (ast: InsertAST) => void;
-  update: (ast: UpdateAST) => void;
-  delete: (ast: DeleteAST) => void;
-  create: (ast: CreateAST) => void;
+  select: (ast: SelectAST) => Result;
+  insert: (ast: InsertAST) => Result;
+  update: (ast: UpdateAST) => Result;
+  delete: (ast: DeleteAST) => Result;
+  create: (ast: CreateAST) => Result;
 };

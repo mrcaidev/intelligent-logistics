@@ -7,11 +7,11 @@ const orm: ORM = {
     { field: "name", type: "TEXT" },
     { field: "age", type: "NUMERIC" },
   ],
-  select: () => [],
-  insert: () => [],
-  update: () => [],
-  delete: () => [],
-  create: () => [],
+  select: () => ({ rows: [], rowCount: 0 }),
+  insert: () => ({ rows: [], rowCount: 0 }),
+  update: () => ({ rows: [], rowCount: 0 }),
+  delete: () => ({ rows: [], rowCount: 0 }),
+  create: () => ({ rows: [], rowCount: 0 }),
 };
 
 const runner = new Runner(orm);
