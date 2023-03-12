@@ -6,24 +6,18 @@
  */
 export class Semaphore {
   /**
-   * Current number of vacancies for concurrent operations.
-   */
-  private count: number;
-
-  /**
    * Queue of pending operations.
    */
   private queue: (() => void)[] = [];
 
   /**
-   * Specify the maximum number of concurrent operations.
+   * Set concurrency limit.
    */
-  constructor(initialCount = 1) {
-    this.count = initialCount;
-  }
+  constructor(private count = 1) {}
 
   /**
-   * Acquire a vacancy for a concurrent operation.
+   * Acquire a vacancy for concurrent operation.
+   * If none are available, the process will be queued.
    */
   public async acquire() {
     return new Promise<void>((resolve) => {
@@ -38,7 +32,8 @@ export class Semaphore {
   }
 
   /**
-   * Release a vacancy in favor of pending operations.
+   * Release a vacancy. If there are pending operations,
+   * the first one will be unblocked.
    */
   public release() {
     this.count++;

@@ -1,4 +1,4 @@
-import { Semaphore } from "src/semaphore";
+import { Semaphore } from "src";
 import { afterAll, afterEach, beforeAll, expect, it, vi } from "vitest";
 
 async function sleep(ms: number) {
@@ -7,7 +7,7 @@ async function sleep(ms: number) {
 
 const results: string[] = [];
 
-function pushFactory(semaphore: Semaphore) {
+function createPush(semaphore: Semaphore) {
   return async (item: string) => {
     await semaphore.acquire();
 
@@ -33,7 +33,7 @@ afterEach(() => {
 
 it("defaults to a binary semaphore", async () => {
   const semaphore = new Semaphore();
-  const push = pushFactory(semaphore);
+  const push = createPush(semaphore);
   push("a");
   push("b");
   push("c");
@@ -50,9 +50,9 @@ it("defaults to a binary semaphore", async () => {
   expect(results).toEqual(["a", "b", "c"]);
 });
 
-it("can set concurrent limit", async () => {
+it("can set concurrency limit", async () => {
   const semaphore = new Semaphore(2);
-  const push = pushFactory(semaphore);
+  const push = createPush(semaphore);
   push("a");
   push("b");
   push("c");
