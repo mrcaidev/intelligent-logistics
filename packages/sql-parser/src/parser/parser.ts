@@ -1,29 +1,23 @@
+import type { AST } from "common";
+import { SqlParserError } from "src/error";
 import { TokenType, type Token } from "src/lexer";
-import { ParserCursor } from "./cursor";
-import { ParserError } from "./error";
-import type { AST } from "./types";
+import { TokenCursor } from "./cursor";
 
 /**
  * Parses a list of tokens into an AST.
  */
 export class Parser {
   /**
-   * Cursor that iterates over every token.
+   * The cursor that iterates over every token.
    */
-  private cursor: ParserCursor;
+  private cursor: TokenCursor;
 
-  /**
-   * Point the cursor to the first token.
-   * @param tokens Tokens to parse.
-   */
   constructor(tokens: Token[]) {
-    this.cursor = new ParserCursor(tokens);
+    this.cursor = new TokenCursor(tokens);
   }
 
   /**
-   * Parse tokens into an AST.
-   * @returns AST of the statement.
-   * @throws When the keyword is invalid.
+   * Parses the tokens into an AST.
    */
   public parse(): AST {
     const { value: keyword } = this.cursor.consume();
@@ -40,13 +34,12 @@ export class Parser {
       case "CREATE":
         return this.parseCreate();
       default:
-        throw new ParserError(`Invalid keyword: ${keyword}`);
+        throw new SqlParserError(`Invalid keyword: ${keyword}`);
     }
   }
 
   /**
-   * Parse SELECT statement.
-   * @returns AST of the statement.
+   * Parses a SELECT statement.
    */
   private parseSelect() {
     const fields = this.parseSelectFields();
@@ -58,8 +51,7 @@ export class Parser {
   }
 
   /**
-   * Parse INSERT statement.
-   * @returns AST of the statement.
+   * Parses an INSERT statement.
    */
   private parseInsert() {
     this.cursor.consumeByValue("INTO");
@@ -74,8 +66,7 @@ export class Parser {
   }
 
   /**
-   * Parse UPDATE statement.
-   * @returns AST of the statement.
+   * Parses an UPDATE statement.
    */
   private parseUpdate() {
     const table = this.cursor.consumeByType(TokenType.IDENTIFIER);
@@ -87,8 +78,7 @@ export class Parser {
   }
 
   /**
-   * Parse DELETE statement.
-   * @returns AST of the statement.
+   * Parses a DELETE statement.
    */
   private parseDelete() {
     this.cursor.consumeByValue("FROM");
@@ -99,8 +89,7 @@ export class Parser {
   }
 
   /**
-   * Parse CREATE statement.
-   * @returns AST of the statement.
+   * Parses a CREATE statement.
    */
   private parseCreate() {
     this.cursor.consumeByValue("TABLE");
@@ -113,9 +102,9 @@ export class Parser {
   }
 
   /**
-   * Parse fields of SELECT statement.
-   * Either a list of identifiers, or "*" which stands for all fields.
-   * @returns Fields of the statement.
+   * Parses the fields of a SELECT statement.
+   * Returns either a list of identifiers,
+   * or "*" which stands for all fields.
    */
   private parseSelectFields() {
     if (!this.cursor.hasValue("*")) {
@@ -128,8 +117,7 @@ export class Parser {
   }
 
   /**
-   * Parse conditions if WHERE keyword is present.
-   * @returns Conditions of the statement.
+   * Parses the conditions if a WHERE keyword is present.
    */
   private parseConditions() {
     if (!this.cursor.hasValue("WHERE")) {
@@ -142,9 +130,9 @@ export class Parser {
   }
 
   /**
-   * Parse fields of INSERT statement.
-   * Either a list of identifiers, or "*" which stands for all fields.
-   * @returns Fields of the statement.
+   * Parses the fields of an INSERT statement.
+   * Returns either a list of identifiers,
+   * or "*" which stands for all fields.
    */
   private parseInsertFields() {
     if (!this.cursor.hasValue("(")) {
@@ -152,9 +140,7 @@ export class Parser {
     }
 
     this.cursor.consume();
-
     const fields = this.cursor.consumeManyByType(TokenType.IDENTIFIER);
-
     this.cursor.consumeByValue(")");
 
     return fields;

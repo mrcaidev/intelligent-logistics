@@ -1,10 +1,10 @@
-import { Lexer, LexerError, TokenType } from "src/lexer";
+import { Lexer, TokenType } from "src/lexer";
 import { describe, expect, it } from "vitest";
 
 describe("invalid initial", () => {
   it("throws error", () => {
     const result = () => new Lexer("{}").tokenize();
-    expect(result).toThrowError(LexerError);
+    expect(result).toThrowError();
   });
 });
 
@@ -31,7 +31,7 @@ describe("number literal", () => {
 
   it("throws error on invalid number", () => {
     const result = () => new Lexer("1.1.1").tokenize();
-    expect(result).toThrowError(LexerError);
+    expect(result).toThrowError();
   });
 });
 
@@ -58,40 +58,40 @@ describe("string literal", () => {
 
   it("throws error on unterminated single quoted string", () => {
     const result = () => new Lexer("'John").tokenize();
-    expect(result).toThrowError(LexerError);
+    expect(result).toThrowError();
   });
 
   it("throws error on unterminated double quoted string", () => {
     const result = () => new Lexer('"John').tokenize();
-    expect(result).toThrowError(LexerError);
+    expect(result).toThrowError();
   });
 });
 
 describe("boolean literal", () => {
   it("parses true", () => {
-    const result = new Lexer("true").tokenize();
+    const result = new Lexer("TRUE").tokenize();
     expect(result).toEqual([{ type: TokenType.LITERAL, value: true }]);
   });
 
   it("parses false", () => {
-    const result = new Lexer("false").tokenize();
+    const result = new Lexer("FALSE").tokenize();
     expect(result).toEqual([{ type: TokenType.LITERAL, value: false }]);
   });
 
   it("ignores case", () => {
-    const result = new Lexer("TrUe").tokenize();
+    const result = new Lexer("true").tokenize();
     expect(result).toEqual([{ type: TokenType.LITERAL, value: true }]);
   });
 });
 
 describe("null literal", () => {
   it("parses null", () => {
-    const result = new Lexer("null").tokenize();
+    const result = new Lexer("NULL").tokenize();
     expect(result).toEqual([{ type: TokenType.LITERAL, value: null }]);
   });
 
   it("ignores case", () => {
-    const result = new Lexer("NuLl").tokenize();
+    const result = new Lexer("null").tokenize();
     expect(result).toEqual([{ type: TokenType.LITERAL, value: null }]);
   });
 });
@@ -103,7 +103,7 @@ describe("keyword", () => {
   });
 
   it("ignores case", () => {
-    const result = new Lexer("SeLeCt").tokenize();
+    const result = new Lexer("select").tokenize();
     expect(result).toEqual([{ type: TokenType.KEYWORD, value: "SELECT" }]);
   });
 });
@@ -115,7 +115,7 @@ describe("data type", () => {
   });
 
   it("ignores case", () => {
-    const result = new Lexer("NuMeRiC").tokenize();
+    const result = new Lexer("numeric").tokenize();
     expect(result).toEqual([{ type: TokenType.DATA_TYPE, value: "NUMERIC" }]);
   });
 });
@@ -138,7 +138,7 @@ describe("operator", () => {
 
   it("throws error on invalid operator", () => {
     const result = () => new Lexer("==").tokenize();
-    expect(result).toThrowError(LexerError);
+    expect(result).toThrowError();
   });
 });
 

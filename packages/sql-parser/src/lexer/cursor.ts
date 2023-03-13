@@ -1,24 +1,18 @@
 import { Cursor } from "src/cursor";
 
 /**
- * Cursor used by lexer.
+ * Iterates over every character.
  */
-export class LexerCursor extends Cursor<string> {
-  /**
-   * Split the statement into single characters,
-   * so that the cursor can iterate over each character.
-   * @param statement A SQL statement.
-   */
+export class CharacterCursor extends Cursor<string> {
   constructor(statement: string) {
     super(statement.split(""));
   }
 
   /**
-   * Consume all the characters that is permitted by the predicate function,
-   * and land on the first character that is not.
-   * @param predicate Predicate function that returns `true`
-   * if the character should be consumed, or `false` otherwise.
-   * @returns The consumed string.
+   * Consumes all characters permitted by the predicate function,
+   * and returns the consumed string.
+   * The predicate function returns true if the given character
+   * should be consumed, or false otherwise.
    */
   public consumeAsLongAs(predicate: (character: string) => boolean) {
     let value = "";

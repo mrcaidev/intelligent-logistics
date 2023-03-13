@@ -1,5 +1,5 @@
-import { LexerCursor } from "./cursor";
-import { LexerError } from "./error";
+import { SqlParserError } from "../error";
+import { CharacterCursor } from "./cursor";
 import { TokenType, type Token } from "./types";
 import { Validator } from "./validator";
 
@@ -8,21 +8,16 @@ import { Validator } from "./validator";
  */
 export class Lexer {
   /**
-   * Cursor that iterates over every character.
+   * The cursor that iterates over every character.
    */
-  private cursor: LexerCursor;
+  private cursor: CharacterCursor;
 
-  /**
-   * Point the cursor to the first character.
-   * @param statement A SQL statement.
-   */
   constructor(statement: string) {
-    this.cursor = new LexerCursor(statement);
+    this.cursor = new CharacterCursor(statement);
   }
 
   /**
-   * Parse the statement into a list of tokens.
-   * @returns List of tokens.
+   * Parses the statement into a list of tokens.
    */
   public tokenize() {
     const tokens: Token[] = [];
@@ -35,9 +30,7 @@ export class Lexer {
   }
 
   /**
-   * Parse the next token after the cursor.
-   * @returns Parsed token.
-   * @throws When the initial is invalid.
+   * Parses the next token after the cursor.
    */
   private parseNextToken(): Token {
     this.skipWhitespaces();
@@ -46,12 +39,12 @@ export class Lexer {
       return this.parseNumberLiteral();
     }
 
-    if (Validator.isLetter(this.cursor.current)) {
-      return this.parseWord();
-    }
-
     if (Validator.isQuote(this.cursor.current)) {
       return this.parseStringLiteral();
+    }
+
+    if (Validator.isLetter(this.cursor.current)) {
+      return this.parseWord();
     }
 
     if (Validator.isMinus(this.cursor.current)) {
@@ -66,11 +59,11 @@ export class Lexer {
       return this.parseOperator();
     }
 
-    throw new LexerError(`Invalid initial: ${this.cursor.current}`);
+    throw new SqlParserError(`Invalid initial: ${this.cursor.current}`);
   }
 
   /**
-   * Skip all whitespaces after the cursor,
+   * Skips all whitespaces after the cursor,
    * and land on the next non-whitespace character.
    */
   private skipWhitespaces() {
@@ -78,9 +71,7 @@ export class Lexer {
   }
 
   /**
-   * Parse a number literal.
-   * @returns Number literal token.
-   * @throws When the number is invalid.
+   * Parses a number literal.
    */
   private parseNumberLiteral() {
     const value = this.cursor.consumeAsLongAs(Validator.isDigitOrDot);
@@ -89,12 +80,30 @@ export class Lexer {
       return { type: TokenType.LITERAL, value: Number(value) };
     }
 
-    throw new LexerError(`Invalid number: ${value}`);
+    throw new SqlParserError(`Invalid number: ${value}`);
   }
 
   /**
-   * Parse a token that starts with a letter.
-   * @returns Parsed token.
+   * Parses a string literal.
+   */
+  private parseStringLiteral() {
+    const quote = this.cursor.consume();
+
+    const value = this.cursor.consumeAsLongAs(
+      (character) => character !== quote
+    );
+
+    if (!this.cursor.isOpen()) {
+      throw new SqlParserError(`Unterminated string: ${quote}${value}`);
+    }
+
+    this.cursor.consume();
+
+    return { type: TokenType.LITERAL, value };
+  }
+
+  /**
+   * Parses a token that starts with a letter.
    */
   private parseWord() {
     const value = this.cursor.consumeAsLongAs(Validator.isLetter);
@@ -119,44 +128,21 @@ export class Lexer {
   }
 
   /**
-   * Parse a string literal.
-   * @returns String literal token.
-   * @throws When the string is unterminated.
-   */
-  private parseStringLiteral() {
-    const quote = this.cursor.consume();
-
-    const value = this.cursor.consumeAsLongAs(
-      (character) => character !== quote
-    );
-
-    if (this.cursor.isClosed()) {
-      throw new LexerError(`Unterminated string: ${quote}${value}`);
-    }
-
-    this.cursor.consume();
-
-    return { type: TokenType.LITERAL, value };
-  }
-
-  /**
-   * Parse a token that starts with "-".
-   * @returns Parsed token.
+   * Parses a token that starts with "-".
    */
   private parseFromMinus() {
-    const value = this.cursor.consume();
+    this.cursor.consume();
 
     if (Validator.isDigit(this.cursor.current)) {
       const negativeNumber = -this.parseNumberLiteral().value;
       return { type: TokenType.LITERAL, value: negativeNumber };
     }
 
-    return { type: TokenType.OPERATOR, value };
+    return { type: TokenType.OPERATOR, value: "-" };
   }
 
   /**
-   * Parse a symbol.
-   * @returns Symbol token.
+   * Parses a symbol.
    */
   private parseSymbol() {
     const value = this.cursor.consume();
@@ -164,9 +150,7 @@ export class Lexer {
   }
 
   /**
-   * Parse an operator.
-   * @returns Operator token.
-   * @throws When the operator is invalid.
+   * Parses an operator.
    */
   private parseOperator() {
     const value = this.cursor.consumeAsLongAs(Validator.isOperatorComponent);
@@ -175,6 +159,6 @@ export class Lexer {
       return { type: TokenType.OPERATOR, value };
     }
 
-    throw new LexerError(`Invalid operator: ${value}`);
+    throw new SqlParserError(`Invalid operator: ${value}`);
   }
 }

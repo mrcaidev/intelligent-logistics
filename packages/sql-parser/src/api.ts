@@ -1,15 +1,12 @@
 import { Lexer } from "./lexer";
 import { Parser } from "./parser";
-import { Preprocessor } from "./preprocessor";
+import { preprocess } from "./preprocess";
 
 /**
- * Parse the input into a list of ASTs.
- * @param input Input string.
- * @returns A list of ASTs.
+ * Parses an input into a list of ASTs.
  */
 export function parse(input: string) {
-  return new Preprocessor(input)
-    .process()
+  return preprocess(input)
     .map((statement) => new Lexer(statement).tokenize())
     .map((tokens) => new Parser(tokens).parse());
 }

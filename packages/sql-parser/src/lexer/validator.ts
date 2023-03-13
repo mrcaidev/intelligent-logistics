@@ -12,17 +12,16 @@ const keywords = [
   "DELETE",
   "CREATE",
   "TABLE",
-  "DROP",
 ];
 
 const dataTypes = ["NUMERIC", "TEXT", "BOOLEAN"];
 
 const operators = ["+", "-", "*", "/", "=", "!=", "<", ">", "<=", ">="];
 
-const symbols = ["(", ")", ",", ";", "."];
+const symbols = ["(", ")", ",", "."];
 
 /**
- * Utilities to validate a character or a string.
+ * Validates a character or a string.
  */
 export class Validator {
   public static isWhitespace(character: string) {
@@ -34,7 +33,7 @@ export class Validator {
   }
 
   public static isDigitOrDot(character: string) {
-    return /^\d|\.$/.test(character);
+    return /^[\d.]$/.test(character);
   }
 
   public static isLetter(character: string) {

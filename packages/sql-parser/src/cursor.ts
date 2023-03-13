@@ -1,30 +1,28 @@
 /**
- * A pointer to some position in an iterable.
- * @template T The type of the items in the iterable.
+ * Iterates over a collection.
+ * @template T The type of the elements in the collection.
  */
 export class Cursor<T> {
   /**
-   * Current index of the cursor in the iterable.
+   * The current index of the cursor.
    */
   private position = 0;
 
-  /**
-   * Store the iterable.
-   */
-  constructor(private iterable: T[]) {}
+  constructor(private collection: T[]) {}
 
   /**
-   * The current item in the iterable.
+   * The current element.
    *
-   * Note: The return type is cast to `T` even when the cursor
-   * has crossed the boundary and pointed to `undefined`.
+   * Note: To make the cursor work better with TypeScript,
+   * the return type is always cast to `T`, even if
+   * it has crossed the boundary and points to `undefined`.
    */
   public get current() {
-    return this.iterable[this.position] as T;
+    return this.collection[this.position] as T;
   }
 
   /**
-   * Return the current item, and move one step forward.
+   * Returns the current element, and moves forward to the next element.
    */
   public consume() {
     const value = this.current;
@@ -33,16 +31,10 @@ export class Cursor<T> {
   }
 
   /**
-   * Check if the cursor is still iterating over the iterable.
+   * Returns true if the cursor has not reached the end of the collection,
+   * or false otherwise.
    */
   public isOpen() {
-    return this.position < this.iterable.length;
-  }
-
-  /**
-   * Check if the cursor has finished iterating over the iterable.
-   */
-  public isClosed() {
-    return this.position >= this.iterable.length;
+    return this.position < this.collection.length;
   }
 }
