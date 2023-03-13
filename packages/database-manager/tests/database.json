@@ -1,0 +1,14 @@
+{
+  "users": {
+    "schema": [
+      { "field": "id", "type": "NUMERIC" },
+      { "field": "name", "type": "TEXT" },
+      { "field": "age", "type": "NUMERIC" }
+    ],
+    "rows": [
+      { "id": 1, "name": "John", "age": 25 },
+      { "id": 2, "name": "Jane", "age": 30 },
+      { "id": 3, "name": "Jack", "age": 35 }
+    ]
+  }
+}
