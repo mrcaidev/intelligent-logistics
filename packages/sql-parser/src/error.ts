@@ -6,8 +6,4 @@ export class SqlParserError extends Error {
    * The name of the error.
    */
   override name = "SqlParserError";
-
-  constructor(message: string) {
-    super(message);
-  }
 }
