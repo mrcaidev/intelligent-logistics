@@ -3,11 +3,7 @@
  */
 export class DatabaseManagerError extends Error {
   /**
-   * Initialize the error.
-   * @param message Error message.
+   * The name of the error.
    */
-  public constructor(message: string) {
-    super(message);
-    this.name = "DatabaseManagerError";
-  }
+  override name = "DatabaseManagerError";
 }

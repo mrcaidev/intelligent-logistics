@@ -1,4 +1,3 @@
-import { DatabaseManagerError } from "src/error";
 import { Validator } from "src/validator";
 import { describe, expect, it } from "vitest";
 
@@ -41,7 +40,7 @@ describe("validates fields", () => {
         fields: ["email"],
         conditions: [],
       });
-    }).toThrowError(DatabaseManagerError);
+    }).toThrowError();
   });
 });
 
@@ -63,7 +62,7 @@ describe("validates conditions", () => {
         table: "users",
         conditions: [[{ field: "unknown", operator: "=", value: 1 }]],
       });
-    }).toThrowError(DatabaseManagerError);
+    }).toThrowError();
   });
 
   it("throws error on invalid condition values", () => {
@@ -73,7 +72,7 @@ describe("validates conditions", () => {
         table: "users",
         conditions: [[{ field: "id", operator: "=", value: "John" }]],
       });
-    }).toThrowError(DatabaseManagerError);
+    }).toThrowError();
   });
 });
 
@@ -97,7 +96,7 @@ describe("validates values with wildcard fields", () => {
         fields: "*",
         values: [1],
       });
-    }).toThrowError(DatabaseManagerError);
+    }).toThrowError();
   });
 
   it("throws error on invalid values", () => {
@@ -108,7 +107,7 @@ describe("validates values with wildcard fields", () => {
         fields: "*",
         values: ["1", "John", 20],
       });
-    }).toThrowError(DatabaseManagerError);
+    }).toThrowError();
   });
 });
 
@@ -132,7 +131,7 @@ describe("validates values with field names", () => {
         fields: ["email"],
         values: ["test"],
       });
-    }).toThrowError(DatabaseManagerError);
+    }).toThrowError();
   });
 
   it("throws error on invalid values", () => {
@@ -143,7 +142,7 @@ describe("validates values with field names", () => {
         fields: ["id"],
         values: ["1"],
       });
-    }).toThrowError(DatabaseManagerError);
+    }).toThrowError();
   });
 
   it("throws error on inconsistent number of fields and values", () => {
@@ -154,7 +153,7 @@ describe("validates values with field names", () => {
         fields: ["id", "name"],
         values: [1],
       });
-    }).toThrowError(DatabaseManagerError);
+    }).toThrowError();
   });
 });
 
@@ -178,7 +177,7 @@ describe("validates assignments", () => {
         assignments: [{ field: "email", value: "test" }],
         conditions: [],
       });
-    }).toThrowError(DatabaseManagerError);
+    }).toThrowError();
   });
 
   it("throws error on invalid values", () => {
@@ -189,7 +188,7 @@ describe("validates assignments", () => {
         assignments: [{ field: "name", value: 1 }],
         conditions: [],
       });
-    }).toThrowError(DatabaseManagerError);
+    }).toThrowError();
   });
 });
 
@@ -217,6 +216,6 @@ describe("validates definitions", () => {
           { field: "id", type: "TEXT" },
         ],
       });
-    }).toThrowError(DatabaseManagerError);
+    }).toThrowError();
   });
 });

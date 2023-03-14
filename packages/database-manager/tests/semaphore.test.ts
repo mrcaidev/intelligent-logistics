@@ -1,18 +1,18 @@
-import { Semaphore } from "src";
+import { Semaphore } from "src/semaphore";
 import { afterAll, afterEach, beforeAll, expect, it, vi } from "vitest";
 
 async function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const results: string[] = [];
+const items: string[] = [];
 
 function createPush(semaphore: Semaphore) {
   return async (item: string) => {
     await semaphore.acquire();
 
     await sleep(1000);
-    results.push(item);
+    items.push(item);
 
     semaphore.release();
   };
@@ -27,7 +27,7 @@ afterAll(() => {
 });
 
 afterEach(() => {
-  results.length = 0;
+  items.length = 0;
   vi.clearAllTimers();
 });
 
@@ -38,30 +38,30 @@ it("defaults to a binary semaphore", async () => {
   push("b");
   push("c");
 
-  expect(results).toEqual([]);
+  expect(items).toEqual([]);
 
   await vi.advanceTimersByTimeAsync(1000);
-  expect(results).toEqual(["a"]);
+  expect(items).toEqual(["a"]);
 
   await vi.advanceTimersByTimeAsync(1000);
-  expect(results).toEqual(["a", "b"]);
+  expect(items).toEqual(["a", "b"]);
 
   await vi.advanceTimersByTimeAsync(1000);
-  expect(results).toEqual(["a", "b", "c"]);
+  expect(items).toEqual(["a", "b", "c"]);
 });
 
-it("can set concurrency limit", async () => {
+it("can customize concurrency limit", async () => {
   const semaphore = new Semaphore(2);
   const push = createPush(semaphore);
   push("a");
   push("b");
   push("c");
 
-  expect(results).toEqual([]);
+  expect(items).toEqual([]);
 
   await vi.advanceTimersByTimeAsync(1000);
-  expect(results).toEqual(["a", "b"]);
+  expect(items).toEqual(["a", "b"]);
 
   await vi.advanceTimersByTimeAsync(1000);
-  expect(results).toEqual(["a", "b", "c"]);
+  expect(items).toEqual(["a", "b", "c"]);
 });

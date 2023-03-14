@@ -18,6 +18,9 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
+  "dependencies": {
+    "common": "workspace:^0.0.0"
+  },
   "devDependencies": {
     "@types/node": "^18.15.0",
     "@vitest/coverage-c8": "^0.29.2",

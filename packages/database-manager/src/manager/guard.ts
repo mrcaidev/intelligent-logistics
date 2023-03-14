@@ -1,12 +1,12 @@
-import { Semaphore } from "./semaphore";
+import { Semaphore } from "../semaphore";
 
 /**
- * Guard of a database table, which solves
+ * The guard of a database table, which solves
  * the readers-writers problem with a fair policy.
  * All readers and writers must ask the guard for permission
  * before they can actually access the table.
  */
-export class TableGuard {
+export class Guard {
   /**
    * Both reader and writer must queue on this semaphore
    * in an FIFO manner before they can access the table.
@@ -21,17 +21,17 @@ export class TableGuard {
   private writerSemaphore = new Semaphore();
 
   /**
-   * Mutex for `readerCount`.
+   * The mutex for `readerCount`.
    */
   private readerCountMutex = new Semaphore();
 
   /**
-   * Number of readers currently accessing the table.
+   * The number of readers currently reading the table.
    */
   private readerCount = 0;
 
   /**
-   * Wait for the table to be available for reading.
+   * Waits for the table to be available for reading.
    */
   public async waitToRead() {
     await this.sharedSemaphore.acquire();
@@ -45,7 +45,7 @@ export class TableGuard {
   }
 
   /**
-   * Finish reading the table.
+   * Finishes reading the table.
    */
   public async finishReading() {
     await this.readerCountMutex.acquire();
@@ -57,7 +57,7 @@ export class TableGuard {
   }
 
   /**
-   * Wait for the table to be available for writing.
+   * Waits for the table to be available for writing.
    */
   public async waitToWrite() {
     await this.sharedSemaphore.acquire();
@@ -65,7 +65,7 @@ export class TableGuard {
   }
 
   /**
-   * Finish writing the table.
+   * Finishes writing the table.
    */
   public async finishWriting() {
     this.writerSemaphore.release();

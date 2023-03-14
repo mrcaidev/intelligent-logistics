@@ -1,5 +1,6 @@
 import type {
   Assignment,
+  AST,
   Condition,
   CreateAST,
   Definition,
@@ -8,22 +9,35 @@ import type {
   Schema,
   SelectAST,
   UpdateAST,
-} from "src/types";
+} from "common";
 import { DatabaseManagerError } from "./error";
 
 /**
- * Validate an AST against its targeted table.
+ * Validates an AST against its targeted table.
  */
 export class Validator {
-  /**
-   * Store the schema of the table.
-   * @param schema Schema of the table.
-   */
   constructor(private schema: Schema) {}
 
   /**
-   * Validate the AST of a SELECT statement.
-   * @param ast AST of a SELECT statement.
+   * Validates an AST.
+   */
+  public validate(ast: AST) {
+    switch (ast.type) {
+      case "select":
+        return this.validateSelect(ast);
+      case "insert":
+        return this.validateInsert(ast);
+      case "update":
+        return this.validateUpdate(ast);
+      case "delete":
+        return this.validateDelete(ast);
+      case "create":
+        return this.validateCreate(ast);
+    }
+  }
+
+  /**
+   * Validates the AST of a SELECT statement.
    */
   public validateSelect(ast: SelectAST) {
     const { fields, conditions } = ast;
@@ -33,8 +47,7 @@ export class Validator {
   }
 
   /**
-   * Validate the AST of an INSERT statement.
-   * @param ast AST of an INSERT statement.
+   * Validates the AST of an INSERT statement.
    */
   public validateInsert(ast: InsertAST) {
     const { fields, values } = ast;
@@ -47,8 +60,7 @@ export class Validator {
   }
 
   /**
-   * Validate the AST of an UPDATE statement.
-   * @param ast AST of an UPDATE statement.
+   * Validates the AST of an UPDATE statement.
    */
   public validateUpdate(ast: UpdateAST) {
     const { assignments, conditions } = ast;
@@ -58,8 +70,7 @@ export class Validator {
   }
 
   /**
-   * Validate the AST of a DELETE statement.
-   * @param ast AST of a DELETE statement.
+   * Validates the AST of a DELETE statement.
    */
   public validateDelete(ast: DeleteAST) {
     const { conditions } = ast;
@@ -68,8 +79,7 @@ export class Validator {
   }
 
   /**
-   * Validate the AST of a CREATE statement.
-   * @param ast AST of a CREATE statement.
+   * Validates the AST of a CREATE statement.
    */
   public validateCreate(ast: CreateAST) {
     const { definitions } = ast;
@@ -78,8 +88,7 @@ export class Validator {
   }
 
   /**
-   * Validate the fields.
-   * @param fields Fields.
+   * Validates the fields.
    */
   private validateFields(fields: "*" | string[]) {
     if (fields === "*") {
@@ -96,8 +105,7 @@ export class Validator {
   }
 
   /**
-   * Validate the values by their order.
-   * @param values Values.
+   * Validates the values by their order.
    */
   private validateOrderedValues(values: unknown[]) {
     if (values.length !== this.schema.length) {
@@ -118,9 +126,7 @@ export class Validator {
   }
 
   /**
-   * Validate the fields and values.
-   * @param fields Fields.
-   * @param values Values.
+   * Validates the fields and the values.
    */
   private validateFieldsAndValues(fields: string[], values: unknown[]) {
     if (values.length !== fields.length) {
@@ -135,8 +141,7 @@ export class Validator {
   }
 
   /**
-   * Validate the field and value in every assignment.
-   * @param assignments Assignments.
+   * Validates the field and the value of every assignment.
    */
   private validateAssignments(assignments: Assignment[]) {
     for (const { field, value } of assignments) {
@@ -145,8 +150,7 @@ export class Validator {
   }
 
   /**
-   * Validate the field and value in every condition.
-   * @param conditions Conditions.
+   * Validates the field and the value of every condition.
    */
   private validateConditions(conditions: Condition[][]) {
     for (const { field, value } of conditions.flat()) {
@@ -155,8 +159,7 @@ export class Validator {
   }
 
   /**
-   * Validate the fields and types in every definition.
-   * @param definitions Definitions.
+   * Validates the field and the type of every definition.
    */
   private validateDefinitions(definitions: Definition[]) {
     const fields = new Set<string>();
@@ -171,9 +174,7 @@ export class Validator {
   }
 
   /**
-   * Validate that the field exists, and the value is of the field's type.
-   * @param field Field.
-   * @param value Value.
+   * Validates that the field exists, and the value is of the field's type.
    */
   private validateFieldAndValue(field: string, value: unknown) {
     const column = this.schema.find((column) => column.field === field);
@@ -190,10 +191,8 @@ export class Validator {
   }
 
   /**
-   * Check if a value is of a given data type.
-   * @param value Value.
-   * @param type Data type.
-   * @returns `true` if matched, `false` otherwise.
+   * Returns true if a value is of a given data type,
+   * or false otherwise.
    */
   private static hasType(value: unknown, type: string) {
     const correspondence: Record<string, string> = {

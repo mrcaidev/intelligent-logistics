@@ -6,17 +6,14 @@
  */
 export class Semaphore {
   /**
-   * Queue of pending operations.
+   * The queue of pending operations.
    */
   private queue: (() => void)[] = [];
 
-  /**
-   * Set concurrency limit.
-   */
   constructor(private count = 1) {}
 
   /**
-   * Acquire a vacancy for concurrent operation.
+   * Acquires a vacancy for concurrent operation.
    * If none are available, the process will be queued.
    */
   public async acquire() {
@@ -32,7 +29,7 @@ export class Semaphore {
   }
 
   /**
-   * Release a vacancy. If there are pending operations,
+   * Releases a vacancy. If there are pending operations,
    * the first one will be unblocked.
    */
   public release() {
