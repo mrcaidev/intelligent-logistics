@@ -1,6 +1,5 @@
 /**
- * Assignment expression,
- * which assigns VALUE to the FIELD.
+ * Assigns the VALUE to the FIELD.
  */
 export type Assignment = {
   field: string;
@@ -8,8 +7,7 @@ export type Assignment = {
 };
 
 /**
- * Conditional expression,
- * which expects the FIELD OPERATOR to the VALUE.
+ * Expects the FIELD OPERATOR to the VALUE.
  */
 export type Condition = {
   field: string;
@@ -18,8 +16,7 @@ export type Condition = {
 };
 
 /**
- * Definition expression,
- * which defines the FIELD to be TYPE.
+ * Defines the FIELD to be of type TYPE.
  */
 export type Definition = {
   field: string;
@@ -27,7 +24,7 @@ export type Definition = {
 };
 
 /**
- * Abstract syntax tree of SELECT statement.
+ * The AST of a SELECT statement.
  */
 export type SelectAST = {
   table: string;
@@ -36,7 +33,7 @@ export type SelectAST = {
 };
 
 /**
- * Abstract syntax tree of INSERT statement.
+ * The AST of an INSERT statement.
  */
 export type InsertAST = {
   table: string;
@@ -45,7 +42,7 @@ export type InsertAST = {
 };
 
 /**
- * Abstract syntax tree of UPDATE statement.
+ * The AST of an UPDATE statement.
  */
 export type UpdateAST = {
   table: string;
@@ -54,7 +51,7 @@ export type UpdateAST = {
 };
 
 /**
- * Abstract syntax tree of DELETE statement.
+ * The AST of a DELETE statement.
  */
 export type DeleteAST = {
   table: string;
@@ -62,7 +59,7 @@ export type DeleteAST = {
 };
 
 /**
- * Abstract syntax tree of CREATE statement.
+ * The AST of a CREATE statement.
  */
 export type CreateAST = {
   table: string;

@@ -1,5 +1,5 @@
 /**
- * Description of the fields and their types.
+ * The outline of a table, including its fields and corresponding types.
  */
 export type Schema = { field: string; type: string }[];
 
@@ -9,7 +9,7 @@ export type Schema = { field: string; type: string }[];
 export type Row = Record<string, unknown>;
 
 /**
- * Table in a database.
+ * A table in a database.
  */
 export type Table = {
   schema: Schema;
@@ -17,12 +17,13 @@ export type Table = {
 };
 
 /**
- * The structure of the JSON file as a database.
+ * A database.
  */
 export type Database = Record<string, Table>;
 
 /**
- * The result of a query.
+ * The result of a statement.
+ * @template T The type of each retrieved row.
  */
 export type Result<T extends Row> = {
   rows: T[];
