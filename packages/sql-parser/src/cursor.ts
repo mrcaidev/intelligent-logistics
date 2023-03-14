@@ -1,6 +1,6 @@
 /**
  * Iterates over a collection.
- * @template T The type of the elements in the collection.
+ * @template T The type of each element in the collection.
  */
 export class Cursor<T> {
   /**
