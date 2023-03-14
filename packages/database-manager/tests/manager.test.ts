@@ -1,5 +1,5 @@
 import type { Database } from "common";
-import { Manager } from "src";
+import { DatabaseManagerError, Manager } from "src";
 import { describe, expect, it } from "vitest";
 
 class TestManager extends Manager {
@@ -85,16 +85,16 @@ describe("runs SELECT", () => {
     });
   });
 
-  it("runs SELECT name FROM users WHERE id = 1", async () => {
+  it("runs SELECT name FROM users WHERE id != 1", async () => {
     const result = await createManager().run({
       type: "select",
       table: "users",
       fields: ["name"],
-      conditions: [[{ field: "id", operator: "=", value: 1 }]],
+      conditions: [[{ field: "id", operator: "!=", value: 1 }]],
     });
     expect(result).toEqual({
-      rows: [{ name: "John" }],
-      rowCount: 1,
+      rows: [{ name: "Jane" }, { name: "Jack" }],
+      rowCount: 2,
     });
   });
 
@@ -128,7 +128,18 @@ describe("runs SELECT", () => {
         fields: "*",
         conditions: [],
       });
-    await expect(result).rejects.toThrowError();
+    await expect(result).rejects.toThrowError(DatabaseManagerError);
+  });
+
+  it("throws error with invalid operator", async () => {
+    const result = () =>
+      createManager().run({
+        type: "select",
+        table: "users",
+        fields: "*",
+        conditions: [[{ field: "id", operator: "@", value: 1 }]],
+      });
+    await expect(result).rejects.toThrowError(DatabaseManagerError);
   });
 });
 
@@ -167,7 +178,7 @@ describe("runs INSERT", () => {
         fields: "*",
         values: [4, "July", 35],
       });
-    await expect(result).rejects.toThrowError();
+    await expect(result).rejects.toThrowError(DatabaseManagerError);
   });
 });
 
@@ -185,12 +196,12 @@ describe("runs UPDATE", () => {
     });
   });
 
-  it("runs UPDATE users SET age = 40 WHERE id > 1", async () => {
+  it("runs UPDATE users SET age = 40 WHERE id >= 2", async () => {
     const result = await createManager().run({
       type: "update",
       table: "users",
       assignments: [{ field: "age", value: 40 }],
-      conditions: [[{ field: "id", operator: ">", value: 1 }]],
+      conditions: [[{ field: "id", operator: ">=", value: 2 }]],
     });
     expect(result).toEqual({
       rows: [],
@@ -206,7 +217,7 @@ describe("runs UPDATE", () => {
         assignments: [{ field: "age", value: 40 }],
         conditions: [[{ field: "id", operator: ">", value: 1 }]],
       });
-    await expect(result).rejects.toThrowError();
+    await expect(result).rejects.toThrowError(DatabaseManagerError);
   });
 });
 
@@ -223,11 +234,11 @@ describe("runs DELETE", () => {
     });
   });
 
-  it("runs DELETE FROM users WHERE id > 1", async () => {
+  it("runs DELETE FROM users WHERE id <= 2", async () => {
     const result = await createManager().run({
       type: "delete",
       table: "users",
-      conditions: [[{ field: "id", operator: ">", value: 1 }]],
+      conditions: [[{ field: "id", operator: "<=", value: 2 }]],
     });
     expect(result).toEqual({
       rows: [],
@@ -242,7 +253,7 @@ describe("runs DELETE", () => {
         table: "posts",
         conditions: [[{ field: "id", operator: ">", value: 1 }]],
       });
-    await expect(result).rejects.toThrowError();
+    await expect(result).rejects.toThrowError(DatabaseManagerError);
   });
 });
 
@@ -269,7 +280,7 @@ describe("runs CREATE", () => {
         fields: "*",
         conditions: [],
       });
-    expect(selectResult).not.toThrowError();
+    expect(selectResult).not.toThrowError(DatabaseManagerError);
   });
 
   it("throws error when table already exists", async () => {
@@ -283,6 +294,6 @@ describe("runs CREATE", () => {
           { field: "age", type: "NUMERIC" },
         ],
       });
-    await expect(result).rejects.toThrowError();
+    await expect(result).rejects.toThrowError(DatabaseManagerError);
   });
 });
