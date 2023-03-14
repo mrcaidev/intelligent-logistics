@@ -118,7 +118,7 @@ export class Validator {
       const { field, type } = this.schema[index]!;
 
       if (Validator.hasType(value, type)) {
-        return;
+        continue;
       }
 
       throw new DatabaseManagerError(`Column ${field} expects ${type}`);
