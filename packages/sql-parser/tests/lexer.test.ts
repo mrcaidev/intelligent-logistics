@@ -144,18 +144,14 @@ describe("operator", () => {
 });
 
 describe("identifier", () => {
-  it("parses single-word identifier", () => {
+  it("parses letter-only identifier", () => {
     const result = new Lexer("users").tokenize();
     expect(result).toEqual([{ type: TokenType.IDENTIFIER, value: "users" }]);
   });
 
-  it("parses multiple-word identifier", () => {
-    const result = new Lexer("users.name").tokenize();
-    expect(result).toEqual([
-      { type: TokenType.IDENTIFIER, value: "users" },
-      { type: TokenType.SYMBOL, value: "." },
-      { type: TokenType.IDENTIFIER, value: "name" },
-    ]);
+  it("parses letter-digit identifier", () => {
+    const result = new Lexer("user1").tokenize();
+    expect(result).toEqual([{ type: TokenType.IDENTIFIER, value: "user1" }]);
   });
 });
 

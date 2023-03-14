@@ -36,6 +36,10 @@ export class Validator {
     return /^[\d.]$/.test(character);
   }
 
+  public static isDigitOrLetter(character: string) {
+    return /^[\da-z]$/i.test(character);
+  }
+
   public static isLetter(character: string) {
     return /^[a-z]$/i.test(character);
   }
