@@ -27,6 +27,7 @@ export type Definition = {
  * The AST of a SELECT statement.
  */
 export type SelectAST = {
+  type: "select";
   table: string;
   fields: "*" | string[];
   conditions: Condition[][];
@@ -36,6 +37,7 @@ export type SelectAST = {
  * The AST of an INSERT statement.
  */
 export type InsertAST = {
+  type: "insert";
   table: string;
   fields: "*" | string[];
   values: unknown[];
@@ -45,6 +47,7 @@ export type InsertAST = {
  * The AST of an UPDATE statement.
  */
 export type UpdateAST = {
+  type: "update";
   table: string;
   assignments: Assignment[];
   conditions: Condition[][];
@@ -54,6 +57,7 @@ export type UpdateAST = {
  * The AST of a DELETE statement.
  */
 export type DeleteAST = {
+  type: "delete";
   table: string;
   conditions: Condition[][];
 };
@@ -62,16 +66,12 @@ export type DeleteAST = {
  * The AST of a CREATE statement.
  */
 export type CreateAST = {
+  type: "create";
   table: string;
   definitions: Definition[];
 };
 
 /**
- * Abstract syntax tree.
+ * The AST of a SQL statement.
  */
-export type AST =
-  | ({ type: "select" } & SelectAST)
-  | ({ type: "insert" } & InsertAST)
-  | ({ type: "update" } & UpdateAST)
-  | ({ type: "delete" } & DeleteAST)
-  | ({ type: "create" } & CreateAST);
+export type AST = SelectAST | InsertAST | UpdateAST | DeleteAST | CreateAST;
