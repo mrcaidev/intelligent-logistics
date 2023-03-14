@@ -207,6 +207,10 @@ export abstract class Manager {
    * or false otherwise.
    */
   private static buildFilter(conditions: Condition[][]) {
+    if (conditions.length === 0) {
+      return () => true;
+    }
+
     const orFilters = conditions.map((group) => {
       const andFilters = group.map(Manager.conditionToFilter);
       return (row: Row) => andFilters.every((filter) => filter(row));
