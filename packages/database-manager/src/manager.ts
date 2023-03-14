@@ -12,7 +12,7 @@ import type {
   UpdateAST,
 } from "common";
 import { Validator } from "src/validator";
-import { DatabaseManagerError } from "../error";
+import { DatabaseManagerError } from "./error";
 import { Guard } from "./guard";
 
 /**

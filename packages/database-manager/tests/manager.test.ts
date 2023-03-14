@@ -1,5 +1,5 @@
 import type { Database } from "common";
-import { Manager } from "src/manager";
+import { Manager } from "src";
 import { describe, expect, it } from "vitest";
 
 class TestManager extends Manager {

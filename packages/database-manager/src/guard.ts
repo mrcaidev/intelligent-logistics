@@ -1,4 +1,4 @@
-import { Semaphore } from "../semaphore";
+import { Semaphore } from "./semaphore";
 
 /**
  * The guard of a database table, which solves
