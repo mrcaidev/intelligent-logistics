@@ -36,12 +36,12 @@ export class Validator {
     return /^[\d.]$/.test(character);
   }
 
-  public static isDigitOrLetter(character: string) {
-    return /^[\da-z]$/i.test(character);
+  public static isLetter(character: string) {
+    return /^[a-zA-Z]$/.test(character);
   }
 
-  public static isLetter(character: string) {
-    return /^[a-z]$/i.test(character);
+  public static isWordComponent(character: string) {
+    return /^[a-zA-Z\d_]$/.test(character);
   }
 
   public static isQuote(character: string) {

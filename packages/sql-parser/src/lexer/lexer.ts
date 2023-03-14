@@ -106,7 +106,7 @@ export class Lexer {
    * Parses a token that starts with a letter.
    */
   private parseWord() {
-    const value = this.cursor.consumeAsLongAs(Validator.isDigitOrLetter);
+    const value = this.cursor.consumeAsLongAs(Validator.isWordComponent);
 
     if (Validator.isBooleanLiteral(value)) {
       return { type: TokenType.LITERAL, value: value.toUpperCase() === "TRUE" };
