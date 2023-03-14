@@ -1,10 +1,11 @@
+import { SqlParserError } from "src";
 import { Lexer, TokenType } from "src/lexer";
 import { describe, expect, it } from "vitest";
 
 describe("invalid initial", () => {
   it("throws error", () => {
     const result = () => new Lexer("{}").tokenize();
-    expect(result).toThrowError();
+    expect(result).toThrowError(SqlParserError);
   });
 });
 
@@ -31,7 +32,7 @@ describe("number literal", () => {
 
   it("throws error on invalid number", () => {
     const result = () => new Lexer("1.1.1").tokenize();
-    expect(result).toThrowError();
+    expect(result).toThrowError(SqlParserError);
   });
 });
 
@@ -58,12 +59,12 @@ describe("string literal", () => {
 
   it("throws error on unterminated single quoted string", () => {
     const result = () => new Lexer("'John").tokenize();
-    expect(result).toThrowError();
+    expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error on unterminated double quoted string", () => {
     const result = () => new Lexer('"John').tokenize();
-    expect(result).toThrowError();
+    expect(result).toThrowError(SqlParserError);
   });
 });
 
@@ -138,7 +139,7 @@ describe("operator", () => {
 
   it("throws error on invalid operator", () => {
     const result = () => new Lexer("==").tokenize();
-    expect(result).toThrowError();
+    expect(result).toThrowError(SqlParserError);
   });
 });
 
