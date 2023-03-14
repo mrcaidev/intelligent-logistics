@@ -6,6 +6,7 @@ import type {
   Database,
   DeleteAST,
   InsertAST,
+  Result,
   Row,
   Schema,
   SelectAST,
@@ -42,25 +43,25 @@ export abstract class Manager {
   /**
    * Runs an AST.
    */
-  public async run(ast: AST) {
+  public async run<T extends Row>(ast: AST): Promise<Result<T>> {
     switch (ast.type) {
       case "select":
-        return this.select(ast);
+        return this.select<T>(ast);
       case "insert":
-        return this.insert(ast);
+        return this.insert<T>(ast);
       case "update":
-        return this.update(ast);
+        return this.update<T>(ast);
       case "delete":
-        return this.delete(ast);
+        return this.delete<T>(ast);
       case "create":
-        return this.create(ast);
+        return this.create<T>(ast);
     }
   }
 
   /**
    * Runs a SELECT AST.
    */
-  private async select(ast: SelectAST) {
+  private async select<T extends Row>(ast: SelectAST) {
     const { table, fields, conditions } = ast;
 
     const database = await this.readDatabase();
@@ -79,13 +80,13 @@ export abstract class Manager {
 
     this.guards[table]!.finishReading();
 
-    return { rows, rowCount: rows.length };
+    return { rows: rows as T[], rowCount: rows.length };
   }
 
   /**
    * Runs an INSERT AST.
    */
-  private async insert(ast: InsertAST) {
+  private async insert<T extends Row>(ast: InsertAST) {
     const { table, fields, values } = ast;
 
     const database = await this.readDatabase();
@@ -104,13 +105,13 @@ export abstract class Manager {
 
     this.guards[table]!.finishWriting();
 
-    return { rows: [], rowCount: 1 };
+    return { rows: [] as T[], rowCount: 1 };
   }
 
   /**
    * Runs an UPDATE AST.
    */
-  private async update(ast: UpdateAST) {
+  private async update<T extends Row>(ast: UpdateAST) {
     const { table, assignments, conditions } = ast;
 
     const database = await this.readDatabase();
@@ -131,13 +132,13 @@ export abstract class Manager {
 
     this.guards[table]!.finishWriting();
 
-    return { rows: [], rowCount: filteredRows.length };
+    return { rows: [] as T[], rowCount: filteredRows.length };
   }
 
   /**
    * Runs a DELETE AST.
    */
-  private async delete(ast: DeleteAST) {
+  private async delete<T extends Row>(ast: DeleteAST) {
     const { table, conditions } = ast;
 
     const database = await this.readDatabase();
@@ -159,13 +160,13 @@ export abstract class Manager {
 
     this.guards[table]!.finishWriting();
 
-    return { rows: [], rowCount: oldRowCount - newRowCount };
+    return { rows: [] as T[], rowCount: oldRowCount - newRowCount };
   }
 
   /**
    * Runs a CREATE AST.
    */
-  private async create(ast: CreateAST) {
+  private async create<T extends Row>(ast: CreateAST) {
     const { table, definitions } = ast;
 
     const database = await this.readDatabase();
@@ -180,7 +181,7 @@ export abstract class Manager {
     this.guards[table] = new Guard();
     await this.writeDatabase(database);
 
-    return { rows: [], rowCount: 0 };
+    return { rows: [] as T[], rowCount: 0 };
   }
 
   /**

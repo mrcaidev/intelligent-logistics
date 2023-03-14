@@ -24,7 +24,7 @@ export type Database = Record<string, Table>;
 /**
  * The result of a query.
  */
-export type Result = {
-  rows: Row[];
+export type Result<T extends Row> = {
+  rows: T[];
   rowCount: number;
 };
