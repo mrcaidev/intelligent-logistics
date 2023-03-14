@@ -1,5 +1,5 @@
 {
-  "extends": "typescript-config-custom/library",
+  "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "baseUrl": "."
   },

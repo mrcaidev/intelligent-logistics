@@ -1,5 +1,4 @@
 {
-  "$schema": "https://json.schemastore.org/tsconfig",
   "compilerOptions": {
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
@@ -15,6 +14,8 @@
     "moduleResolution": "Node",
     "resolveJsonModule": true,
     "importsNotUsedAsValues": "error",
+    "noEmit": true,
+    "stripInternal": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
