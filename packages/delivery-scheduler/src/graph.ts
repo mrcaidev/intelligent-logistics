@@ -1,5 +1,5 @@
 /**
- * Edge in a graph, which has two ends and a weight.
+ * An edge in a graph, which has two ends and a weight.
  */
 type Edge = {
   from: string;
@@ -30,30 +30,20 @@ export class Graph {
    */
   private shortestPaths: ShortestPaths = {};
 
-  /**
-   * Store the edges, and initialize the shortest paths.
-   * @param edges The edges in the graph.
-   */
   constructor(private edges: Edge[]) {
     this.shortestPaths = Graph.calculateShortestPaths(edges);
   }
 
   /**
-   * Get the shortest path between two nodes.
-   * @param from The start node of the path.
-   * @param to The end node of the path.
-   * @returns The shortest path.
+   * Returns the shortest path between two nodes.
    */
   public getShortestPath(from: string, to: string) {
     return this.shortestPaths[from]![to]!;
   }
 
   /**
-   * Update an edge between two nodes.
-   * If the edge does not exist, create it.
-   * @param from The start node of the edge.
-   * @param to The end node of the edge.
-   * @param weight The weight of the edge.
+   * Updates an edge between two nodes,
+   * or creates it if it does not exist.
    */
   public setEdge(from: string, to: string, weight: number) {
     const edge = this.edges.find(
@@ -70,10 +60,8 @@ export class Graph {
   }
 
   /**
-   * Calculate shortest paths from each node to each other node,
+   * Calculates the shortest paths from each node to each other node,
    * using Floyd-Warshall algorithm.
-   * @param edges The edges in the graph.
-   * @returns The shortest paths from each node to each other node.
    */
   private static calculateShortestPaths(edges: Edge[]) {
     const nodes = Graph.collectNodesFromEdges(edges);
@@ -123,9 +111,7 @@ export class Graph {
   }
 
   /**
-   * Collect every node that appears in given edges.
-   * @param edges The edges in the graph.
-   * @returns A list of nodes.
+   * Collects every node that appears in the given edges.
    */
   private static collectNodesFromEdges(edges: Edge[]) {
     return [...new Set(edges.flatMap((edge) => [edge.from, edge.to]))];

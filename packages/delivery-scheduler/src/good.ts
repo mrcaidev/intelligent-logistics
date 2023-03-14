@@ -1,7 +1,7 @@
 import type { Graph } from "./graph";
 
 /**
- * Configurable properties of goods.
+ * The configurable properties of goods.
  */
 type Config = {
   name: string;
@@ -12,31 +12,31 @@ type Config = {
 };
 
 /**
- * Goods delivered in the logistics system.
+ * The items delivered in the logistics system.
  */
 export class Good {
   /**
-   * Unique id of the good.
+   * The unique id of the good.
    */
   public readonly id = Good.generateId();
 
   /**
-   * Name of the good.
+   * The name of the good.
    */
   public readonly name;
 
   /**
-   * Time when the good is created.
+   * The time when the good is created.
    */
   public readonly createdAt = new Date();
 
   /**
-   * Departure node.
+   * The departure node.
    */
   public readonly departure: string;
 
   /**
-   * Destination node.
+   * The destination node.
    */
   public readonly destination: string;
 
@@ -46,15 +46,12 @@ export class Good {
   public readonly isVip: boolean;
 
   /**
-   * Delivery strategy of this good.
-   * This is a graph, whose shortest path will be the delivery path.
+   * The delivery strategy of this good.
+   * This is a graph, whose shortest path
+   * will be selected as the delivery path.
    */
   private strategy: Graph;
 
-  /**
-   * Create a good.
-   * @param config The configurable properties of the good.
-   */
   constructor(config: Config) {
     this.name = config.name;
     this.departure = config.departure;
@@ -64,24 +61,21 @@ export class Good {
   }
 
   /**
-   * Get the delivery path of this good.
-   * @returns A list of nodes.
+   * Returns the delivery path.
    */
   public getPath() {
     return this.strategy.getShortestPath(this.departure, this.destination);
   }
 
   /**
-   * Set the delivery strategy.
-   * @param strategy Desired delivery strategy.
+   * Sets the delivery strategy.
    */
   public setStrategy(strategy: Graph) {
     this.strategy = strategy;
   }
 
   /**
-   * Generate a random id.
-   * @returns The generated id.
+   * Generates a random id.
    */
   private static generateId() {
     return Math.random().toString(36).substring(2, 10);

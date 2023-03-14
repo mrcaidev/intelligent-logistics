@@ -1,19 +1,18 @@
 import type { Good } from "./good";
 
 /**
- * Priority queue for goods.
+ * The priority queue for goods.
  * Goods with higher priority are at the front of the queue,
  * which means they will be delivered first.
  */
 export class GoodQueue {
   /**
-   * Queue of goods.
+   * The queue of the goods.
    */
   private queue: Good[] = [];
 
   /**
-   * Push a good to the queue.
-   * @param good The good to be added.
+   * Pushes a good to the queue.
    */
   public push(good: Good) {
     this.queue.push(good);
@@ -21,15 +20,14 @@ export class GoodQueue {
   }
 
   /**
-   * Pop a good from the queue.
-   * @returns The good with the highest priority.
+   * Pops a good from the queue.
    */
   public pop() {
     return this.queue.shift();
   }
 
   /**
-   * Compare two goods by their arrival time.
+   * Compares two goods by their arrival time.
    * VIP goods will be considered as arriving one day earlier
    * to make sure they have a higher priority.
    */
