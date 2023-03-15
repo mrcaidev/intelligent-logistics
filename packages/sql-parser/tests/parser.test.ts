@@ -1,29 +1,39 @@
 import { SqlParserError } from "src";
-import { Lexer } from "src/lexer";
+import { TokenType } from "src/lexer";
 import { Parser } from "src/parser";
 import { describe, expect, it } from "vitest";
 
-function parse(statement: string) {
-  const tokens = new Lexer(statement).tokenize();
-  const ast = new Parser(tokens).parse();
-  return ast;
-}
-
 describe("invalid keyword", () => {
   it("throws error with no keyword", () => {
-    const result = () => parse("id FROM users");
+    const result = () =>
+      new Parser([
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.KEYWORD, value: "FROM" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error with invalid keyword", () => {
-    const result = () => parse("UNKNOWN id FROM users");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "FOO" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.KEYWORD, value: "FROM" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 });
 
 describe("SELECT statement", () => {
-  it("parses simple SELECT", () => {
-    const result = parse("SELECT * FROM users");
+  it("parses wildcard fields", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "SELECT" },
+      { type: TokenType.OPERATOR, value: "*" },
+      { type: TokenType.KEYWORD, value: "FROM" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+    ]).parse();
     expect(result).toEqual({
       type: "select",
       table: "users",
@@ -32,8 +42,17 @@ describe("SELECT statement", () => {
     });
   });
 
-  it("parses SELECT with column names", () => {
-    const result = parse("SELECT id, name, age FROM users");
+  it("parses specified fields", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "SELECT" },
+      { type: TokenType.IDENTIFIER, value: "id" },
+      { type: TokenType.OPERATOR, value: "," },
+      { type: TokenType.IDENTIFIER, value: "name" },
+      { type: TokenType.OPERATOR, value: "," },
+      { type: TokenType.IDENTIFIER, value: "age" },
+      { type: TokenType.KEYWORD, value: "FROM" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+    ]).parse();
     expect(result).toEqual({
       type: "select",
       table: "users",
@@ -42,8 +61,17 @@ describe("SELECT statement", () => {
     });
   });
 
-  it("parses SELECT with one condition", () => {
-    const result = parse("SELECT * FROM users WHERE id = 1");
+  it("parses single condition", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "SELECT" },
+      { type: TokenType.OPERATOR, value: "*" },
+      { type: TokenType.KEYWORD, value: "FROM" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.KEYWORD, value: "WHERE" },
+      { type: TokenType.IDENTIFIER, value: "id" },
+      { type: TokenType.OPERATOR, value: "=" },
+      { type: TokenType.LITERAL, value: 1 },
+    ]).parse();
     expect(result).toEqual({
       type: "select",
       table: "users",
@@ -52,10 +80,21 @@ describe("SELECT statement", () => {
     });
   });
 
-  it("parses SELECT with AND condition", () => {
-    const result = parse(
-      "SELECT * FROM users WHERE name = 'John' AND age <= 30"
-    );
+  it("parses conditions joined by AND", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "SELECT" },
+      { type: TokenType.OPERATOR, value: "*" },
+      { type: TokenType.KEYWORD, value: "FROM" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.KEYWORD, value: "WHERE" },
+      { type: TokenType.IDENTIFIER, value: "name" },
+      { type: TokenType.OPERATOR, value: "=" },
+      { type: TokenType.LITERAL, value: "John" },
+      { type: TokenType.KEYWORD, value: "AND" },
+      { type: TokenType.IDENTIFIER, value: "age" },
+      { type: TokenType.OPERATOR, value: "<=" },
+      { type: TokenType.LITERAL, value: 30 },
+    ]).parse();
     expect(result).toEqual({
       type: "select",
       table: "users",
@@ -69,10 +108,21 @@ describe("SELECT statement", () => {
     });
   });
 
-  it("parses SELECT with OR condition", () => {
-    const result = parse(
-      "SELECT * FROM users WHERE name = 'John' OR age <= 30"
-    );
+  it("parses conditions joined by OR", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "SELECT" },
+      { type: TokenType.OPERATOR, value: "*" },
+      { type: TokenType.KEYWORD, value: "FROM" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.KEYWORD, value: "WHERE" },
+      { type: TokenType.IDENTIFIER, value: "name" },
+      { type: TokenType.OPERATOR, value: "=" },
+      { type: TokenType.LITERAL, value: "John" },
+      { type: TokenType.KEYWORD, value: "OR" },
+      { type: TokenType.IDENTIFIER, value: "age" },
+      { type: TokenType.OPERATOR, value: "<=" },
+      { type: TokenType.LITERAL, value: 30 },
+    ]).parse();
     expect(result).toEqual({
       type: "select",
       table: "users",
@@ -84,10 +134,25 @@ describe("SELECT statement", () => {
     });
   });
 
-  it("parses SELECT with AND and OR condition", () => {
-    const result = parse(
-      "SELECT * FROM users WHERE id = 1 AND name = 'John' OR age <= 30"
-    );
+  it("parses conditions joined by AND and OR", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "SELECT" },
+      { type: TokenType.OPERATOR, value: "*" },
+      { type: TokenType.KEYWORD, value: "FROM" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.KEYWORD, value: "WHERE" },
+      { type: TokenType.IDENTIFIER, value: "id" },
+      { type: TokenType.OPERATOR, value: "=" },
+      { type: TokenType.LITERAL, value: 1 },
+      { type: TokenType.KEYWORD, value: "AND" },
+      { type: TokenType.IDENTIFIER, value: "name" },
+      { type: TokenType.OPERATOR, value: "=" },
+      { type: TokenType.LITERAL, value: "John" },
+      { type: TokenType.KEYWORD, value: "OR" },
+      { type: TokenType.IDENTIFIER, value: "age" },
+      { type: TokenType.OPERATOR, value: "<=" },
+      { type: TokenType.LITERAL, value: 30 },
+    ]).parse();
     expect(result).toEqual({
       type: "select",
       table: "users",
@@ -103,168 +168,333 @@ describe("SELECT statement", () => {
   });
 
   it("throws error when missing fields", () => {
-    const result = () => parse("SELECT FROM users");
+    const result = () =>
+      new Parser([{ type: TokenType.KEYWORD, value: "SELECT" }]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
-  it("throws error when fields are not separated by comma", () => {
-    const result = () => parse("SELECT id name FROM users");
+  it("throws error when fields are not separated by commas", () => {
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "SELECT" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.IDENTIFIER, value: "name" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error when missing FROM", () => {
-    const result = () => parse("SELECT * users");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "SELECT" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error when missing table name", () => {
-    const result = () => parse("SELECT * FROM");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "SELECT" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.KEYWORD, value: "FROM" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error when no condition follows WHERE", () => {
-    const result = () => parse("SELECT * FROM users WHERE");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "SELECT" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.KEYWORD, value: "FROM" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.KEYWORD, value: "WHERE" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error with incomplete condition", () => {
-    const result = () => parse("SELECT * FROM users WHERE id =");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "SELECT" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.KEYWORD, value: "FROM" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.KEYWORD, value: "WHERE" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.OPERATOR, value: "=" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error with incorrect condition", () => {
-    const result = () => parse("SELECT * FROM users WHERE id = SELECT");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "SELECT" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.KEYWORD, value: "FROM" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.KEYWORD, value: "WHERE" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.OPERATOR, value: "=" },
+        { type: TokenType.KEYWORD, value: "SELECT" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 });
 
 describe("INSERT statement", () => {
-  it("parses simple INSERT", () => {
-    const result = parse("INSERT INTO users VALUES (1, 'John')");
+  it("parses wildcard fields", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "INSERT" },
+      { type: TokenType.KEYWORD, value: "INTO" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.KEYWORD, value: "VALUES" },
+      { type: TokenType.SYMBOL, value: "(" },
+      { type: TokenType.LITERAL, value: 1 },
+      { type: TokenType.SYMBOL, value: ")" },
+    ]).parse();
     expect(result).toEqual({
       type: "insert",
       table: "users",
       fields: "*",
-      values: [1, "John"],
+      values: [1],
     });
   });
 
   it("parses INSERT with column names", () => {
-    const result = parse("INSERT INTO users (id, name) VALUES (1, 'John')");
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "INSERT" },
+      { type: TokenType.KEYWORD, value: "INTO" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.SYMBOL, value: "(" },
+      { type: TokenType.IDENTIFIER, value: "id" },
+      { type: TokenType.SYMBOL, value: ")" },
+      { type: TokenType.KEYWORD, value: "VALUES" },
+      { type: TokenType.SYMBOL, value: "(" },
+      { type: TokenType.LITERAL, value: 1 },
+      { type: TokenType.SYMBOL, value: ")" },
+    ]).parse();
     expect(result).toEqual({
       type: "insert",
       table: "users",
-      fields: ["id", "name"],
-      values: [1, "John"],
+      fields: ["id"],
+      values: [1],
     });
   });
 
   it("throws error when missing INTO", () => {
-    const result = () => parse("INSERT users VALUES (1, 'John')");
+    const result = () =>
+      new Parser([{ type: TokenType.KEYWORD, value: "INSERT" }]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error when missing table name", () => {
-    const result = () => parse("INSERT INTO VALUES (1, 'John')");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "INSERT" },
+        { type: TokenType.KEYWORD, value: "INTO" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error when missing VALUES", () => {
-    const result = () => parse("INSERT INTO users (1, 'John')");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "INSERT" },
+        { type: TokenType.KEYWORD, value: "INTO" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error when missing values", () => {
-    const result = () => parse("INSERT INTO users VALUES");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "INSERT" },
+        { type: TokenType.KEYWORD, value: "INTO" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.KEYWORD, value: "VALUES" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error with empty fields", () => {
-    const result = () => parse("INSERT INTO users () VALUES (1, 'John')");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "INSERT" },
+        { type: TokenType.KEYWORD, value: "INTO" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.SYMBOL, value: "(" },
+        { type: TokenType.SYMBOL, value: ")" },
+        { type: TokenType.KEYWORD, value: "VALUES" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error with empty values", () => {
-    const result = () => parse("INSERT INTO users VALUES ()");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "INSERT" },
+        { type: TokenType.KEYWORD, value: "INTO" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.KEYWORD, value: "VALUES" },
+        { type: TokenType.SYMBOL, value: "(" },
+        { type: TokenType.SYMBOL, value: ")" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 });
 
 describe("UPDATE statement", () => {
-  it("parses simple UPDATE", () => {
-    const result = parse("UPDATE users SET name = 'John'");
+  it("parses single assignment", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "UPDATE" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.KEYWORD, value: "SET" },
+      { type: TokenType.IDENTIFIER, value: "id" },
+      { type: TokenType.OPERATOR, value: "=" },
+      { type: TokenType.LITERAL, value: 1 },
+    ]).parse();
     expect(result).toEqual({
       type: "update",
       table: "users",
-      assignments: [{ field: "name", value: "John" }],
+      assignments: [{ field: "id", value: 1 }],
       conditions: [],
     });
   });
 
-  it("parses UPDATE with more than one column", () => {
-    const result = parse("UPDATE users SET name = 'John', age = 30");
+  it("parses multiple assignments", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "UPDATE" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.KEYWORD, value: "SET" },
+      { type: TokenType.IDENTIFIER, value: "id" },
+      { type: TokenType.OPERATOR, value: "=" },
+      { type: TokenType.LITERAL, value: 1 },
+      { type: TokenType.SYMBOL, value: "," },
+      { type: TokenType.IDENTIFIER, value: "age" },
+      { type: TokenType.OPERATOR, value: "=" },
+      { type: TokenType.LITERAL, value: 30 },
+    ]).parse();
     expect(result).toEqual({
       type: "update",
       table: "users",
       assignments: [
-        { field: "name", value: "John" },
+        { field: "id", value: 1 },
         { field: "age", value: 30 },
       ],
       conditions: [],
     });
   });
 
-  it("parses UPDATE with conditions", () => {
-    const result = parse(
-      "UPDATE users SET name = 'John' WHERE id = 1 AND age = 30"
-    );
+  it("parses condition", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "UPDATE" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.KEYWORD, value: "SET" },
+      { type: TokenType.IDENTIFIER, value: "age" },
+      { type: TokenType.OPERATOR, value: "=" },
+      { type: TokenType.LITERAL, value: 30 },
+      { type: TokenType.KEYWORD, value: "WHERE" },
+      { type: TokenType.IDENTIFIER, value: "id" },
+      { type: TokenType.OPERATOR, value: "=" },
+      { type: TokenType.LITERAL, value: 1 },
+    ]).parse();
     expect(result).toEqual({
       type: "update",
       table: "users",
-      assignments: [{ field: "name", value: "John" }],
-      conditions: [
-        [
-          { field: "id", operator: "=", value: 1 },
-          { field: "age", operator: "=", value: 30 },
-        ],
-      ],
+      assignments: [{ field: "age", value: 30 }],
+      conditions: [[{ field: "id", operator: "=", value: 1 }]],
     });
   });
 
   it("throws error when missing table name", () => {
-    const result = () => parse("UPDATE SET name = 'John'");
+    const result = () =>
+      new Parser([{ type: TokenType.KEYWORD, value: "UPDATE" }]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error when missing SET", () => {
-    const result = () => parse("UPDATE users name = 'John'");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "UPDATE" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
-  it("throws error when missing fields", () => {
-    const result = () => parse("UPDATE users SET");
+  it("throws error when missing assignments", () => {
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "UPDATE" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.KEYWORD, value: "SET" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error with incomplete assignments", () => {
-    const result = () => parse("UPDATE users SET name =");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "UPDATE" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.KEYWORD, value: "SET" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+      ]).parse();
+    expect(result).toThrowError(SqlParserError);
+  });
+
+  it("throws error without =", () => {
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "UPDATE" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.KEYWORD, value: "SET" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.LITERAL, value: 1 },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error with incorrect assignments", () => {
-    const result = () => parse("UPDATE users SET name = SELECT");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "UPDATE" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.KEYWORD, value: "SET" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.OPERATOR, value: "=" },
+        { type: TokenType.KEYWORD, value: "SELECT" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
-  it("throws error when assignments are not separated by comma", () => {
-    const result = () => parse("UPDATE users SET name = 'John' age = 30");
+  it("throws error when assignments are not separated by commas", () => {
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "UPDATE" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.KEYWORD, value: "SET" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.OPERATOR, value: "=" },
+        { type: TokenType.LITERAL, value: 1 },
+        { type: TokenType.IDENTIFIER, value: "age" },
+        { type: TokenType.OPERATOR, value: "=" },
+        { type: TokenType.LITERAL, value: 30 },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 });
 
 describe("DELETE statement", () => {
-  it("parses simple DELETE", () => {
-    const result = parse("DELETE FROM users");
+  it("parses without conditions", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "DELETE" },
+      { type: TokenType.KEYWORD, value: "FROM" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+    ]).parse();
     expect(result).toEqual({
       type: "delete",
       table: "users",
@@ -272,8 +502,16 @@ describe("DELETE statement", () => {
     });
   });
 
-  it("parses DELETE with conditions", () => {
-    const result = parse("DELETE FROM users WHERE id = 1");
+  it("parses with conditions", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "DELETE" },
+      { type: TokenType.KEYWORD, value: "FROM" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.KEYWORD, value: "WHERE" },
+      { type: TokenType.IDENTIFIER, value: "id" },
+      { type: TokenType.OPERATOR, value: "=" },
+      { type: TokenType.LITERAL, value: 1 },
+    ]).parse();
     expect(result).toEqual({
       type: "delete",
       table: "users",
@@ -282,29 +520,90 @@ describe("DELETE statement", () => {
   });
 
   it("throws error when missing FROM", () => {
-    const result = () => parse("DELETE users");
+    const result = () =>
+      new Parser([{ type: TokenType.KEYWORD, value: "DELETE" }]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error when missing table name", () => {
-    const result = () => parse("DELETE FROM");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "DELETE" },
+        { type: TokenType.KEYWORD, value: "FROM" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error when no condition follows WHERE", () => {
-    const result = () => parse("DELETE FROM users WHERE");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "DELETE" },
+        { type: TokenType.KEYWORD, value: "FROM" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.KEYWORD, value: "WHERE" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error with incomplete condition", () => {
-    const result = () => parse("DELETE FROM users WHERE id =");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "DELETE" },
+        { type: TokenType.KEYWORD, value: "FROM" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.KEYWORD, value: "WHERE" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.OPERATOR, value: "=" },
+      ]).parse();
+    expect(result).toThrowError(SqlParserError);
+  });
+
+  it("throws error with incorrect condition", () => {
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "DELETE" },
+        { type: TokenType.KEYWORD, value: "FROM" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.KEYWORD, value: "WHERE" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.OPERATOR, value: "=" },
+        { type: TokenType.KEYWORD, value: "SELECT" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 });
 
 describe("CREATE statement", () => {
-  it("parses simple CREATE", () => {
-    const result = parse("CREATE TABLE users (id NUMERIC, name TEXT)");
+  it("parses single definition", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "CREATE" },
+      { type: TokenType.KEYWORD, value: "TABLE" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.SYMBOL, value: "(" },
+      { type: TokenType.IDENTIFIER, value: "id" },
+      { type: TokenType.DATA_TYPE, value: "NUMERIC" },
+      { type: TokenType.SYMBOL, value: ")" },
+    ]).parse();
+    expect(result).toEqual({
+      type: "create",
+      table: "users",
+      definitions: [{ field: "id", type: "NUMERIC" }],
+    });
+  });
+
+  it("parses multiple definitions", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "CREATE" },
+      { type: TokenType.KEYWORD, value: "TABLE" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.SYMBOL, value: "(" },
+      { type: TokenType.IDENTIFIER, value: "id" },
+      { type: TokenType.DATA_TYPE, value: "NUMERIC" },
+      { type: TokenType.SYMBOL, value: "," },
+      { type: TokenType.IDENTIFIER, value: "name" },
+      { type: TokenType.DATA_TYPE, value: "TEXT" },
+      { type: TokenType.SYMBOL, value: ")" },
+    ]).parse();
     expect(result).toEqual({
       type: "create",
       table: "users",
@@ -316,32 +615,79 @@ describe("CREATE statement", () => {
   });
 
   it("throws error when missing TABLE", () => {
-    const result = () => parse("CREATE users (id NUMERIC, name TEXT)");
+    const result = () =>
+      new Parser([{ type: TokenType.KEYWORD, value: "CREATE" }]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error when missing table name", () => {
-    const result = () => parse("CREATE TABLE (id NUMERIC, name TEXT)");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "CREATE" },
+        { type: TokenType.KEYWORD, value: "TABLE" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error when missing fields", () => {
-    const result = () => parse("CREATE TABLE users");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "CREATE" },
+        { type: TokenType.KEYWORD, value: "TABLE" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+      ]).parse();
+    expect(result).toThrowError(SqlParserError);
+  });
+
+  it("throws error with empty definition", () => {
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "CREATE" },
+        { type: TokenType.KEYWORD, value: "TABLE" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.SYMBOL, value: "(" },
+        { type: TokenType.SYMBOL, value: ")" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error when missing field name", () => {
-    const result = () => parse("CREATE TABLE users (NUMERIC, name TEXT)");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "CREATE" },
+        { type: TokenType.KEYWORD, value: "TABLE" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.SYMBOL, value: "(" },
+        { type: TokenType.DATA_TYPE, value: "NUMERIC" },
+        { type: TokenType.SYMBOL, value: ")" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
   it("throws error when missing field type", () => {
-    const result = () => parse("CREATE TABLE users (id, name TEXT)");
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "CREATE" },
+        { type: TokenType.KEYWORD, value: "TABLE" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.SYMBOL, value: "(" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.SYMBOL, value: ")" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 
-  it("throws error when fields are not separated by comma", () => {
-    const result = () => parse("CREATE TABLE users (id NUMERIC name TEXT)");
+  it("throws error when fields are not separated by commas", () => {
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "CREATE" },
+        { type: TokenType.KEYWORD, value: "TABLE" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.SYMBOL, value: "(" },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.DATA_TYPE, value: "NUMERIC" },
+        { type: TokenType.IDENTIFIER, value: "name" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 });

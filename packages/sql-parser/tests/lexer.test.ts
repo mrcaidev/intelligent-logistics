@@ -98,9 +98,69 @@ describe("null literal", () => {
 });
 
 describe("keyword", () => {
-  it("parses keyword", () => {
+  it("parses SELECT", () => {
     const result = new Lexer("SELECT").tokenize();
     expect(result).toEqual([{ type: TokenType.KEYWORD, value: "SELECT" }]);
+  });
+
+  it("parses FROM", () => {
+    const result = new Lexer("FROM").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "FROM" }]);
+  });
+
+  it("parses WHERE", () => {
+    const result = new Lexer("WHERE").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "WHERE" }]);
+  });
+
+  it("parses AND", () => {
+    const result = new Lexer("AND").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "AND" }]);
+  });
+
+  it("parses OR", () => {
+    const result = new Lexer("OR").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "OR" }]);
+  });
+
+  it("parses INSERT", () => {
+    const result = new Lexer("INSERT").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "INSERT" }]);
+  });
+
+  it("parses INTO", () => {
+    const result = new Lexer("INTO").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "INTO" }]);
+  });
+
+  it("parses VALUES", () => {
+    const result = new Lexer("VALUES").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "VALUES" }]);
+  });
+
+  it("parses UPDATE", () => {
+    const result = new Lexer("UPDATE").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "UPDATE" }]);
+  });
+
+  it("parses SET", () => {
+    const result = new Lexer("SET").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "SET" }]);
+  });
+
+  it("parses DELETE", () => {
+    const result = new Lexer("DELETE").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "DELETE" }]);
+  });
+
+  it("parses CREATE", () => {
+    const result = new Lexer("CREATE").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "CREATE" }]);
+  });
+
+  it("parses TABLE", () => {
+    const result = new Lexer("TABLE").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "TABLE" }]);
   });
 
   it("ignores case", () => {
@@ -110,9 +170,19 @@ describe("keyword", () => {
 });
 
 describe("data type", () => {
-  it("parses data type", () => {
+  it("parses NUMERIC", () => {
     const result = new Lexer("NUMERIC").tokenize();
     expect(result).toEqual([{ type: TokenType.DATA_TYPE, value: "NUMERIC" }]);
+  });
+
+  it("parses TEXT", () => {
+    const result = new Lexer("TEXT").tokenize();
+    expect(result).toEqual([{ type: TokenType.DATA_TYPE, value: "TEXT" }]);
+  });
+
+  it("parses BOOLEAN", () => {
+    const result = new Lexer("BOOLEAN").tokenize();
+    expect(result).toEqual([{ type: TokenType.DATA_TYPE, value: "BOOLEAN" }]);
   });
 
   it("ignores case", () => {
@@ -122,19 +192,54 @@ describe("data type", () => {
 });
 
 describe("operator", () => {
-  it("parses single-character operator", () => {
-    const result = new Lexer("=").tokenize();
-    expect(result).toEqual([{ type: TokenType.OPERATOR, value: "=" }]);
-  });
-
-  it("parses multi-character operator", () => {
-    const result = new Lexer("<=").tokenize();
-    expect(result).toEqual([{ type: TokenType.OPERATOR, value: "<=" }]);
+  it("parses +", () => {
+    const result = new Lexer("+").tokenize();
+    expect(result).toEqual([{ type: TokenType.OPERATOR, value: "+" }]);
   });
 
   it("parses -", () => {
     const result = new Lexer("-").tokenize();
     expect(result).toEqual([{ type: TokenType.OPERATOR, value: "-" }]);
+  });
+
+  it("parses *", () => {
+    const result = new Lexer("*").tokenize();
+    expect(result).toEqual([{ type: TokenType.OPERATOR, value: "*" }]);
+  });
+
+  it("parses /", () => {
+    const result = new Lexer("/").tokenize();
+    expect(result).toEqual([{ type: TokenType.OPERATOR, value: "/" }]);
+  });
+
+  it("parses =", () => {
+    const result = new Lexer("=").tokenize();
+    expect(result).toEqual([{ type: TokenType.OPERATOR, value: "=" }]);
+  });
+
+  it("parses !=", () => {
+    const result = new Lexer("!=").tokenize();
+    expect(result).toEqual([{ type: TokenType.OPERATOR, value: "!=" }]);
+  });
+
+  it("parses <", () => {
+    const result = new Lexer("<").tokenize();
+    expect(result).toEqual([{ type: TokenType.OPERATOR, value: "<" }]);
+  });
+
+  it("parses >", () => {
+    const result = new Lexer(">").tokenize();
+    expect(result).toEqual([{ type: TokenType.OPERATOR, value: ">" }]);
+  });
+
+  it("parses <=", () => {
+    const result = new Lexer("<=").tokenize();
+    expect(result).toEqual([{ type: TokenType.OPERATOR, value: "<=" }]);
+  });
+
+  it("parses >=", () => {
+    const result = new Lexer(">=").tokenize();
+    expect(result).toEqual([{ type: TokenType.OPERATOR, value: ">=" }]);
   });
 
   it("throws error on invalid operator", () => {
@@ -161,11 +266,23 @@ describe("identifier", () => {
 });
 
 describe("symbol", () => {
-  it("parses symbols", () => {
-    const result = new Lexer("()").tokenize();
-    expect(result).toEqual([
-      { type: TokenType.SYMBOL, value: "(" },
-      { type: TokenType.SYMBOL, value: ")" },
-    ]);
+  it("parses (", () => {
+    const result = new Lexer("(").tokenize();
+    expect(result).toEqual([{ type: TokenType.SYMBOL, value: "(" }]);
+  });
+
+  it("parses )", () => {
+    const result = new Lexer(")").tokenize();
+    expect(result).toEqual([{ type: TokenType.SYMBOL, value: ")" }]);
+  });
+
+  it("parses ,", () => {
+    const result = new Lexer(",").tokenize();
+    expect(result).toEqual([{ type: TokenType.SYMBOL, value: "," }]);
+  });
+
+  it("parses .", () => {
+    const result = new Lexer(".").tokenize();
+    expect(result).toEqual([{ type: TokenType.SYMBOL, value: "." }]);
   });
 });
