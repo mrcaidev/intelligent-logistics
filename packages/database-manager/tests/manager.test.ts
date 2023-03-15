@@ -3,18 +3,22 @@ import { DatabaseManagerError, Manager } from "src";
 import { describe, expect, it } from "vitest";
 
 class TestManager extends Manager {
-  private database: Database = {};
+  private _database: Database = {};
 
   constructor() {
     super("Test");
   }
 
   protected async readDatabase() {
-    return this.database;
+    return this._database;
   }
 
   protected async writeDatabase(database: Database) {
-    this.database = database;
+    this._database = database;
+  }
+
+  public get database() {
+    return this._database;
   }
 }
 
@@ -50,8 +54,8 @@ function createManager() {
   return manager;
 }
 
-describe("runs SELECT", () => {
-  it("runs SELECT * FROM users", async () => {
+describe("SELECT", () => {
+  it("can select all fields", async () => {
     const result = await createManager().run({
       type: "select",
       table: "users",
@@ -68,7 +72,7 @@ describe("runs SELECT", () => {
     });
   });
 
-  it("runs SELECT id, name FROM users", async () => {
+  it("can select specific fields", async () => {
     const result = await createManager().run({
       type: "select",
       table: "users",
@@ -85,7 +89,7 @@ describe("runs SELECT", () => {
     });
   });
 
-  it("runs SELECT name FROM users WHERE id != 1", async () => {
+  it("can filter rows with single condition", async () => {
     const result = await createManager().run({
       type: "select",
       table: "users",
@@ -98,7 +102,7 @@ describe("runs SELECT", () => {
     });
   });
 
-  it("runs SELECT * FROM users WHERE age > 20 AND age < 30 OR name = 'John'", async () => {
+  it("can filter rows with multiple conditions", async () => {
     const result = await createManager().run({
       type: "select",
       table: "users",
@@ -143,31 +147,29 @@ describe("runs SELECT", () => {
   });
 });
 
-describe("runs INSERT", () => {
-  it("runs INSERT INTO users VALUES (4, 'July', 35)", async () => {
-    const result = await createManager().run({
+describe("INSERT", () => {
+  it("can insert into every field", async () => {
+    const manager = createManager();
+    const result = await manager.run({
       type: "insert",
       table: "users",
       fields: "*",
       values: [4, "July", 35],
     });
-    expect(result).toEqual({
-      rows: [],
-      rowCount: 1,
-    });
+    expect(result).toEqual({ rows: [], rowCount: 1 });
+    expect(manager.database.users?.rows.length).toEqual(4);
   });
 
-  it("runs INSERT INTO users (id, name, age) VALUES (4, 'July', 35)", async () => {
-    const result = await createManager().run({
+  it("can insert into specific fields", async () => {
+    const manager = createManager();
+    const result = await manager.run({
       type: "insert",
       table: "users",
       fields: ["id", "name", "age"],
       values: [4, "July", 35],
     });
-    expect(result).toEqual({
-      rows: [],
-      rowCount: 1,
-    });
+    expect(result).toEqual({ rows: [], rowCount: 1 });
+    expect(manager.database.users?.rows.length).toEqual(4);
   });
 
   it("throws error when table does not exist", async () => {
@@ -182,31 +184,30 @@ describe("runs INSERT", () => {
   });
 });
 
-describe("runs UPDATE", () => {
-  it("runs UPDATE users SET name = 'July', age = 35 WHERE id = 2", async () => {
-    const result = await createManager().run({
+describe("UPDATE", () => {
+  it("can update rows", async () => {
+    const manager = createManager();
+    const result = await manager.run({
       type: "update",
       table: "users",
       assignments: [{ field: "age", value: 35 }],
       conditions: [[{ field: "id", operator: "=", value: 2 }]],
     });
-    expect(result).toEqual({
-      rows: [],
-      rowCount: 1,
-    });
+    expect(result).toEqual({ rows: [], rowCount: 1 });
+    expect(manager.database.users?.rows[1]?.age).toEqual(35);
   });
 
-  it("runs UPDATE users SET age = 40 WHERE id >= 2", async () => {
-    const result = await createManager().run({
+  it("can filter rows to update", async () => {
+    const manager = createManager();
+    const result = await manager.run({
       type: "update",
       table: "users",
       assignments: [{ field: "age", value: 40 }],
       conditions: [[{ field: "id", operator: ">=", value: 2 }]],
     });
-    expect(result).toEqual({
-      rows: [],
-      rowCount: 2,
-    });
+    expect(result).toEqual({ rows: [], rowCount: 2 });
+    expect(manager.database.users?.rows[1]?.age).toEqual(40);
+    expect(manager.database.users?.rows[2]?.age).toEqual(40);
   });
 
   it("throws error when table does not exist", async () => {
@@ -222,28 +223,26 @@ describe("runs UPDATE", () => {
 });
 
 describe("runs DELETE", () => {
-  it("runs DELETE FROM users WHERE id = 2", async () => {
-    const result = await createManager().run({
+  it("can delete all rows", async () => {
+    const manager = createManager();
+    const result = await manager.run({
       type: "delete",
       table: "users",
-      conditions: [[{ field: "id", operator: "=", value: 2 }]],
+      conditions: [],
     });
-    expect(result).toEqual({
-      rows: [],
-      rowCount: 1,
-    });
+    expect(result).toEqual({ rows: [], rowCount: 3 });
+    expect(manager.database.users?.rows.length).toEqual(0);
   });
 
-  it("runs DELETE FROM users WHERE id <= 2", async () => {
-    const result = await createManager().run({
+  it("can filter rows to delete", async () => {
+    const manager = createManager();
+    const result = await manager.run({
       type: "delete",
       table: "users",
-      conditions: [[{ field: "id", operator: "<=", value: 2 }]],
+      conditions: [[{ field: "id", operator: "<=", value: 1 }]],
     });
-    expect(result).toEqual({
-      rows: [],
-      rowCount: 2,
-    });
+    expect(result).toEqual({ rows: [], rowCount: 1 });
+    expect(manager.database.users?.rows.length).toEqual(2);
   });
 
   it("throws error when table does not exist", async () => {
@@ -257,8 +256,8 @@ describe("runs DELETE", () => {
   });
 });
 
-describe("runs CREATE", () => {
-  it("runs CREATE TABLE posts (id NUMERIC, author TEXT)", async () => {
+describe("CREATE", () => {
+  it("can create table", async () => {
     const manager = createManager();
     const createResult = await manager.run({
       type: "create",
@@ -268,19 +267,8 @@ describe("runs CREATE", () => {
         { field: "author", type: "TEXT" },
       ],
     });
-    expect(createResult).toEqual({
-      rows: [],
-      rowCount: 0,
-    });
-
-    const selectResult = async () =>
-      await manager.run({
-        type: "select",
-        table: "posts",
-        fields: "*",
-        conditions: [],
-      });
-    expect(selectResult).not.toThrowError(DatabaseManagerError);
+    expect(createResult).toEqual({ rows: [], rowCount: 0 });
+    expect(manager.database.posts).not.toEqual(undefined);
   });
 
   it("throws error when table already exists", async () => {
