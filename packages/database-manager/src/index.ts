@@ -1,2 +1,2 @@
 export { DatabaseManagerError } from "./error";
-export { Manager } from "./manager";
+export { Manager, BrowserManager } from "./manager";

@@ -12,8 +12,8 @@ import type {
   UpdateAST,
 } from "common";
 import { Validator } from "src/validator";
-import { DatabaseManagerError } from "./error";
-import { Guard } from "./guard";
+import { DatabaseManagerError } from "../error";
+import { Guard } from "../guard";
 
 /**
  * An abstract database manager, which provides an API to run ASTs, and
