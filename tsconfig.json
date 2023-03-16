@@ -12,6 +12,9 @@
     },
     {
       "path": "packages/sql-parser"
+    },
+    {
+      "path": "app"
     }
   ]
 }
