@@ -42,10 +42,14 @@ importers:
       '@types/react-dom': ^18.0.11
       '@vitejs/plugin-react-swc': ^3.2.0
       autoprefixer: ^10.4.14
+      common: workspace:^0.0.0
+      database-manager: workspace:^0.0.0
+      delivery-scheduler: workspace:^0.0.0
       postcss: ^8.4.21
       react: ^18.2.0
       react-dom: ^18.2.0
       reagraph: ^4.7.0
+      sql-parser: workspace:^0.0.0
       tailwindcss: ^3.2.7
       typescript: ^4.9.5
       vite: ^4.1.4
@@ -53,10 +57,14 @@ importers:
       zustand: ^4.3.6
     dependencies:
       autoprefixer: 10.4.14_postcss@8.4.21
+      common: link:../packages/common
+      database-manager: link:../packages/database-manager
+      delivery-scheduler: link:../packages/delivery-scheduler
       postcss: 8.4.21
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       reagraph: 4.7.0_o6krhbw7i4sljzg6fargktmine
+      sql-parser: link:../packages/sql-parser
       tailwindcss: 3.2.7_postcss@8.4.21
       zustand: 4.3.6_react@18.2.0
     devDependencies:
@@ -101,11 +109,14 @@ importers:
   packages/delivery-scheduler:
     specifiers:
       '@vitest/coverage-c8': ^0.29.3
+      common: workspace:^0.0.0
       typescript: ^4.9.5
       vite: ^4.1.4
       vite-plugin-dts: ^2.1.0
       vite-tsconfig-paths: ^4.0.7
       vitest: ^0.29.3
+    dependencies:
+      common: link:../common
     devDependencies:
       '@vitest/coverage-c8': 0.29.3_vitest@0.29.3
       typescript: 4.9.5

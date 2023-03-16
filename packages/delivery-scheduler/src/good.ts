@@ -1,4 +1,5 @@
 import type { Graph } from "./graph";
+import { generateRandomId } from "common";
 
 /**
  * The configurable properties of goods.
@@ -18,7 +19,7 @@ export class Good {
   /**
    * The unique id of the good.
    */
-  public readonly id = Good.generateId();
+  public readonly id = generateRandomId();
 
   /**
    * The name of the good.
@@ -72,12 +73,5 @@ export class Good {
    */
   public setStrategy(strategy: Graph) {
     this.strategy = strategy;
-  }
-
-  /**
-   * Generates a random id.
-   */
-  private static generateId() {
-    return Math.random().toString(36).substring(2, 10);
   }
 }
