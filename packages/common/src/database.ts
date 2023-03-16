@@ -20,12 +20,3 @@ export type Table = {
  * A database.
  */
 export type Database = Record<string, Table>;
-
-/**
- * The result of a statement.
- * @template T The type of each retrieved row.
- */
-export type Result<T extends Row> = {
-  rows: T[];
-  rowCount: number;
-};

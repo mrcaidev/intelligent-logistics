@@ -62,14 +62,11 @@ describe("SELECT", () => {
       fields: "*",
       conditions: [],
     });
-    expect(result).toEqual({
-      rows: [
-        { id: 1, name: "John", age: 20 },
-        { id: 2, name: "Jane", age: 25 },
-        { id: 3, name: "Jack", age: 30 },
-      ],
-      rowCount: 3,
-    });
+    expect(result).toEqual([
+      { id: 1, name: "John", age: 20 },
+      { id: 2, name: "Jane", age: 25 },
+      { id: 3, name: "Jack", age: 30 },
+    ]);
   });
 
   it("can select specific fields", async () => {
@@ -79,14 +76,11 @@ describe("SELECT", () => {
       fields: ["id", "name"],
       conditions: [],
     });
-    expect(result).toEqual({
-      rows: [
-        { id: 1, name: "John" },
-        { id: 2, name: "Jane" },
-        { id: 3, name: "Jack" },
-      ],
-      rowCount: 3,
-    });
+    expect(result).toEqual([
+      { id: 1, name: "John" },
+      { id: 2, name: "Jane" },
+      { id: 3, name: "Jack" },
+    ]);
   });
 
   it("can filter rows with single condition", async () => {
@@ -96,10 +90,7 @@ describe("SELECT", () => {
       fields: ["name"],
       conditions: [[{ field: "id", operator: "!=", value: 1 }]],
     });
-    expect(result).toEqual({
-      rows: [{ name: "Jane" }, { name: "Jack" }],
-      rowCount: 2,
-    });
+    expect(result).toEqual([{ name: "Jane" }, { name: "Jack" }]);
   });
 
   it("can filter rows with multiple conditions", async () => {
@@ -115,13 +106,10 @@ describe("SELECT", () => {
         [{ field: "name", operator: "=", value: "John" }],
       ],
     });
-    expect(result).toEqual({
-      rows: [
-        { id: 1, name: "John", age: 20 },
-        { id: 2, name: "Jane", age: 25 },
-      ],
-      rowCount: 2,
-    });
+    expect(result).toEqual([
+      { id: 1, name: "John", age: 20 },
+      { id: 2, name: "Jane", age: 25 },
+    ]);
   });
 
   it("throws error when table does not exist", async () => {
@@ -156,7 +144,7 @@ describe("INSERT", () => {
       fields: "*",
       values: [4, "July", 35],
     });
-    expect(result).toEqual({ rows: [], rowCount: 1 });
+    expect(result).toEqual([]);
     expect(manager.database.users?.rows.length).toEqual(4);
   });
 
@@ -168,7 +156,7 @@ describe("INSERT", () => {
       fields: ["id", "name", "age"],
       values: [4, "July", 35],
     });
-    expect(result).toEqual({ rows: [], rowCount: 1 });
+    expect(result).toEqual([]);
     expect(manager.database.users?.rows.length).toEqual(4);
   });
 
@@ -193,7 +181,7 @@ describe("UPDATE", () => {
       assignments: [{ field: "age", value: 35 }],
       conditions: [[{ field: "id", operator: "=", value: 2 }]],
     });
-    expect(result).toEqual({ rows: [], rowCount: 1 });
+    expect(result).toEqual([]);
     expect(manager.database.users?.rows[1]?.age).toEqual(35);
   });
 
@@ -205,7 +193,7 @@ describe("UPDATE", () => {
       assignments: [{ field: "age", value: 40 }],
       conditions: [[{ field: "id", operator: ">=", value: 2 }]],
     });
-    expect(result).toEqual({ rows: [], rowCount: 2 });
+    expect(result).toEqual([]);
     expect(manager.database.users?.rows[1]?.age).toEqual(40);
     expect(manager.database.users?.rows[2]?.age).toEqual(40);
   });
@@ -230,7 +218,7 @@ describe("runs DELETE", () => {
       table: "users",
       conditions: [],
     });
-    expect(result).toEqual({ rows: [], rowCount: 3 });
+    expect(result).toEqual([]);
     expect(manager.database.users?.rows.length).toEqual(0);
   });
 
@@ -241,7 +229,7 @@ describe("runs DELETE", () => {
       table: "users",
       conditions: [[{ field: "id", operator: "<=", value: 1 }]],
     });
-    expect(result).toEqual({ rows: [], rowCount: 1 });
+    expect(result).toEqual([]);
     expect(manager.database.users?.rows.length).toEqual(2);
   });
 
@@ -267,7 +255,7 @@ describe("CREATE", () => {
         { field: "author", type: "TEXT" },
       ],
     });
-    expect(createResult).toEqual({ rows: [], rowCount: 0 });
+    expect(createResult).toEqual([]);
     expect(manager.database.posts).not.toEqual(undefined);
   });
 

@@ -6,7 +6,6 @@ import type {
   Database,
   DeleteAST,
   InsertAST,
-  Result,
   Row,
   Schema,
   SelectAST,
@@ -17,14 +16,14 @@ import { DatabaseManagerError } from "./error";
 import { Guard } from "./guard";
 
 /**
- * An abstract database manager, which provides an API to run ASTs,
+ * An abstract database manager, which provides an API to run ASTs, and
  * handles the concurrency control, but leaves the implementation of
  * reading and writing the database to its subclasses.
  */
 export abstract class Manager {
   /**
    * The guards of every table, used to control
-   * the reading and writing concurrency on every table.
+   * the concurrency of reading and writing on every table.
    */
   private guards: Record<string, Guard> = {};
 
@@ -36,14 +35,14 @@ export abstract class Manager {
   protected abstract readDatabase(): Promise<Database>;
 
   /**
-   * Writes the object to a database.
+   * Writes an object to the database.
    */
   protected abstract writeDatabase(database: Database): Promise<void>;
 
   /**
    * Runs an AST.
    */
-  public async run<T extends Row>(ast: AST): Promise<Result<T>> {
+  public async run<T extends Row>(ast: AST) {
     switch (ast.type) {
       case "select":
         return this.select<T>(ast);
@@ -59,7 +58,7 @@ export abstract class Manager {
   }
 
   /**
-   * Runs a SELECT AST.
+   * Runs the AST of a SELECT statement.
    */
   private async select<T extends Row>(ast: SelectAST) {
     const { table, fields, conditions } = ast;
@@ -80,11 +79,11 @@ export abstract class Manager {
 
     this.guards[table]!.finishReading();
 
-    return { rows: rows as T[], rowCount: rows.length };
+    return rows as T[];
   }
 
   /**
-   * Runs an INSERT AST.
+   * Runs the AST of an INSERT statement.
    */
   private async insert<T extends Row>(ast: InsertAST) {
     const { table, fields, values } = ast;
@@ -105,11 +104,11 @@ export abstract class Manager {
 
     this.guards[table]!.finishWriting();
 
-    return { rows: [] as T[], rowCount: 1 };
+    return [] as T[];
   }
 
   /**
-   * Runs an UPDATE AST.
+   * Runs the AST of an UPDATE statement.
    */
   private async update<T extends Row>(ast: UpdateAST) {
     const { table, assignments, conditions } = ast;
@@ -126,17 +125,16 @@ export abstract class Manager {
 
     const filter = Manager.buildFilter(conditions);
     const updater = Manager.buildUpdater(assignments);
-    const filteredRows = database[table]!.rows.filter(filter);
-    filteredRows.forEach(updater);
+    database[table]!.rows.filter(filter).forEach(updater);
     await this.writeDatabase(database);
 
     this.guards[table]!.finishWriting();
 
-    return { rows: [] as T[], rowCount: filteredRows.length };
+    return [] as T[];
   }
 
   /**
-   * Runs a DELETE AST.
+   * Runs the AST of a DELETE statement.
    */
   private async delete<T extends Row>(ast: DeleteAST) {
     const { table, conditions } = ast;
@@ -151,20 +149,18 @@ export abstract class Manager {
     const validator = new Validator(database[table]!.schema);
     validator.validateDelete(ast);
 
-    const oldRowCount = database[table]!.rows.length;
     const filter = Manager.buildFilter(conditions);
     database[table]!.rows = database[table]!.rows.filter((row) => !filter(row));
-    const newRowCount = database[table]!.rows.length;
 
     await this.writeDatabase(database);
 
     this.guards[table]!.finishWriting();
 
-    return { rows: [] as T[], rowCount: oldRowCount - newRowCount };
+    return [] as T[];
   }
 
   /**
-   * Runs a CREATE AST.
+   * Runs the AST of a CREATE statement.
    */
   private async create<T extends Row>(ast: CreateAST) {
     const { table, definitions } = ast;
@@ -181,7 +177,7 @@ export abstract class Manager {
     this.guards[table] = new Guard();
     await this.writeDatabase(database);
 
-    return { rows: [] as T[], rowCount: 0 };
+    return [] as T[];
   }
 
   /**
