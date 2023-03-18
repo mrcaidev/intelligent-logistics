@@ -36,7 +36,7 @@ importers:
       turbo: 1.8.3
       typescript: 4.9.5
 
-  app:
+  apps/frontend:
     specifiers:
       '@antv/graphin': ^2.7.13
       '@types/react': ^18.0.28
@@ -57,13 +57,13 @@ importers:
     dependencies:
       '@antv/graphin': 2.7.13_biqbaboplfbrettd7655fr4n2y
       '@unocss/reset': 0.50.6
-      common: link:../packages/common
-      database-manager: link:../packages/database-manager
-      delivery-scheduler: link:../packages/delivery-scheduler
+      common: link:../../packages/common
+      database-manager: link:../../packages/database-manager
+      delivery-scheduler: link:../../packages/delivery-scheduler
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
       react-feather: 2.0.10_react@18.2.0
-      sql-parser: link:../packages/sql-parser
+      sql-parser: link:../../packages/sql-parser
       unocss: 0.50.6_postcss@8.4.21+vite@4.2.0
     devDependencies:
       '@types/react': 18.0.28
