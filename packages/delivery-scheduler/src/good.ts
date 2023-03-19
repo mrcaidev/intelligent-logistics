@@ -1,13 +1,13 @@
-import type { Graph } from "./graph";
 import { generateRandomId } from "common";
+import type { Graph } from "./graph";
 
 /**
  * The configurable properties of goods.
  */
 type Config = {
   name: string;
-  departure: string;
-  destination: string;
+  source: string;
+  target: string;
   isVip?: boolean;
   strategy: Graph;
 };
@@ -34,12 +34,12 @@ export class Good {
   /**
    * The departure node.
    */
-  public readonly departure: string;
+  public readonly source: string;
 
   /**
    * The destination node.
    */
-  public readonly destination: string;
+  public readonly target: string;
 
   /**
    * Whether the good is from a VIP user.
@@ -55,8 +55,8 @@ export class Good {
 
   constructor(config: Config) {
     this.name = config.name;
-    this.departure = config.departure;
-    this.destination = config.destination;
+    this.source = config.source;
+    this.target = config.target;
     this.isVip = config.isVip ?? false;
     this.strategy = config.strategy;
   }
@@ -65,7 +65,7 @@ export class Good {
    * Returns the delivery path.
    */
   public getPath() {
-    return this.strategy.getShortestPath(this.departure, this.destination);
+    return this.strategy.getShortestPath(this.source, this.target);
   }
 
   /**

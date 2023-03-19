@@ -5,7 +5,7 @@ import { expect, it, vi } from "vitest";
 
 const graph = new Graph([]);
 const fakeGood = (name: string, isVip = false) =>
-  new Good({ name, departure: "A", destination: "B", isVip, strategy: graph });
+  new Good({ name, source: "A", target: "B", isVip, strategy: graph });
 
 it("first delivers goods that arrived earliest", () => {
   const queue = new GoodQueue();

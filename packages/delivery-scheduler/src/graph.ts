@@ -1,19 +1,19 @@
 /**
- * An edge in a graph, which has two ends and a weight.
+ * An edge in a graph, which has two ends and a cost.
  */
 type Edge = {
   from: string;
   to: string;
-  weight: number;
+  cost: number;
 };
 
 /**
  * The shortest path between two nodes,
- * represented by every node in the path and the total weight.
+ * represented by every node in the path and the total cost.
  */
 type ShortestPath = {
   path: string[];
-  weight: number;
+  cost: number;
 };
 
 /**
@@ -45,15 +45,15 @@ export class Graph {
    * Updates an edge between two nodes,
    * or creates it if it does not exist.
    */
-  public setEdge(from: string, to: string, weight: number) {
+  public setEdge(from: string, to: string, cost: number) {
     const edge = this.edges.find(
       (edge) => edge.from === from && edge.to === to
     );
 
     if (edge) {
-      edge.weight = weight;
+      edge.cost = cost;
     } else {
-      this.edges.push({ from, to, weight });
+      this.edges.push({ from, to, cost });
     }
 
     this.shortestPaths = Graph.calculateShortestPaths(this.edges);
@@ -73,35 +73,39 @@ export class Graph {
       for (const to of nodes) {
         paths[from]![to] = {
           path: [from, to],
-          weight: from === to ? 0 : Infinity,
+          cost: from === to ? 0 : Infinity,
         };
       }
     }
 
-    for (const { from, to, weight } of edges) {
-      paths[from]![to]!.weight = weight;
+    for (const { from, to, cost } of edges) {
+      paths[from]![to]!.cost = cost;
+      paths[to]![from]!.cost = cost;
     }
 
     for (const middle of nodes) {
-      for (const from of nodes) {
-        for (const to of nodes) {
-          if (from === to) {
-            continue;
-          }
-
+      for (const [fromIndex, from] of nodes.entries()) {
+        for (const to of nodes.slice(fromIndex + 1)) {
           const newWeight =
-            paths[from]![middle]!.weight + paths[middle]![to]!.weight;
+            paths[from]![middle]!.cost + paths[middle]![to]!.cost;
 
-          if (newWeight >= paths[from]![to]!.weight) {
+          if (newWeight >= paths[from]![to]!.cost) {
             continue;
           }
 
           paths[from]![to] = {
-            weight: newWeight,
             path: [
               ...paths[from]![middle]!.path,
               ...paths[middle]![to]!.path.slice(1),
             ],
+            cost: newWeight,
+          };
+          paths[to]![from] = {
+            path: [
+              ...paths[to]![middle]!.path,
+              ...paths[middle]![from]!.path.slice(1),
+            ],
+            cost: newWeight,
           };
         }
       }
