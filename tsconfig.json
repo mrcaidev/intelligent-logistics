@@ -14,6 +14,9 @@
       "path": "packages/sql-parser"
     },
     {
+      "path": "apps/backend"
+    },
+    {
       "path": "apps/frontend"
     }
   ]
