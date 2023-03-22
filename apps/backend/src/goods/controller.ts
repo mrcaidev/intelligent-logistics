@@ -6,7 +6,7 @@ export class GoodsController {
   public static async findAll(_: Request, res: Response, next: NextFunction) {
     try {
       const goods = await GoodsService.findAll();
-      res.json({ message: "", data: goods });
+      res.status(200).json({ message: "", data: goods });
     } catch (error) {
       next(error);
     }
@@ -19,7 +19,7 @@ export class GoodsController {
   ) {
     try {
       const good = await GoodsService.create(req.body);
-      res.json({ message: "", data: good });
+      res.status(201).json({ message: "", data: good });
     } catch (error) {
       next(error);
     }
@@ -32,7 +32,7 @@ export class GoodsController {
   ) {
     try {
       const good = await GoodsService.update(req.params.id, req.body);
-      res.json({ message: "", data: good });
+      res.status(200).json({ message: "", data: good });
     } catch (error) {
       next(error);
     }
@@ -45,7 +45,7 @@ export class GoodsController {
   ) {
     try {
       await GoodsService.delete(req.params.id);
-      res.json({ message: "", data: null });
+      res.status(204).json({ message: "", data: null });
     } catch (error) {
       next(error);
     }

@@ -7,7 +7,7 @@ export const app: Express = express();
 app.use(express.json());
 
 app.get("/healthz", (_, res) => {
-  res.json({ message: "OK", data: null });
+  res.status(200).json({ message: "OK", data: null });
 });
 
 app.use("/goods", goodsRouter);
