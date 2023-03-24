@@ -25,7 +25,16 @@ class NodeManager extends Manager {
 
 const manager = new NodeManager();
 
-export async function query<T extends Row>(input: string) {
-  const ast = parse(input)[0]!;
+export async function query<T extends Row>(
+  sql: string,
+  values: unknown[] = []
+) {
+  const parameterizedSql = sql.replaceAll(/\$(\d+)/g, (raw, index) => {
+    if (values.length >= +index) {
+      return JSON.stringify(values[+index - 1]);
+    }
+    return raw;
+  });
+  const ast = parse(parameterizedSql)[0]!;
   return manager.run<T>(ast);
 }
