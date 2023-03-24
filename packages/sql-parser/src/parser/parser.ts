@@ -93,12 +93,13 @@ export class Parser {
    */
   private parseCreate() {
     this.cursor.consumeByValue("TABLE");
+    const ifNotExists = this.parseIfNotExists();
     const table = this.cursor.consumeByType(TokenType.IDENTIFIER);
     this.cursor.consumeByValue("(");
     const definitions = this.cursor.consumeManyDefinitions();
     this.cursor.consumeByValue(")");
 
-    return { type: "create", table, definitions } as AST;
+    return { type: "create", table, ifNotExists, definitions } as AST;
   }
 
   /**
@@ -144,5 +145,22 @@ export class Parser {
     this.cursor.consumeByValue(")");
 
     return fields;
+  }
+
+  /**
+   * Parses the IF NOT EXISTS keyword.
+   * Returns true if there is `IF NOT EXISTS` keyword,
+   * or false otherwise.
+   */
+  private parseIfNotExists() {
+    if (!this.cursor.hasValue("IF")) {
+      return false;
+    }
+
+    this.cursor.consume();
+    this.cursor.consumeByValue("NOT");
+    this.cursor.consumeByValue("EXISTS");
+
+    return true;
   }
 }

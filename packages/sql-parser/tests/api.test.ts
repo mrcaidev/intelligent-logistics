@@ -4,7 +4,7 @@ import { expect, it } from "vitest";
 it("parses an input into a list of ASTs", () => {
   const result = parse(`
     -- We only create a small table for simplicity.
-    CREATE TABLE goods (
+    CREATE TABLE IF NOT EXISTS goods (
       id TEXT,
       name TEXT
     );
@@ -29,6 +29,7 @@ it("parses an input into a list of ASTs", () => {
     {
       type: "create",
       table: "goods",
+      ifNotExists: true,
       definitions: [
         { field: "id", type: "TEXT" },
         { field: "name", type: "TEXT" },

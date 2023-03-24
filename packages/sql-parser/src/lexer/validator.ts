@@ -12,6 +12,9 @@ const keywords = [
   "DELETE",
   "CREATE",
   "TABLE",
+  "IF",
+  "NOT",
+  "EXISTS",
 ];
 
 const dataTypes = ["NUMERIC", "TEXT", "BOOLEAN"];

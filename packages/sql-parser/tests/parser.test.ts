@@ -587,6 +587,7 @@ describe("CREATE statement", () => {
     expect(result).toEqual({
       type: "create",
       table: "users",
+      ifNotExists: false,
       definitions: [{ field: "id", type: "NUMERIC" }],
     });
   });
@@ -607,6 +608,7 @@ describe("CREATE statement", () => {
     expect(result).toEqual({
       type: "create",
       table: "users",
+      ifNotExists: false,
       definitions: [
         { field: "id", type: "NUMERIC" },
         { field: "name", type: "TEXT" },
@@ -614,9 +616,42 @@ describe("CREATE statement", () => {
     });
   });
 
+  it("parses IF NOT EXISTS", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "CREATE" },
+      { type: TokenType.KEYWORD, value: "TABLE" },
+      { type: TokenType.KEYWORD, value: "IF" },
+      { type: TokenType.KEYWORD, value: "NOT" },
+      { type: TokenType.KEYWORD, value: "EXISTS" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.SYMBOL, value: "(" },
+      { type: TokenType.IDENTIFIER, value: "id" },
+      { type: TokenType.DATA_TYPE, value: "NUMERIC" },
+      { type: TokenType.SYMBOL, value: ")" },
+    ]).parse();
+    expect(result).toEqual({
+      type: "create",
+      table: "users",
+      ifNotExists: true,
+      definitions: [{ field: "id", type: "NUMERIC" }],
+    });
+  });
+
   it("throws error when missing TABLE", () => {
     const result = () =>
       new Parser([{ type: TokenType.KEYWORD, value: "CREATE" }]).parse();
+    expect(result).toThrowError(SqlParserError);
+  });
+
+  it("throws error when IF NOT EXISTS is not complete", () => {
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "CREATE" },
+        { type: TokenType.KEYWORD, value: "TABLE" },
+        { type: TokenType.KEYWORD, value: "IF" },
+        { type: TokenType.KEYWORD, value: "NOT" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+      ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
 

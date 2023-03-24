@@ -68,6 +68,7 @@ export type DeleteAST = {
 export type CreateAST = {
   type: "create";
   table: string;
+  ifNotExists: boolean;
   definitions: Definition[];
 };
 
