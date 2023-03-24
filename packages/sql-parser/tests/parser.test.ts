@@ -251,9 +251,9 @@ describe("INSERT statement", () => {
       { type: TokenType.KEYWORD, value: "INTO" },
       { type: TokenType.IDENTIFIER, value: "users" },
       { type: TokenType.KEYWORD, value: "VALUES" },
-      { type: TokenType.SYMBOL, value: "(" },
+      { type: TokenType.BOUNDARY, value: "(" },
       { type: TokenType.LITERAL, value: 1 },
-      { type: TokenType.SYMBOL, value: ")" },
+      { type: TokenType.BOUNDARY, value: ")" },
     ]).parse();
     expect(result).toEqual({
       type: "insert",
@@ -268,13 +268,13 @@ describe("INSERT statement", () => {
       { type: TokenType.KEYWORD, value: "INSERT" },
       { type: TokenType.KEYWORD, value: "INTO" },
       { type: TokenType.IDENTIFIER, value: "users" },
-      { type: TokenType.SYMBOL, value: "(" },
+      { type: TokenType.BOUNDARY, value: "(" },
       { type: TokenType.IDENTIFIER, value: "id" },
-      { type: TokenType.SYMBOL, value: ")" },
+      { type: TokenType.BOUNDARY, value: ")" },
       { type: TokenType.KEYWORD, value: "VALUES" },
-      { type: TokenType.SYMBOL, value: "(" },
+      { type: TokenType.BOUNDARY, value: "(" },
       { type: TokenType.LITERAL, value: 1 },
-      { type: TokenType.SYMBOL, value: ")" },
+      { type: TokenType.BOUNDARY, value: ")" },
     ]).parse();
     expect(result).toEqual({
       type: "insert",
@@ -326,8 +326,8 @@ describe("INSERT statement", () => {
         { type: TokenType.KEYWORD, value: "INSERT" },
         { type: TokenType.KEYWORD, value: "INTO" },
         { type: TokenType.IDENTIFIER, value: "users" },
-        { type: TokenType.SYMBOL, value: "(" },
-        { type: TokenType.SYMBOL, value: ")" },
+        { type: TokenType.BOUNDARY, value: "(" },
+        { type: TokenType.BOUNDARY, value: ")" },
         { type: TokenType.KEYWORD, value: "VALUES" },
       ]).parse();
     expect(result).toThrowError(SqlParserError);
@@ -340,8 +340,8 @@ describe("INSERT statement", () => {
         { type: TokenType.KEYWORD, value: "INTO" },
         { type: TokenType.IDENTIFIER, value: "users" },
         { type: TokenType.KEYWORD, value: "VALUES" },
-        { type: TokenType.SYMBOL, value: "(" },
-        { type: TokenType.SYMBOL, value: ")" },
+        { type: TokenType.BOUNDARY, value: "(" },
+        { type: TokenType.BOUNDARY, value: ")" },
       ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
@@ -373,7 +373,7 @@ describe("UPDATE statement", () => {
       { type: TokenType.IDENTIFIER, value: "id" },
       { type: TokenType.OPERATOR, value: "=" },
       { type: TokenType.LITERAL, value: 1 },
-      { type: TokenType.SYMBOL, value: "," },
+      { type: TokenType.BOUNDARY, value: "," },
       { type: TokenType.IDENTIFIER, value: "age" },
       { type: TokenType.OPERATOR, value: "=" },
       { type: TokenType.LITERAL, value: 30 },
@@ -579,10 +579,10 @@ describe("CREATE statement", () => {
       { type: TokenType.KEYWORD, value: "CREATE" },
       { type: TokenType.KEYWORD, value: "TABLE" },
       { type: TokenType.IDENTIFIER, value: "users" },
-      { type: TokenType.SYMBOL, value: "(" },
+      { type: TokenType.BOUNDARY, value: "(" },
       { type: TokenType.IDENTIFIER, value: "id" },
       { type: TokenType.DATA_TYPE, value: "NUMERIC" },
-      { type: TokenType.SYMBOL, value: ")" },
+      { type: TokenType.BOUNDARY, value: ")" },
     ]).parse();
     expect(result).toEqual({
       type: "create",
@@ -597,13 +597,13 @@ describe("CREATE statement", () => {
       { type: TokenType.KEYWORD, value: "CREATE" },
       { type: TokenType.KEYWORD, value: "TABLE" },
       { type: TokenType.IDENTIFIER, value: "users" },
-      { type: TokenType.SYMBOL, value: "(" },
+      { type: TokenType.BOUNDARY, value: "(" },
       { type: TokenType.IDENTIFIER, value: "id" },
       { type: TokenType.DATA_TYPE, value: "NUMERIC" },
-      { type: TokenType.SYMBOL, value: "," },
+      { type: TokenType.BOUNDARY, value: "," },
       { type: TokenType.IDENTIFIER, value: "name" },
       { type: TokenType.DATA_TYPE, value: "TEXT" },
-      { type: TokenType.SYMBOL, value: ")" },
+      { type: TokenType.BOUNDARY, value: ")" },
     ]).parse();
     expect(result).toEqual({
       type: "create",
@@ -624,10 +624,10 @@ describe("CREATE statement", () => {
       { type: TokenType.KEYWORD, value: "NOT" },
       { type: TokenType.KEYWORD, value: "EXISTS" },
       { type: TokenType.IDENTIFIER, value: "users" },
-      { type: TokenType.SYMBOL, value: "(" },
+      { type: TokenType.BOUNDARY, value: "(" },
       { type: TokenType.IDENTIFIER, value: "id" },
       { type: TokenType.DATA_TYPE, value: "NUMERIC" },
-      { type: TokenType.SYMBOL, value: ")" },
+      { type: TokenType.BOUNDARY, value: ")" },
     ]).parse();
     expect(result).toEqual({
       type: "create",
@@ -680,8 +680,8 @@ describe("CREATE statement", () => {
         { type: TokenType.KEYWORD, value: "CREATE" },
         { type: TokenType.KEYWORD, value: "TABLE" },
         { type: TokenType.IDENTIFIER, value: "users" },
-        { type: TokenType.SYMBOL, value: "(" },
-        { type: TokenType.SYMBOL, value: ")" },
+        { type: TokenType.BOUNDARY, value: "(" },
+        { type: TokenType.BOUNDARY, value: ")" },
       ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
@@ -692,9 +692,9 @@ describe("CREATE statement", () => {
         { type: TokenType.KEYWORD, value: "CREATE" },
         { type: TokenType.KEYWORD, value: "TABLE" },
         { type: TokenType.IDENTIFIER, value: "users" },
-        { type: TokenType.SYMBOL, value: "(" },
+        { type: TokenType.BOUNDARY, value: "(" },
         { type: TokenType.DATA_TYPE, value: "NUMERIC" },
-        { type: TokenType.SYMBOL, value: ")" },
+        { type: TokenType.BOUNDARY, value: ")" },
       ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
@@ -705,9 +705,9 @@ describe("CREATE statement", () => {
         { type: TokenType.KEYWORD, value: "CREATE" },
         { type: TokenType.KEYWORD, value: "TABLE" },
         { type: TokenType.IDENTIFIER, value: "users" },
-        { type: TokenType.SYMBOL, value: "(" },
+        { type: TokenType.BOUNDARY, value: "(" },
         { type: TokenType.IDENTIFIER, value: "id" },
-        { type: TokenType.SYMBOL, value: ")" },
+        { type: TokenType.BOUNDARY, value: ")" },
       ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
@@ -718,7 +718,7 @@ describe("CREATE statement", () => {
         { type: TokenType.KEYWORD, value: "CREATE" },
         { type: TokenType.KEYWORD, value: "TABLE" },
         { type: TokenType.IDENTIFIER, value: "users" },
-        { type: TokenType.SYMBOL, value: "(" },
+        { type: TokenType.BOUNDARY, value: "(" },
         { type: TokenType.IDENTIFIER, value: "id" },
         { type: TokenType.DATA_TYPE, value: "NUMERIC" },
         { type: TokenType.IDENTIFIER, value: "name" },

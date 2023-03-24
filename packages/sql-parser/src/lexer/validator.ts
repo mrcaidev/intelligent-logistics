@@ -21,7 +21,7 @@ const dataTypes = ["NUMERIC", "TEXT", "BOOLEAN"];
 
 const operators = ["+", "-", "*", "/", "=", "!=", "<", ">", "<=", ">="];
 
-const symbols = ["(", ")", ",", "."];
+const boundaries = ["(", ")", ",", "."];
 
 /**
  * Validates a character or a string.
@@ -55,8 +55,8 @@ export class Validator {
     return "-" === character;
   }
 
-  public static isSymbol(character: string) {
-    return symbols.includes(character);
+  public static isBoundary(character: string) {
+    return boundaries.includes(character);
   }
 
   public static isOperatorInitial(character: string) {

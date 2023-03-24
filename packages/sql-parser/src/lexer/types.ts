@@ -7,7 +7,7 @@ export enum TokenType {
   DATA_TYPE = "data type",
   OPERATOR = "operator",
   IDENTIFIER = "identifier",
-  SYMBOL = "symbol",
+  BOUNDARY = "boundary",
 }
 
 /**

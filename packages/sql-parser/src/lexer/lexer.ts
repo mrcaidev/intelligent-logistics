@@ -51,8 +51,8 @@ export class Lexer {
       return this.parseFromMinus();
     }
 
-    if (Validator.isSymbol(this.cursor.current)) {
-      return this.parseSymbol();
+    if (Validator.isBoundary(this.cursor.current)) {
+      return this.parseBoundary();
     }
 
     if (Validator.isOperatorInitial(this.cursor.current)) {
@@ -142,11 +142,11 @@ export class Lexer {
   }
 
   /**
-   * Parses a symbol.
+   * Parses a Boundary.
    */
-  private parseSymbol() {
+  private parseBoundary() {
     const value = this.cursor.consume();
-    return { type: TokenType.SYMBOL, value };
+    return { type: TokenType.BOUNDARY, value };
   }
 
   /**

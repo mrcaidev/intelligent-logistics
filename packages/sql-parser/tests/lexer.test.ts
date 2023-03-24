@@ -265,24 +265,24 @@ describe("identifier", () => {
   });
 });
 
-describe("symbol", () => {
+describe("boundary", () => {
   it("parses (", () => {
     const result = new Lexer("(").tokenize();
-    expect(result).toEqual([{ type: TokenType.SYMBOL, value: "(" }]);
+    expect(result).toEqual([{ type: TokenType.BOUNDARY, value: "(" }]);
   });
 
   it("parses )", () => {
     const result = new Lexer(")").tokenize();
-    expect(result).toEqual([{ type: TokenType.SYMBOL, value: ")" }]);
+    expect(result).toEqual([{ type: TokenType.BOUNDARY, value: ")" }]);
   });
 
   it("parses ,", () => {
     const result = new Lexer(",").tokenize();
-    expect(result).toEqual([{ type: TokenType.SYMBOL, value: "," }]);
+    expect(result).toEqual([{ type: TokenType.BOUNDARY, value: "," }]);
   });
 
   it("parses .", () => {
     const result = new Lexer(".").tokenize();
-    expect(result).toEqual([{ type: TokenType.SYMBOL, value: "." }]);
+    expect(result).toEqual([{ type: TokenType.BOUNDARY, value: "." }]);
   });
 });
