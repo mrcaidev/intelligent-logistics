@@ -68,7 +68,8 @@ export abstract class Manager {
       throw new DatabaseManagerError(`Table ${table} does not exist`);
     }
 
-    await this.guards[table]!.waitToRead();
+    const guard = this.getGuard(table);
+    await guard.waitToRead();
 
     const validator = new Validator(database[table]!.schema);
     validator.validateSelect(ast);
@@ -77,7 +78,7 @@ export abstract class Manager {
     const selector = Manager.buildSelector(fields);
     const rows = database[table]!.rows.filter(filter).map(selector);
 
-    this.guards[table]!.finishReading();
+    guard.finishReading();
 
     return rows as T[];
   }
@@ -93,7 +94,8 @@ export abstract class Manager {
       throw new DatabaseManagerError(`Table ${table} does not exist`);
     }
 
-    await this.guards[table]!.waitToWrite();
+    const guard = this.getGuard(table);
+    await guard.waitToWrite();
 
     const validator = new Validator(database[table]!.schema);
     validator.validateInsert(ast);
@@ -102,7 +104,7 @@ export abstract class Manager {
     database[table]!.rows.push(row);
     await this.writeDatabase(database);
 
-    this.guards[table]!.finishWriting();
+    guard.finishWriting();
 
     return [] as T[];
   }
@@ -118,7 +120,8 @@ export abstract class Manager {
       throw new DatabaseManagerError(`Table ${table} does not exist`);
     }
 
-    await this.guards[table]!.waitToWrite();
+    const guard = this.getGuard(table);
+    await guard.waitToWrite();
 
     const validator = new Validator(database[table]!.schema);
     validator.validateUpdate(ast);
@@ -128,7 +131,7 @@ export abstract class Manager {
     database[table]!.rows.filter(filter).forEach(updater);
     await this.writeDatabase(database);
 
-    this.guards[table]!.finishWriting();
+    guard.finishWriting();
 
     return [] as T[];
   }
@@ -144,7 +147,8 @@ export abstract class Manager {
       throw new DatabaseManagerError(`Table ${table} does not exist`);
     }
 
-    await this.guards[table]!.waitToWrite();
+    const guard = this.getGuard(table);
+    await guard.waitToWrite();
 
     const validator = new Validator(database[table]!.schema);
     validator.validateDelete(ast);
@@ -154,7 +158,7 @@ export abstract class Manager {
 
     await this.writeDatabase(database);
 
-    this.guards[table]!.finishWriting();
+    guard.finishWriting();
 
     return [] as T[];
   }
@@ -273,5 +277,17 @@ export abstract class Manager {
       default:
         throw new DatabaseManagerError(`Invalid operator: ${operator}`);
     }
+  }
+
+  private getGuard(table: string) {
+    const guard = this.guards[table];
+
+    if (guard) {
+      return guard;
+    }
+
+    const newGuard = new Guard();
+    this.guards[table] = newGuard;
+    return newGuard;
   }
 }
