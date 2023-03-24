@@ -1,7 +1,6 @@
 import { generateRandomId } from "common";
 import { query } from "src/utils/database";
-import type { CreateDto } from "./dto";
-import type { Good } from "./models";
+import type { CreateReq, Good } from "./types";
 
 export class GoodsRepository {
   public static async findAll() {
@@ -14,7 +13,7 @@ export class GoodsRepository {
     return good;
   }
 
-  public static async create(dto: CreateDto) {
+  public static async create(dto: CreateReq["body"]) {
     const { name, source, target, isVip, graphId } = dto;
 
     const id = generateRandomId();

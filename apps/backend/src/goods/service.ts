@@ -1,24 +1,24 @@
 import { HttpError } from "src/utils/error";
-import type { CreateDto } from "./dto";
 import { GoodsRepository } from "./repository";
+import type { CreateReq, UpdateReq } from "./types";
 
 export class GoodsService {
   public static async findAll() {
     return GoodsRepository.findAll();
   }
 
-  public static async create(dto: CreateDto) {
+  public static async create(dto: CreateReq["body"]) {
     return GoodsRepository.create(dto);
   }
 
-  public static async update(id: string, dto: CreateDto) {
+  public static async update(id: string, dto: UpdateReq["body"]) {
     const oldGood = await GoodsRepository.findById(id);
 
     if (!oldGood) {
       throw new HttpError(404, `Good ${id} not found`);
     }
 
-    const newGood = { ...oldGood, ...dto };
+    const newGood = { ...dto, ...oldGood };
 
     await GoodsRepository.update(id, newGood);
 

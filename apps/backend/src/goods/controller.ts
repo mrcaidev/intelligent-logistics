@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
-import type { CreateDto } from "./dto";
 import { GoodsService } from "./service";
+import type { CreateReq, DeleteReq, UpdateReq } from "./types";
 
 export class GoodsController {
   public static async findAll(_: Request, res: Response, next: NextFunction) {
@@ -13,7 +13,7 @@ export class GoodsController {
   }
 
   public static async create(
-    req: Request<never, CreateDto>,
+    req: CreateReq,
     res: Response,
     next: NextFunction
   ) {
@@ -26,7 +26,7 @@ export class GoodsController {
   }
 
   public static async update(
-    req: Request<{ id: string }>,
+    req: UpdateReq,
     res: Response,
     next: NextFunction
   ) {
@@ -39,7 +39,7 @@ export class GoodsController {
   }
 
   public static async delete(
-    req: Request<{ id: string }>,
+    req: DeleteReq,
     res: Response,
     next: NextFunction
   ) {
