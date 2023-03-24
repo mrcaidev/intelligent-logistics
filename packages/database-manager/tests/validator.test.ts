@@ -199,6 +199,7 @@ describe("validates definitions", () => {
       validator.validate({
         type: "create",
         table: "cars",
+        ifNotExists: false,
         definitions: [
           { field: "id", type: "NUMERIC" },
           { field: "name", type: "TEXT" },
@@ -212,6 +213,7 @@ describe("validates definitions", () => {
       validator.validate({
         type: "create",
         table: "cars",
+        ifNotExists: false,
         definitions: [
           { field: "id", type: "NUMERIC" },
           { field: "id", type: "TEXT" },

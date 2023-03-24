@@ -163,10 +163,15 @@ export abstract class Manager {
    * Runs the AST of a CREATE statement.
    */
   private async create<T extends Row>(ast: CreateAST) {
-    const { table, definitions } = ast;
+    const { table, ifNotExists, definitions } = ast;
 
     const database = await this.readDatabase();
-    if (database[table]) {
+
+    if (database[table] && ifNotExists) {
+      return [] as T[];
+    }
+
+    if (database[table] && !ifNotExists) {
       throw new DatabaseManagerError(`Table ${table} already exists`);
     }
 

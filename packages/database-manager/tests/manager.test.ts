@@ -22,30 +22,31 @@ class TestManager extends Manager {
   }
 }
 
-function createManager() {
+async function createManager() {
   const manager = new TestManager();
-  manager.run({
+  await manager.run({
     type: "create",
     table: "users",
+    ifNotExists: false,
     definitions: [
       { field: "id", type: "NUMERIC" },
       { field: "name", type: "TEXT" },
       { field: "age", type: "NUMERIC" },
     ],
   });
-  manager.run({
+  await manager.run({
     type: "insert",
     table: "users",
     fields: "*",
     values: [1, "John", 20],
   });
-  manager.run({
+  await manager.run({
     type: "insert",
     table: "users",
     fields: "*",
     values: [2, "Jane", 25],
   });
-  manager.run({
+  await manager.run({
     type: "insert",
     table: "users",
     fields: "*",
@@ -56,7 +57,8 @@ function createManager() {
 
 describe("SELECT", () => {
   it("can select all fields", async () => {
-    const result = await createManager().run({
+    const manager = await createManager();
+    const result = await manager.run({
       type: "select",
       table: "users",
       fields: "*",
@@ -70,7 +72,8 @@ describe("SELECT", () => {
   });
 
   it("can select specific fields", async () => {
-    const result = await createManager().run({
+    const manager = await createManager();
+    const result = await manager.run({
       type: "select",
       table: "users",
       fields: ["id", "name"],
@@ -84,7 +87,8 @@ describe("SELECT", () => {
   });
 
   it("can filter rows with single condition", async () => {
-    const result = await createManager().run({
+    const manager = await createManager();
+    const result = await manager.run({
       type: "select",
       table: "users",
       fields: ["name"],
@@ -94,7 +98,8 @@ describe("SELECT", () => {
   });
 
   it("can filter rows with multiple conditions", async () => {
-    const result = await createManager().run({
+    const manager = await createManager();
+    const result = await manager.run({
       type: "select",
       table: "users",
       fields: "*",
@@ -113,8 +118,8 @@ describe("SELECT", () => {
   });
 
   it("throws error when table does not exist", async () => {
-    const result = () =>
-      createManager().run({
+    const result = async () =>
+      (await createManager()).run({
         type: "select",
         table: "posts",
         fields: "*",
@@ -124,8 +129,8 @@ describe("SELECT", () => {
   });
 
   it("throws error with invalid operator", async () => {
-    const result = () =>
-      createManager().run({
+    const result = async () =>
+      (await createManager()).run({
         type: "select",
         table: "users",
         fields: "*",
@@ -137,7 +142,7 @@ describe("SELECT", () => {
 
 describe("INSERT", () => {
   it("can insert into every field", async () => {
-    const manager = createManager();
+    const manager = await createManager();
     const result = await manager.run({
       type: "insert",
       table: "users",
@@ -149,7 +154,7 @@ describe("INSERT", () => {
   });
 
   it("can insert into specific fields", async () => {
-    const manager = createManager();
+    const manager = await createManager();
     const result = await manager.run({
       type: "insert",
       table: "users",
@@ -161,8 +166,8 @@ describe("INSERT", () => {
   });
 
   it("throws error when table does not exist", async () => {
-    const result = () =>
-      createManager().run({
+    const result = async () =>
+      (await createManager()).run({
         type: "insert",
         table: "posts",
         fields: "*",
@@ -174,7 +179,7 @@ describe("INSERT", () => {
 
 describe("UPDATE", () => {
   it("can update rows", async () => {
-    const manager = createManager();
+    const manager = await createManager();
     const result = await manager.run({
       type: "update",
       table: "users",
@@ -186,7 +191,7 @@ describe("UPDATE", () => {
   });
 
   it("can filter rows to update", async () => {
-    const manager = createManager();
+    const manager = await createManager();
     const result = await manager.run({
       type: "update",
       table: "users",
@@ -199,8 +204,8 @@ describe("UPDATE", () => {
   });
 
   it("throws error when table does not exist", async () => {
-    const result = () =>
-      createManager().run({
+    const result = async () =>
+      (await createManager()).run({
         type: "update",
         table: "posts",
         assignments: [{ field: "age", value: 40 }],
@@ -212,7 +217,7 @@ describe("UPDATE", () => {
 
 describe("runs DELETE", () => {
   it("can delete all rows", async () => {
-    const manager = createManager();
+    const manager = await createManager();
     const result = await manager.run({
       type: "delete",
       table: "users",
@@ -223,7 +228,7 @@ describe("runs DELETE", () => {
   });
 
   it("can filter rows to delete", async () => {
-    const manager = createManager();
+    const manager = await createManager();
     const result = await manager.run({
       type: "delete",
       table: "users",
@@ -234,8 +239,8 @@ describe("runs DELETE", () => {
   });
 
   it("throws error when table does not exist", async () => {
-    const result = () =>
-      createManager().run({
+    const result = async () =>
+      (await createManager()).run({
         type: "delete",
         table: "posts",
         conditions: [[{ field: "id", operator: ">", value: 1 }]],
@@ -246,10 +251,11 @@ describe("runs DELETE", () => {
 
 describe("CREATE", () => {
   it("can create table", async () => {
-    const manager = createManager();
+    const manager = await createManager();
     const createResult = await manager.run({
       type: "create",
       table: "posts",
+      ifNotExists: false,
       definitions: [
         { field: "id", type: "NUMERIC" },
         { field: "author", type: "TEXT" },
@@ -259,11 +265,28 @@ describe("CREATE", () => {
     expect(manager.database.posts).not.toEqual(undefined);
   });
 
+  it("can skip creating with IF NOT EXISTS", async () => {
+    const manager = await createManager();
+    const createResult = manager.run({
+      type: "create",
+      table: "users",
+      ifNotExists: true,
+      definitions: [
+        { field: "id", type: "NUMERIC" },
+        { field: "name", type: "TEXT" },
+        { field: "age", type: "NUMERIC" },
+      ],
+    });
+    expect(createResult).resolves.toEqual([]);
+    expect(manager.database.users).not.toEqual(undefined);
+  });
+
   it("throws error when table already exists", async () => {
-    const result = () =>
-      createManager().run({
+    const result = async () =>
+      (await createManager()).run({
         type: "create",
         table: "users",
+        ifNotExists: false,
         definitions: [
           { field: "id", type: "NUMERIC" },
           { field: "name", type: "TEXT" },
