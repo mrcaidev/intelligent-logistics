@@ -12,21 +12,34 @@ export const goodSchema = z.object({
 
 export type Good = z.infer<typeof goodSchema>;
 
-export const createReqSchema = z.object({
-  body: goodSchema.omit({ id: true, createdAt: true }),
+export const createRequestSchema = z.object({
+  body: goodSchema.omit({
+    id: true,
+    createdAt: true,
+  }),
 });
 
-export type CreateReq = z.infer<typeof createReqSchema>;
+export type CreateRequest = z.infer<typeof createRequestSchema>;
 
-export const updateReqSchema = z.object({
-  params: z.object({ id: z.string().length(10) }),
-  body: goodSchema.omit({ id: true, createdAt: true }).partial(),
+export const updateRequestSchema = z.object({
+  params: z.object({
+    id: z.string().length(10),
+  }),
+  body: goodSchema
+    .omit({
+      id: true,
+      createdAt: true,
+      isVip: true,
+    })
+    .partial(),
 });
 
-export type UpdateReq = z.infer<typeof updateReqSchema>;
+export type UpdateRequest = z.infer<typeof updateRequestSchema>;
 
-export const deleteReqSchema = z.object({
-  params: z.object({ id: z.string().length(10) }),
+export const deleteRequestSchema = z.object({
+  params: z.object({
+    id: z.string().length(10),
+  }),
 });
 
-export type DeleteReq = z.infer<typeof deleteReqSchema>;
+export type DeleteRequest = z.infer<typeof deleteRequestSchema>;

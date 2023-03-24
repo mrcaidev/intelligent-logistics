@@ -1,7 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import { HttpError } from "src/utils/error";
 
-export function handleError(
+export async function handleError(
   error: Error,
   _: Request,
   res: Response,

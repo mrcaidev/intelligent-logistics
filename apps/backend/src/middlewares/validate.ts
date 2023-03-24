@@ -8,7 +8,9 @@ export function validate(schema: AnyZodObject) {
       return next();
     } catch (error) {
       if (error instanceof ZodError) {
-        return res.status(400).json({ message: error.issues[0]?.message });
+        return res
+          .status(400)
+          .json({ message: error.issues[0]?.message ?? "请求数据格式错误" });
       }
       return next(error);
     }

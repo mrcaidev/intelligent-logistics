@@ -1,6 +1,5 @@
-import { generateRandomId } from "common";
 import { query } from "src/utils/database";
-import type { CreateReq, Good } from "./types";
+import type { Good } from "./types";
 
 export class GoodsRepository {
   public static async findAll() {
@@ -13,22 +12,25 @@ export class GoodsRepository {
     return good;
   }
 
-  public static async create(dto: CreateReq["body"]) {
-    const { name, source, target, isVip, graphId } = dto;
-
-    const id = generateRandomId();
-    const createdAt = new Date().toISOString();
+  public static async create(good: Good) {
+    const { id, name, createdAt, source, target, isVip, graphId } = good;
 
     await query(`
       INSERT INTO goods (id, name, createdAt, source, target, isVip, graphId)
-      VALUES (${id}, ${name}, ${createdAt}, ${source}, ${target}, ${isVip}, ${graphId})
+      VALUES (
+        ${id},
+        ${name},
+        ${createdAt},
+        ${source},
+        ${target},
+        ${isVip},
+        ${graphId}
+      )
     `);
-
-    return { id, createdAt, ...dto } as Good;
   }
 
-  public static async update(id: string, dto: Good) {
-    const { name, source, target, graphId } = dto;
+  public static async updateById(id: string, good: Good) {
+    const { name, source, target, graphId } = good;
 
     await query(`
       UPDATE goods
@@ -38,11 +40,9 @@ export class GoodsRepository {
         graphId = ${graphId}
       WHERE id = ${id}
     `);
-
-    return dto;
   }
 
-  public static async delete(id: string) {
+  public static async deleteById(id: string) {
     await query(`DELETE FROM goods WHERE id = ${id}`);
   }
 }

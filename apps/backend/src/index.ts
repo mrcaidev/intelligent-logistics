@@ -5,8 +5,6 @@ const server = app.listen(3000, () => {
 });
 
 process.on("SIGTERM", () => {
-  console.log("Shutting down server...");
-  server.close(() => {
-    console.log("Server shut down.");
-  });
+  console.log("Server is shutting down...");
+  server.close(() => console.log("Server shut down successfully."));
 });
