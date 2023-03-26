@@ -5,6 +5,7 @@ import type {
   CreateAST,
   Database,
   DeleteAST,
+  DropAST,
   InsertAST,
   Row,
   Schema,
@@ -54,6 +55,8 @@ export abstract class Manager {
         return this.delete<T>(ast);
       case "create":
         return this.create<T>(ast);
+      case "drop":
+        return this.drop<T>(ast);
     }
   }
 
@@ -185,6 +188,34 @@ export abstract class Manager {
     database[table] = { schema: definitions, rows: [] };
     this.guards[table] = new Guard();
     await this.writeDatabase(database);
+
+    return [] as T[];
+  }
+
+  /**
+   * Runs the AST of a DROP statement.
+   */
+  private async drop<T extends Row>(ast: DropAST) {
+    const { table, ifExists } = ast;
+
+    const database = await this.readDatabase();
+
+    if (!database[table] && ifExists) {
+      return [] as T[];
+    }
+
+    if (!database[table] && !ifExists) {
+      throw new DatabaseManagerError(`Table ${table} does not exist`);
+    }
+
+    const guard = this.getGuard(table);
+    await guard.waitToWrite();
+
+    delete database[table];
+
+    await this.writeDatabase(database);
+
+    guard.finishWriting();
 
     return [] as T[];
   }

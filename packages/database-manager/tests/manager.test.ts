@@ -296,3 +296,37 @@ describe("CREATE", () => {
     await expect(result).rejects.toThrowError(DatabaseManagerError);
   });
 });
+
+describe("DROP", () => {
+  it("can drop table", async () => {
+    const manager = await createManager();
+    const result = await manager.run({
+      type: "drop",
+      table: "users",
+      ifExists: false,
+    });
+    expect(result).toEqual([]);
+    expect(manager.database.users).toEqual(undefined);
+  });
+
+  it("can skip dropping with IF EXISTS", async () => {
+    const manager = await createManager();
+    const result = await manager.run({
+      type: "drop",
+      table: "posts",
+      ifExists: true,
+    });
+    expect(result).toEqual([]);
+    expect(manager.database.posts).toEqual(undefined);
+  });
+
+  it("throws error when table does not exist", async () => {
+    const result = async () =>
+      (await createManager()).run({
+        type: "drop",
+        table: "posts",
+        ifExists: false,
+      });
+    await expect(result).rejects.toThrowError(DatabaseManagerError);
+  });
+});
