@@ -163,6 +163,26 @@ describe("keyword", () => {
     expect(result).toEqual([{ type: TokenType.KEYWORD, value: "TABLE" }]);
   });
 
+  it("parses IF", () => {
+    const result = new Lexer("IF").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "IF" }]);
+  });
+
+  it("parses NOT", () => {
+    const result = new Lexer("NOT").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "NOT" }]);
+  });
+
+  it("parses EXISTS", () => {
+    const result = new Lexer("EXISTS").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "EXISTS" }]);
+  });
+
+  it("parses DROP", () => {
+    const result = new Lexer("DROP").tokenize();
+    expect(result).toEqual([{ type: TokenType.KEYWORD, value: "DROP" }]);
+  });
+
   it("ignores case", () => {
     const result = new Lexer("select").tokenize();
     expect(result).toEqual([{ type: TokenType.KEYWORD, value: "SELECT" }]);

@@ -24,6 +24,8 @@ it("parses an input into a list of ASTs", () => {
 
     DELETE FROM goods
     WHERE name != 'Pork';
+
+    DROP TABLE IF EXISTS goods;
   `);
   expect(result).toEqual([
     {
@@ -63,6 +65,11 @@ it("parses an input into a list of ASTs", () => {
       type: "delete",
       table: "goods",
       conditions: [[{ field: "name", operator: "!=", value: "Pork" }]],
+    },
+    {
+      type: "drop",
+      table: "goods",
+      ifExists: true,
     },
   ]);
 });

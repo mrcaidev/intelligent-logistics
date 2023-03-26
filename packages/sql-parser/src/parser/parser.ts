@@ -33,6 +33,8 @@ export class Parser {
         return this.parseDelete();
       case "CREATE":
         return this.parseCreate();
+      case "DROP":
+        return this.parseDrop();
       default:
         throw new SqlParserError(`Invalid keyword: ${keyword}`);
     }
@@ -103,6 +105,17 @@ export class Parser {
   }
 
   /**
+   * Parses a DROP statement.
+   */
+  private parseDrop() {
+    this.cursor.consumeByValue("TABLE");
+    const ifExists = this.parseIfExists();
+    const table = this.cursor.consumeByType(TokenType.IDENTIFIER);
+
+    return { type: "drop", table, ifExists } as AST;
+  }
+
+  /**
    * Parses the fields of a SELECT statement.
    * Returns either a list of identifiers,
    * or "*" which stands for all fields.
@@ -159,6 +172,22 @@ export class Parser {
 
     this.cursor.consume();
     this.cursor.consumeByValue("NOT");
+    this.cursor.consumeByValue("EXISTS");
+
+    return true;
+  }
+
+  /**
+   * Parses the IF EXISTS keyword.
+   * Returns true if there is `IF EXISTS` keyword,
+   * or false otherwise.
+   */
+  private parseIfExists() {
+    if (!this.cursor.hasValue("IF")) {
+      return false;
+    }
+
+    this.cursor.consume();
     this.cursor.consumeByValue("EXISTS");
 
     return true;

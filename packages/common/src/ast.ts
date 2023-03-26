@@ -73,6 +73,21 @@ export type CreateAST = {
 };
 
 /**
+ * The AST of a DROP statement.
+ */
+export type DropAST = {
+  type: "drop";
+  table: string;
+  ifExists: boolean;
+};
+
+/**
  * The AST of a SQL statement.
  */
-export type AST = SelectAST | InsertAST | UpdateAST | DeleteAST | CreateAST;
+export type AST =
+  | SelectAST
+  | InsertAST
+  | UpdateAST
+  | DeleteAST
+  | CreateAST
+  | DropAST;

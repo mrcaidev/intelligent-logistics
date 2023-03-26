@@ -726,3 +726,59 @@ describe("CREATE statement", () => {
     expect(result).toThrowError(SqlParserError);
   });
 });
+
+describe("DROP statement", () => {
+  it("parses drop command", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "DROP" },
+      { type: TokenType.KEYWORD, value: "TABLE" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+    ]).parse();
+    expect(result).toEqual({
+      type: "drop",
+      table: "users",
+      ifExists: false,
+    });
+  });
+
+  it("parses IF EXISTS", () => {
+    const result = new Parser([
+      { type: TokenType.KEYWORD, value: "DROP" },
+      { type: TokenType.KEYWORD, value: "TABLE" },
+      { type: TokenType.KEYWORD, value: "IF" },
+      { type: TokenType.KEYWORD, value: "EXISTS" },
+      { type: TokenType.IDENTIFIER, value: "users" },
+    ]).parse();
+    expect(result).toEqual({
+      type: "drop",
+      table: "users",
+      ifExists: true,
+    });
+  });
+
+  it("throws error when missing TABLE", () => {
+    const result = () =>
+      new Parser([{ type: TokenType.KEYWORD, value: "DROP" }]).parse();
+    expect(result).toThrowError(SqlParserError);
+  });
+
+  it("throws error when IF EXISTS is not complete", () => {
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "DROP" },
+        { type: TokenType.KEYWORD, value: "TABLE" },
+        { type: TokenType.KEYWORD, value: "IF" },
+        { type: TokenType.IDENTIFIER, value: "users" },
+      ]).parse();
+    expect(result).toThrowError(SqlParserError);
+  });
+
+  it("throws error when missing table name", () => {
+    const result = () =>
+      new Parser([
+        { type: TokenType.KEYWORD, value: "DROP" },
+        { type: TokenType.KEYWORD, value: "TABLE" },
+      ]).parse();
+    expect(result).toThrowError(SqlParserError);
+  });
+});

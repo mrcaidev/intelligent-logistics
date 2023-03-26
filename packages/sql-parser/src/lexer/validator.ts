@@ -15,6 +15,7 @@ const keywords = [
   "IF",
   "NOT",
   "EXISTS",
+  "DROP",
 ];
 
 const dataTypes = ["NUMERIC", "TEXT", "BOOLEAN"];
