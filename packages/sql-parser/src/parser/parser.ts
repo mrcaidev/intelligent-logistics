@@ -1,4 +1,12 @@
-import type { AST } from "common";
+import type {
+  AST,
+  CreateAST,
+  DeleteAST,
+  DropAST,
+  InsertAST,
+  SelectAST,
+  UpdateAST,
+} from "common";
 import { SqlParserError } from "src/error";
 import { TokenType, type Token } from "src/lexer";
 import { TokenCursor } from "./cursor";
@@ -49,7 +57,7 @@ export class Parser {
     const table = this.cursor.consumeByType(TokenType.IDENTIFIER);
     const conditions = this.parseConditions();
 
-    return { type: "select", table, fields, conditions } as AST;
+    return { type: "select", table, fields, conditions } as SelectAST;
   }
 
   /**
@@ -64,7 +72,7 @@ export class Parser {
     const values = this.cursor.consumeManyByType(TokenType.LITERAL);
     this.cursor.consumeByValue(")");
 
-    return { type: "insert", table, fields, values } as AST;
+    return { type: "insert", table, fields, values } as InsertAST;
   }
 
   /**
@@ -76,7 +84,7 @@ export class Parser {
     const assignments = this.cursor.consumeManyAssignments();
     const conditions = this.parseConditions();
 
-    return { type: "update", table, assignments, conditions } as AST;
+    return { type: "update", table, assignments, conditions } as UpdateAST;
   }
 
   /**
@@ -87,7 +95,7 @@ export class Parser {
     const table = this.cursor.consumeByType(TokenType.IDENTIFIER);
     const conditions = this.parseConditions();
 
-    return { type: "delete", table, conditions } as AST;
+    return { type: "delete", table, conditions } as DeleteAST;
   }
 
   /**
@@ -101,7 +109,7 @@ export class Parser {
     const definitions = this.cursor.consumeManyDefinitions();
     this.cursor.consumeByValue(")");
 
-    return { type: "create", table, ifNotExists, definitions } as AST;
+    return { type: "create", table, ifNotExists, definitions } as CreateAST;
   }
 
   /**
@@ -112,7 +120,7 @@ export class Parser {
     const ifExists = this.parseIfExists();
     const table = this.cursor.consumeByType(TokenType.IDENTIFIER);
 
-    return { type: "drop", table, ifExists } as AST;
+    return { type: "drop", table, ifExists } as DropAST;
   }
 
   /**
