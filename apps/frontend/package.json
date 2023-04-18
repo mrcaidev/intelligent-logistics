@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@antv/graphin": "^2.7.13",
-    "@unocss/reset": "^0.50.6",
+    "@antv/graphin": "^2.7.15",
+    "@unocss/reset": "^0.51.4",
     "common": "workspace:^0.0.0",
     "database-manager": "workspace:^0.0.0",
     "delivery-scheduler": "workspace:^0.0.0",
@@ -18,14 +18,14 @@
     "react-dom": "^18.2.0",
     "react-feather": "^2.0.10",
     "sql-parser": "workspace:^0.0.0",
-    "unocss": "^0.50.6"
+    "unocss": "^0.51.4"
   },
   "devDependencies": {
-    "@types/react": "^18.0.28",
+    "@types/react": "^18.0.37",
     "@types/react-dom": "^18.0.11",
-    "@vitejs/plugin-react-swc": "^3.2.0",
-    "typescript": "^4.9.5",
-    "vite": "^4.2.0",
-    "vite-tsconfig-paths": "^4.0.7"
+    "@vitejs/plugin-react-swc": "^3.3.0",
+    "typescript": "^5.0.4",
+    "vite": "^4.2.2",
+    "vite-tsconfig-paths": "^4.2.0"
   }
 }
