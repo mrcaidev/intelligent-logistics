@@ -1,10 +1,10 @@
-import { generateRandomId } from "src";
+import { generateRandomId } from "utils";
 import { describe, expect, it } from "vitest";
 
 describe("generateRandomId", () => {
-  it("has a length of 10", () => {
+  it("is 10 characters long", () => {
     const id = generateRandomId();
-    expect(id.length).toEqual(10);
+    expect(id).toHaveLength(10);
   });
 
   it("hardly collides", () => {

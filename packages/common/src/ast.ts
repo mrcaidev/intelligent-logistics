@@ -1,5 +1,5 @@
 /**
- * Assigns the VALUE to the FIELD.
+ * Assigns VALUE to FIELD.
  */
 export type Assignment = {
   field: string;
@@ -7,7 +7,7 @@ export type Assignment = {
 };
 
 /**
- * Expects the FIELD OPERATOR to the VALUE.
+ * Expects FIELD OPERATOR to VALUE.
  */
 export type Condition = {
   field: string;
@@ -16,7 +16,7 @@ export type Condition = {
 };
 
 /**
- * Defines the FIELD to be of type TYPE.
+ * Defines FIELD to be of type TYPE.
  */
 export type Definition = {
   field: string;
