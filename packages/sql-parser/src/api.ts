@@ -4,8 +4,6 @@ import { preprocess } from "./preprocess";
 
 /**
  * Parses a string into a list of ASTs.
- *
- * @param input A string containing one or more SQL statements.
  */
 export function parse(input: string) {
   return preprocess(input)

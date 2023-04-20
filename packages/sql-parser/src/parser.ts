@@ -366,8 +366,6 @@ export class Parser extends Cursor<Token> {
   /**
    * Returns true if the current token type matches the expectation,
    * or false otherwise.
-   *
-   * @param expectation Expected token type.
    */
   private match(expectation: TokenType | TokenType[]) {
     if (!this.isOpen()) {
@@ -385,8 +383,6 @@ export class Parser extends Cursor<Token> {
    * If the current token type matches the expectation,
    * returns its value and moves to the next one.
    * Otherwise, throws an error.
-   *
-   * @param expectation Expected token type.
    */
   private consumeToken(expectation: TokenType | TokenType[]) {
     const isMatched = this.match(expectation);
