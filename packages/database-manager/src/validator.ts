@@ -39,7 +39,7 @@ export class Validator {
   /**
    * Validates the AST of a SELECT statement.
    */
-  public validateSelect(ast: SelectAST) {
+  private validateSelect(ast: SelectAST) {
     const { fields, conditions } = ast;
 
     this.validateFields(fields);
@@ -49,24 +49,25 @@ export class Validator {
   /**
    * Validates the AST of an INSERT statement.
    */
-  public validateInsert(ast: InsertAST) {
+  private validateInsert(ast: InsertAST) {
     const { fields, values } = ast;
 
     if (fields === "*") {
       for (const value of values) {
         this.validateOrderedValues(value);
       }
-    } else {
-      for (const value of values) {
-        this.validateNamedValues(fields, value);
-      }
+      return;
+    }
+
+    for (const value of values) {
+      this.validateNamedValues(fields, value);
     }
   }
 
   /**
    * Validates the AST of an UPDATE statement.
    */
-  public validateUpdate(ast: UpdateAST) {
+  private validateUpdate(ast: UpdateAST) {
     const { assignments, conditions } = ast;
 
     this.validateAssignments(assignments);
@@ -76,7 +77,7 @@ export class Validator {
   /**
    * Validates the AST of a DELETE statement.
    */
-  public validateDelete(ast: DeleteAST) {
+  private validateDelete(ast: DeleteAST) {
     const { conditions } = ast;
 
     this.validateConditions(conditions);
@@ -85,7 +86,7 @@ export class Validator {
   /**
    * Validates the AST of a CREATE statement.
    */
-  public validateCreate(ast: CreateAST) {
+  private validateCreate(ast: CreateAST) {
     const { definitions } = ast;
 
     this.validateDefinitions(definitions);

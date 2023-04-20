@@ -68,6 +68,7 @@ export abstract class Manager {
 
     const database = await this.readDatabase();
     const table = database[tableName];
+
     if (!table) {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
@@ -76,7 +77,7 @@ export abstract class Manager {
     await guard.waitToRead();
 
     const validator = new Validator(table.schema);
-    validator.validateSelect(ast);
+    validator.validate(ast);
 
     const filter = Manager.buildFilter(conditions);
     const selector = Manager.buildSelector(fields);
@@ -95,6 +96,7 @@ export abstract class Manager {
 
     const database = await this.readDatabase();
     const table = database[tableName];
+
     if (!table) {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
@@ -103,10 +105,13 @@ export abstract class Manager {
     await guard.waitToWrite();
 
     const validator = new Validator(table.schema);
-    validator.validateInsert(ast);
+    validator.validate(ast);
 
-    const rows = Manager.buildRows(fields, values, table.schema);
-    table.rows = table.rows.concat(rows);
+    const insertedRows = values.map((value) =>
+      Manager.buildRow(fields, value, table.schema)
+    );
+    table.rows = [...table.rows, ...insertedRows];
+
     await this.writeDatabase(database);
 
     guard.finishWriting();
@@ -122,6 +127,7 @@ export abstract class Manager {
 
     const database = await this.readDatabase();
     const table = database[tableName];
+
     if (!table) {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
@@ -130,11 +136,12 @@ export abstract class Manager {
     await guard.waitToWrite();
 
     const validator = new Validator(table.schema);
-    validator.validateUpdate(ast);
+    validator.validate(ast);
 
     const filter = Manager.buildFilter(conditions);
     const updater = Manager.buildUpdater(assignments);
     table.rows.filter(filter).forEach(updater);
+
     await this.writeDatabase(database);
 
     guard.finishWriting();
@@ -150,6 +157,7 @@ export abstract class Manager {
 
     const database = await this.readDatabase();
     const table = database[tableName];
+
     if (!table) {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
@@ -158,7 +166,7 @@ export abstract class Manager {
     await guard.waitToWrite();
 
     const validator = new Validator(table.schema);
-    validator.validateDelete(ast);
+    validator.validate(ast);
 
     const filter = Manager.buildFilter(conditions);
     table.rows = table.rows.filter((row) => !filter(row));
@@ -187,10 +195,10 @@ export abstract class Manager {
     }
 
     const validator = new Validator([]);
-    validator.validateCreate(ast);
+    validator.validate(ast);
 
     database[tableName] = { schema: definitions, rows: [] };
-    this.guards[tableName] = new Guard();
+
     await this.writeDatabase(database);
 
     return [] as T[];
@@ -264,21 +272,15 @@ export abstract class Manager {
    * each of which is an object with the fields as keys
    * and the values as values.
    */
-  private static buildRows(
+  private static buildRow(
     fields: "*" | string[],
-    values: unknown[][],
+    values: unknown[],
     schema: Schema
   ) {
-    if (fields === "*") {
-      return values.map((value) =>
-        Object.fromEntries(
-          schema.map(({ field }, index) => [field, value[index]])
-        )
-      );
-    }
-
-    return values.map((value) =>
-      Object.fromEntries(fields.map((field, index) => [field, value[index]]))
+    return Object.fromEntries(
+      fields === "*"
+        ? schema.map(({ field }, index) => [field, values[index]])
+        : fields.map((field, index) => [field, values[index]])
     );
   }
 
@@ -320,6 +322,10 @@ export abstract class Manager {
     }
   }
 
+  /**
+   * Gets the guard for a table. If it does not yet exist,
+   * creates and returns a new guard for the table.
+   */
   private getGuard(table: string) {
     const guard = this.guards[table];
 

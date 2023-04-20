@@ -10,7 +10,7 @@ const schema = [
 
 const validator = new Validator(schema);
 
-describe("validates fields", () => {
+describe("field", () => {
   it("permits wildcard fields", () => {
     expect(() => {
       validator.validate({
@@ -22,7 +22,7 @@ describe("validates fields", () => {
     }).not.toThrowError(DatabaseManagerError);
   });
 
-  it("permits valid field names", () => {
+  it("permits valid fields", () => {
     expect(() => {
       validator.validate({
         type: "select",
@@ -33,19 +33,19 @@ describe("validates fields", () => {
     }).not.toThrowError(DatabaseManagerError);
   });
 
-  it("throws error on invalid field names", () => {
+  it("throws error when names are invalid", () => {
     expect(() => {
       validator.validate({
         type: "select",
         table: "users",
-        fields: ["email"],
+        fields: ["id", "email"],
         conditions: [],
       });
     }).toThrowError(DatabaseManagerError);
   });
 });
 
-describe("validates conditions", () => {
+describe("condition", () => {
   it("permits valid conditions", () => {
     expect(() => {
       validator.validate({
@@ -56,7 +56,7 @@ describe("validates conditions", () => {
     }).not.toThrowError(DatabaseManagerError);
   });
 
-  it("throws error on invalid condition fields", () => {
+  it("throws error when fields are invalid", () => {
     expect(() => {
       validator.validate({
         type: "delete",
@@ -66,7 +66,7 @@ describe("validates conditions", () => {
     }).toThrowError(DatabaseManagerError);
   });
 
-  it("throws error on invalid condition values", () => {
+  it("throws error when values are invalid", () => {
     expect(() => {
       validator.validate({
         type: "delete",
@@ -77,19 +77,22 @@ describe("validates conditions", () => {
   });
 });
 
-describe("validates values with wildcard fields", () => {
+describe("ordered values", () => {
   it("permits valid values", () => {
     expect(() => {
       validator.validate({
         type: "insert",
         table: "users",
         fields: "*",
-        values: [[1, "John", 20]],
+        values: [
+          [1, "John", 20],
+          [2, "Jane", 25],
+        ],
       });
     }).not.toThrowError(DatabaseManagerError);
   });
 
-  it("throws error on wrong number of values", () => {
+  it("throws error when values have wrong length", () => {
     expect(() => {
       validator.validate({
         type: "insert",
@@ -100,20 +103,20 @@ describe("validates values with wildcard fields", () => {
     }).toThrowError(DatabaseManagerError);
   });
 
-  it("throws error on invalid values", () => {
+  it("throws error when values are invalid", () => {
     expect(() => {
       validator.validate({
         type: "insert",
         table: "users",
         fields: "*",
-        values: [["1", "John", 20]],
+        values: [["1", 20, "John"]],
       });
     }).toThrowError(DatabaseManagerError);
   });
 });
 
-describe("validates values with field names", () => {
-  it("permits valid field names and values", () => {
+describe("named values", () => {
+  it("permits valid fields and values", () => {
     expect(() => {
       validator.validate({
         type: "insert",
@@ -121,10 +124,10 @@ describe("validates values with field names", () => {
         fields: ["id", "name"],
         values: [[1, "John"]],
       });
-    });
+    }).not.toThrowError(DatabaseManagerError);
   });
 
-  it("throws error on invalid field names", () => {
+  it("throws error when fields are invalid", () => {
     expect(() => {
       validator.validate({
         type: "insert",
@@ -135,7 +138,7 @@ describe("validates values with field names", () => {
     }).toThrowError(DatabaseManagerError);
   });
 
-  it("throws error on invalid values", () => {
+  it("throws error when values are invalid", () => {
     expect(() => {
       validator.validate({
         type: "insert",
@@ -146,7 +149,7 @@ describe("validates values with field names", () => {
     }).toThrowError(DatabaseManagerError);
   });
 
-  it("throws error on inconsistent number of fields and values", () => {
+  it("throws error when fields and values have different length", () => {
     expect(() => {
       validator.validate({
         type: "insert",
@@ -159,7 +162,7 @@ describe("validates values with field names", () => {
 });
 
 describe("validates assignments", () => {
-  it("permits valid field names and values", () => {
+  it("permits valid fields and values", () => {
     expect(() => {
       validator.validate({
         type: "update",
@@ -170,7 +173,7 @@ describe("validates assignments", () => {
     }).not.toThrowError(DatabaseManagerError);
   });
 
-  it("throws error on invalid field names", () => {
+  it("throws error when fields are invalid", () => {
     expect(() => {
       validator.validate({
         type: "update",
@@ -181,7 +184,7 @@ describe("validates assignments", () => {
     }).toThrowError(DatabaseManagerError);
   });
 
-  it("throws error on invalid values", () => {
+  it("throws error when values are invalid", () => {
     expect(() => {
       validator.validate({
         type: "update",
@@ -208,7 +211,7 @@ describe("validates definitions", () => {
     }).not.toThrowError(DatabaseManagerError);
   });
 
-  it("throws error on duplicate field names", () => {
+  it("throws error when fields are duplicated", () => {
     expect(() => {
       validator.validate({
         type: "create",
