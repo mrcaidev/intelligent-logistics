@@ -14,7 +14,7 @@ export class Semaphore {
 
   /**
    * Acquires a vacancy for concurrent operation.
-   * If none are available, the process will be queued.
+   * If none are available, the process will be blocked and queued.
    */
   public async acquire() {
     return new Promise<void>((resolve) => {
@@ -30,7 +30,7 @@ export class Semaphore {
 
   /**
    * Releases a vacancy. If there are pending operations,
-   * the first one will be unblocked.
+   * the first one will be unqueued, unblocked and resolved.
    */
   public release() {
     this.count++;

@@ -1,5 +1,5 @@
-import { DatabaseManagerError } from "src";
-import { Validator } from "src/validator";
+import { DatabaseManagerError } from "error";
+import { Validator } from "validator";
 import { describe, expect, it } from "vitest";
 
 const schema = [
@@ -84,7 +84,7 @@ describe("validates values with wildcard fields", () => {
         type: "insert",
         table: "users",
         fields: "*",
-        values: [1, "John", 20],
+        values: [[1, "John", 20]],
       });
     }).not.toThrowError(DatabaseManagerError);
   });
@@ -95,7 +95,7 @@ describe("validates values with wildcard fields", () => {
         type: "insert",
         table: "users",
         fields: "*",
-        values: [1],
+        values: [[1]],
       });
     }).toThrowError(DatabaseManagerError);
   });
@@ -106,7 +106,7 @@ describe("validates values with wildcard fields", () => {
         type: "insert",
         table: "users",
         fields: "*",
-        values: ["1", "John", 20],
+        values: [["1", "John", 20]],
       });
     }).toThrowError(DatabaseManagerError);
   });
@@ -119,7 +119,7 @@ describe("validates values with field names", () => {
         type: "insert",
         table: "users",
         fields: ["id", "name"],
-        values: [1, "John"],
+        values: [[1, "John"]],
       });
     });
   });
@@ -130,7 +130,7 @@ describe("validates values with field names", () => {
         type: "insert",
         table: "users",
         fields: ["email"],
-        values: ["test"],
+        values: [["test"]],
       });
     }).toThrowError(DatabaseManagerError);
   });
@@ -141,7 +141,7 @@ describe("validates values with field names", () => {
         type: "insert",
         table: "users",
         fields: ["id"],
-        values: ["1"],
+        values: [["1"]],
       });
     }).toThrowError(DatabaseManagerError);
   });
@@ -152,7 +152,7 @@ describe("validates values with field names", () => {
         type: "insert",
         table: "users",
         fields: ["id", "name"],
-        values: [1],
+        values: [[1]],
       });
     }).toThrowError(DatabaseManagerError);
   });

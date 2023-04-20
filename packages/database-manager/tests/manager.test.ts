@@ -1,9 +1,10 @@
 import type { Database } from "common";
-import { DatabaseManagerError, Manager } from "src";
+import { DatabaseManagerError } from "error";
+import { Manager } from "manager";
 import { describe, expect, it } from "vitest";
 
 class TestManager extends Manager {
-  private _database: Database = {};
+  public _database: Database = {};
 
   constructor() {
     super("Test");
@@ -38,19 +39,11 @@ async function createManager() {
     type: "insert",
     table: "users",
     fields: "*",
-    values: [1, "John", 20],
-  });
-  await manager.run({
-    type: "insert",
-    table: "users",
-    fields: "*",
-    values: [2, "Jane", 25],
-  });
-  await manager.run({
-    type: "insert",
-    table: "users",
-    fields: "*",
-    values: [3, "Jack", 30],
+    values: [
+      [1, "John", 20],
+      [2, "Jane", 25],
+      [3, "Jack", 30],
+    ],
   });
   return manager;
 }
@@ -147,7 +140,7 @@ describe("INSERT", () => {
       type: "insert",
       table: "users",
       fields: "*",
-      values: [4, "July", 35],
+      values: [[4, "July", 35]],
     });
     expect(result).toEqual([]);
     expect(manager.database.users?.rows.length).toEqual(4);
@@ -159,7 +152,7 @@ describe("INSERT", () => {
       type: "insert",
       table: "users",
       fields: ["id", "name", "age"],
-      values: [4, "July", 35],
+      values: [[4, "July", 35]],
     });
     expect(result).toEqual([]);
     expect(manager.database.users?.rows.length).toEqual(4);
@@ -171,7 +164,7 @@ describe("INSERT", () => {
         type: "insert",
         table: "posts",
         fields: "*",
-        values: [4, "July", 35],
+        values: [[4, "July", 35]],
       });
     await expect(result).rejects.toThrowError(DatabaseManagerError);
   });
@@ -215,7 +208,7 @@ describe("UPDATE", () => {
   });
 });
 
-describe("runs DELETE", () => {
+describe("DELETE", () => {
   it("can delete all rows", async () => {
     const manager = await createManager();
     const result = await manager.run({

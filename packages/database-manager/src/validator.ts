@@ -13,7 +13,7 @@ import type {
 import { DatabaseManagerError } from "./error";
 
 /**
- * Validates an AST against its targeted table.
+ * Validates an AST against its target table.
  */
 export class Validator {
   constructor(private schema: Schema) {}
@@ -53,9 +53,13 @@ export class Validator {
     const { fields, values } = ast;
 
     if (fields === "*") {
-      this.validateOrderedValues(values);
+      for (const value of values) {
+        this.validateOrderedValues(value);
+      }
     } else {
-      this.validateFieldsAndValues(fields, values);
+      for (const value of values) {
+        this.validateNamedValues(fields, value);
+      }
     }
   }
 
@@ -128,7 +132,7 @@ export class Validator {
   /**
    * Validates the fields and the values.
    */
-  private validateFieldsAndValues(fields: string[], values: unknown[]) {
+  private validateNamedValues(fields: string[], values: unknown[]) {
     if (values.length !== fields.length) {
       throw new DatabaseManagerError(
         `Cannot insert ${values.length} values into ${fields.length} fields`

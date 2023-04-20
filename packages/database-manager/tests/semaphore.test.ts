@@ -1,4 +1,4 @@
-import { Semaphore } from "src/semaphore";
+import { Semaphore } from "semaphore";
 import { afterAll, afterEach, beforeAll, expect, it, vi } from "vitest";
 
 async function sleep(ms: number) {

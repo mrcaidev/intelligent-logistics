@@ -12,13 +12,13 @@ import type {
   SelectAST,
   UpdateAST,
 } from "common";
-import { Validator } from "src/validator";
 import { DatabaseManagerError } from "./error";
 import { Guard } from "./guard";
+import { Validator } from "./validator";
 
 /**
- * An abstract database manager, which provides an API to run ASTs, and
- * handles the concurrency control, but leaves the implementation of
+ * An abstract database manager, which provides an API to run ASTs,
+ * controls concurrency, but leaves the implementation of
  * reading and writing the database to its subclasses.
  */
 export abstract class Manager {
@@ -31,7 +31,7 @@ export abstract class Manager {
   constructor(protected databaseName: string) {}
 
   /**
-   * Reads an database and returns the object.
+   * Reads a database and returns the object.
    */
   protected abstract readDatabase(): Promise<Database>;
 
@@ -64,22 +64,23 @@ export abstract class Manager {
    * Runs the AST of a SELECT statement.
    */
   private async select<T extends Row>(ast: SelectAST) {
-    const { table, fields, conditions } = ast;
+    const { table: tableName, fields, conditions } = ast;
 
     const database = await this.readDatabase();
-    if (!database[table]) {
-      throw new DatabaseManagerError(`Table ${table} does not exist`);
+    const table = database[tableName];
+    if (!table) {
+      throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    const guard = this.getGuard(table);
+    const guard = this.getGuard(tableName);
     await guard.waitToRead();
 
-    const validator = new Validator(database[table]!.schema);
+    const validator = new Validator(table.schema);
     validator.validateSelect(ast);
 
     const filter = Manager.buildFilter(conditions);
     const selector = Manager.buildSelector(fields);
-    const rows = database[table]!.rows.filter(filter).map(selector);
+    const rows = table.rows.filter(filter).map(selector);
 
     guard.finishReading();
 
@@ -90,21 +91,24 @@ export abstract class Manager {
    * Runs the AST of an INSERT statement.
    */
   private async insert<T extends Row>(ast: InsertAST) {
-    const { table, fields, values } = ast;
+    const { table: tableName, fields, values } = ast;
 
     const database = await this.readDatabase();
-    if (!database[table]) {
-      throw new DatabaseManagerError(`Table ${table} does not exist`);
+    const table = database[tableName];
+    if (!table) {
+      throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    const guard = this.getGuard(table);
+    const guard = this.getGuard(tableName);
     await guard.waitToWrite();
 
-    const validator = new Validator(database[table]!.schema);
+    const validator = new Validator(table.schema);
     validator.validateInsert(ast);
 
-    const row = Manager.buildRow(fields, values, database[table]!.schema);
-    database[table]!.rows.push(row);
+    const rows = Manager.buildRows(fields, values, table.schema);
+    console.log(rows);
+    table.rows = table.rows.concat(rows);
+    console.log(table.rows);
     await this.writeDatabase(database);
 
     guard.finishWriting();
@@ -116,22 +120,23 @@ export abstract class Manager {
    * Runs the AST of an UPDATE statement.
    */
   private async update<T extends Row>(ast: UpdateAST) {
-    const { table, assignments, conditions } = ast;
+    const { table: tableName, assignments, conditions } = ast;
 
     const database = await this.readDatabase();
-    if (!database[table]) {
-      throw new DatabaseManagerError(`Table ${table} does not exist`);
+    const table = database[tableName];
+    if (!table) {
+      throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    const guard = this.getGuard(table);
+    const guard = this.getGuard(tableName);
     await guard.waitToWrite();
 
-    const validator = new Validator(database[table]!.schema);
+    const validator = new Validator(table.schema);
     validator.validateUpdate(ast);
 
     const filter = Manager.buildFilter(conditions);
     const updater = Manager.buildUpdater(assignments);
-    database[table]!.rows.filter(filter).forEach(updater);
+    table.rows.filter(filter).forEach(updater);
     await this.writeDatabase(database);
 
     guard.finishWriting();
@@ -143,21 +148,22 @@ export abstract class Manager {
    * Runs the AST of a DELETE statement.
    */
   private async delete<T extends Row>(ast: DeleteAST) {
-    const { table, conditions } = ast;
+    const { table: tableName, conditions } = ast;
 
     const database = await this.readDatabase();
-    if (!database[table]) {
-      throw new DatabaseManagerError(`Table ${table} does not exist`);
+    const table = database[tableName];
+    if (!table) {
+      throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    const guard = this.getGuard(table);
+    const guard = this.getGuard(tableName);
     await guard.waitToWrite();
 
-    const validator = new Validator(database[table]!.schema);
+    const validator = new Validator(table.schema);
     validator.validateDelete(ast);
 
     const filter = Manager.buildFilter(conditions);
-    database[table]!.rows = database[table]!.rows.filter((row) => !filter(row));
+    table.rows = table.rows.filter((row) => !filter(row));
 
     await this.writeDatabase(database);
 
@@ -170,23 +176,23 @@ export abstract class Manager {
    * Runs the AST of a CREATE statement.
    */
   private async create<T extends Row>(ast: CreateAST) {
-    const { table, ifNotExists, definitions } = ast;
+    const { table: tableName, ifNotExists, definitions } = ast;
 
     const database = await this.readDatabase();
 
-    if (database[table] && ifNotExists) {
+    if (database[tableName] && ifNotExists) {
       return [] as T[];
     }
 
-    if (database[table] && !ifNotExists) {
-      throw new DatabaseManagerError(`Table ${table} already exists`);
+    if (database[tableName] && !ifNotExists) {
+      throw new DatabaseManagerError(`Table ${tableName} already exists`);
     }
 
     const validator = new Validator([]);
     validator.validateCreate(ast);
 
-    database[table] = { schema: definitions, rows: [] };
-    this.guards[table] = new Guard();
+    database[tableName] = { schema: definitions, rows: [] };
+    this.guards[tableName] = new Guard();
     await this.writeDatabase(database);
 
     return [] as T[];
@@ -196,22 +202,22 @@ export abstract class Manager {
    * Runs the AST of a DROP statement.
    */
   private async drop<T extends Row>(ast: DropAST) {
-    const { table, ifExists } = ast;
+    const { table: tableName, ifExists } = ast;
 
     const database = await this.readDatabase();
 
-    if (!database[table] && ifExists) {
+    if (!database[tableName] && ifExists) {
       return [] as T[];
     }
 
-    if (!database[table] && !ifExists) {
-      throw new DatabaseManagerError(`Table ${table} does not exist`);
+    if (!database[tableName] && !ifExists) {
+      throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    const guard = this.getGuard(table);
+    const guard = this.getGuard(tableName);
     await guard.waitToWrite();
 
-    delete database[table];
+    delete database[tableName];
 
     await this.writeDatabase(database);
 
@@ -256,19 +262,25 @@ export abstract class Manager {
   }
 
   /**
-   * Builds a row according to the given fields and values,
-   * which is an object with the fields as keys and the values as values.
-   * If the fields is "*", then the row will contain all fields in the schema.
+   * Builds rows according to the given fields and values,
+   * each of which is an object with the fields as keys
+   * and the values as values.
    */
-  private static buildRow(
+  private static buildRows(
     fields: "*" | string[],
-    values: unknown[],
+    values: unknown[][],
     schema: Schema
   ) {
-    return Object.fromEntries(
-      fields === "*"
-        ? schema.map(({ field }, index) => [field, values[index]])
-        : fields.map((field, index) => [field, values[index]])
+    if (fields === "*") {
+      return values.map((value) =>
+        Object.fromEntries(
+          schema.map(({ field }, index) => [field, value[index]])
+        )
+      );
+    }
+
+    return values.map((value) =>
+      Object.fromEntries(fields.map((field, index) => [field, value[index]]))
     );
   }
 

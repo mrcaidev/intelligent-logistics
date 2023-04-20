@@ -3,6 +3,7 @@ import { Semaphore } from "./semaphore";
 /**
  * The guard of a database table, which solves
  * the readers-writers problem with a fair policy.
+ *
  * All readers and writers must ask the guard for permission
  * before they can actually access the table.
  */

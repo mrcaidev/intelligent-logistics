@@ -1,4 +1,4 @@
-import { Guard } from "src/guard";
+import { Guard } from "guard";
 import { afterAll, beforeAll, beforeEach, expect, it, vi } from "vitest";
 
 async function sleep(ms: number) {
