@@ -106,9 +106,7 @@ export abstract class Manager {
     validator.validateInsert(ast);
 
     const rows = Manager.buildRows(fields, values, table.schema);
-    console.log(rows);
     table.rows = table.rows.concat(rows);
-    console.log(table.rows);
     await this.writeDatabase(database);
 
     guard.finishWriting();
