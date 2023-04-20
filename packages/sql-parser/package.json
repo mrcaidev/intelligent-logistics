@@ -13,10 +13,7 @@
     ".": "./dist/index.js"
   },
   "scripts": {
-    "build": "vite build",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:coverage": "vitest run --coverage"
+    "build": "vite build"
   },
   "dependencies": {
     "common": "workspace:^0.0.0"

@@ -40,7 +40,7 @@ export type InsertAST = {
   type: "insert";
   table: string;
   fields: "*" | string[];
-  values: unknown[];
+  values: unknown[][];
 };
 
 /**

@@ -3,7 +3,9 @@ import { Parser } from "./parser";
 import { preprocess } from "./preprocess";
 
 /**
- * Parses an input into a list of ASTs.
+ * Parses a string into a list of ASTs.
+ *
+ * @param input A string containing one or more SQL statements.
  */
 export function parse(input: string) {
   return preprocess(input)

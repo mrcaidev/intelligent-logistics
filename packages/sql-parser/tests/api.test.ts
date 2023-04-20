@@ -1,29 +1,33 @@
-import { parse } from "src";
+import { parse } from "api";
 import { expect, it } from "vitest";
 
 it("parses an input into a list of ASTs", () => {
   const result = parse(`
-    -- We only create a small table for simplicity.
+    -- We create a simplified table for testing purpose.
     CREATE TABLE IF NOT EXISTS goods (
       id TEXT,
       name TEXT
     );
 
-    INSERT INTO goods (id, name)
-    VALUES (1, 'Beef');
+    INSERT INTO goods VALUES
+    (1, 'Beef'),
+    (2, 'Pork');
 
     SELECT * -- Check all information about the goods we have.
     FROM goods;
 
-    UPDATE goods
-    SET name = 'Pork'
-    WHERE id = 1;
+    INSERT INTO goods (id, name) VALUES
+    (3, 'Chicken');
 
-    SELECT id, name -- Specify columns as an optimization.
+    UPDATE goods
+    SET name = 'Milk'
+    WHERE id = 1 AND name != 'Milk';
+
+    SELECT id, name -- Specify some columns.
     FROM goods;
 
     DELETE FROM goods
-    WHERE name != 'Pork';
+    WHERE id > 3;
 
     DROP TABLE IF EXISTS goods;
   `);
@@ -40,8 +44,11 @@ it("parses an input into a list of ASTs", () => {
     {
       type: "insert",
       table: "goods",
-      fields: ["id", "name"],
-      values: [1, "Beef"],
+      fields: "*",
+      values: [
+        [1, "Beef"],
+        [2, "Pork"],
+      ],
     },
     {
       type: "select",
@@ -50,10 +57,21 @@ it("parses an input into a list of ASTs", () => {
       conditions: [],
     },
     {
+      type: "insert",
+      table: "goods",
+      fields: ["id", "name"],
+      values: [[3, "Chicken"]],
+    },
+    {
       type: "update",
       table: "goods",
-      assignments: [{ field: "name", value: "Pork" }],
-      conditions: [[{ field: "id", operator: "=", value: 1 }]],
+      assignments: [{ field: "name", value: "Milk" }],
+      conditions: [
+        [
+          { field: "id", operator: "=", value: 1 },
+          { field: "name", operator: "!=", value: "Milk" },
+        ],
+      ],
     },
     {
       type: "select",
@@ -64,7 +82,7 @@ it("parses an input into a list of ASTs", () => {
     {
       type: "delete",
       table: "goods",
-      conditions: [[{ field: "name", operator: "!=", value: "Pork" }]],
+      conditions: [[{ field: "id", operator: ">", value: 3 }]],
     },
     {
       type: "drop",

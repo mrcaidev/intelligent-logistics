@@ -1,4 +1,4 @@
-import { preprocess } from "src/preprocess";
+import { preprocess } from "preprocess";
 import { expect, it } from "vitest";
 
 it("splits statements", () => {

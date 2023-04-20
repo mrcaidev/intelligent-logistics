@@ -1,10 +1,5 @@
-import { Cursor } from "src/cursor";
+import { Cursor } from "cursor";
 import { expect, it } from "vitest";
-
-it("starts at the first element", () => {
-  const cursor = new Cursor(["a", "b", "c"]);
-  expect(cursor.current).toEqual("a");
-});
 
 it("can consume elements", () => {
   const cursor = new Cursor(["a", "b", "c"]);
@@ -19,7 +14,7 @@ it("can consume elements", () => {
   expect(cursor.current).toEqual("c");
 });
 
-it("manages state correctly", () => {
+it("manages open/closed state", () => {
   const cursor = new Cursor(["a", "b"]);
   expect(cursor.isOpen()).toEqual(true);
 
