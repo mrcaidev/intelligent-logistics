@@ -1,6 +1,6 @@
-import { app } from "src/app";
-import { query } from "src/utils/database";
+import { app } from "app";
 import supertest from "supertest";
+import { query } from "utils/database";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 const request = supertest(app);

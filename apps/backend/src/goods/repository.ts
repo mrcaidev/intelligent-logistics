@@ -1,46 +1,68 @@
-import { query } from "src/utils/database";
-import type { Good } from "./types";
+import { query } from "utils/database";
+import { Good } from "./types";
 
-export class GoodsRepository {
-  public static async findAll() {
-    const goods = await query<Good>("SELECT * FROM goods");
-    return goods;
-  }
+export const goodRepository = {
+  findAll,
+  findById,
+  create,
+  updateById,
+  removeById,
+};
 
-  public static async findById(id: string) {
-    const [good] = await query<Good>("SELECT * FROM goods WHERE id = $1", [id]);
-    return good;
-  }
+async function findAll() {
+  return query<Good>(
+    `
+      SELECT *
+      FROM good
+    `
+  );
+}
 
-  public static async create(good: Good) {
-    const { id, name, createdAt, source, target, isVip, graphId } = good;
+async function findById(id: string) {
+  const [good] = await query<Good>(
+    `
+      SELECT * FROM good
+      WHERE id = $1
+    `,
+    [id]
+  );
+  return good;
+}
 
-    await query(
-      `
-        INSERT INTO goods (id, name, createdAt, source, target, isVip, graphId)
-        VALUES ($1, $2, $3, $4, $5, $6, $7)
-      `,
-      [id, name, createdAt, source, target, isVip, graphId]
-    );
-  }
+async function create(good: Good) {
+  const { id, name, createdAt, source, target, isVip, graphId } = good;
 
-  public static async updateById(id: string, good: Good) {
-    const { name, source, target, graphId } = good;
+  await query(
+    `
+      INSERT INTO good
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `,
+    [id, name, createdAt, source, target, isVip, graphId]
+  );
+}
 
-    await query(
-      `
-        UPDATE goods
-        SET name = $2,
-          source = $3,
-          target = $4,
-          graphId = $5
-        WHERE id = $1
-      `,
-      [id, name, source, target, graphId]
-    );
-  }
+async function updateById(id: string, good: Good) {
+  const { name, source, target, graphId } = good;
 
-  public static async deleteById(id: string) {
-    await query("DELETE FROM goods WHERE id = $1", [id]);
-  }
+  await query(
+    `
+      UPDATE good
+      SET name = $2,
+        source = $3,
+        target = $4,
+        graphId = $5
+      WHERE id = $1
+    `,
+    [id, name, source, target, graphId]
+  );
+}
+
+async function removeById(id: string) {
+  await query(
+    `
+      DELETE FROM good
+      WHERE id = $1
+    `,
+    [id]
+  );
 }

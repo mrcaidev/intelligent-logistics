@@ -1,5 +1,6 @@
-import type { NextFunction, Request, Response } from "express";
-import { HttpError } from "src/utils/error";
+import { NextFunction, Request, Response } from "express";
+import { HttpError } from "utils/http-error";
+import { ZodError } from "zod";
 
 export async function handleError(
   error: Error,
@@ -11,11 +12,13 @@ export async function handleError(
     return next(error);
   }
 
-  if (error instanceof HttpError) {
-    return res
-      .status(error.status)
-      .json({ message: error.message, data: null });
+  if (error instanceof ZodError) {
+    return res.status(400).json({ error: "请求格式错误" });
   }
 
-  return res.status(500).json({ message: error.message, data: null });
+  if (error instanceof HttpError) {
+    return res.status(error.status).json({ error: error.message });
+  }
+
+  return res.status(500).json({ error: error.message });
 }

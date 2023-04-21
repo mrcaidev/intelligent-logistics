@@ -1,23 +1,23 @@
 import { Router } from "express";
-import { validate } from "src/middlewares/validate";
-import { GoodsController } from "./controller";
+import { validate } from "middlewares/validate";
+import { goodController } from "./controller";
 import {
   createRequestSchema,
-  deleteRequestSchema,
-  updateRequestSchema,
+  removeByIdRequestSchema,
+  updateByIdRequestSchema,
 } from "./types";
 
-export const goodsRouter: Router = Router();
+export const goodRouter: Router = Router();
 
-goodsRouter.get("/", GoodsController.findAll);
-goodsRouter.post("/", validate(createRequestSchema), GoodsController.create);
-goodsRouter.patch(
+goodRouter.get("/", goodController.findAll);
+goodRouter.post("/", validate(createRequestSchema), goodController.create);
+goodRouter.patch(
   "/:id",
-  validate(updateRequestSchema),
-  GoodsController.update
+  validate(updateByIdRequestSchema),
+  goodController.updateById
 );
-goodsRouter.delete(
+goodRouter.delete(
   "/:id",
-  validate(deleteRequestSchema),
-  GoodsController.delete
+  validate(removeByIdRequestSchema),
+  goodController.removeById
 );

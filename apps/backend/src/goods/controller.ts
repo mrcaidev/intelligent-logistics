@@ -1,53 +1,54 @@
-import type { NextFunction, Request, Response } from "express";
-import { GoodsService } from "./service";
-import type { CreateRequest, DeleteRequest, UpdateRequest } from "./types";
+import { NextFunction, Request, Response } from "express";
+import { goodService } from "./service";
+import { CreateRequest, RemoveByIdRequest, UpdateByIdRequest } from "./types";
 
-export class GoodsController {
-  public static async findAll(_: Request, res: Response, next: NextFunction) {
-    try {
-      const goods = await GoodsService.findAll();
-      return res.status(200).json({ message: "", data: goods });
-    } catch (error) {
-      return next(error);
-    }
+export const goodController = {
+  findAll,
+  create,
+  updateById,
+  removeById,
+};
+
+async function findAll(_: Request, res: Response, next: NextFunction) {
+  try {
+    const goods = await goodService.findAll();
+    return res.status(200).json({ data: goods });
+  } catch (error) {
+    return next(error);
   }
+}
 
-  public static async create(
-    req: CreateRequest,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const good = await GoodsService.create(req.body);
-      return res.status(201).json({ message: "", data: good });
-    } catch (error) {
-      return next(error);
-    }
+async function create(req: CreateRequest, res: Response, next: NextFunction) {
+  try {
+    const good = await goodService.create(req.body);
+    return res.status(201).json({ data: good });
+  } catch (error) {
+    return next(error);
   }
+}
 
-  public static async update(
-    req: UpdateRequest,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const good = await GoodsService.updateById(req.params.id, req.body);
-      return res.status(200).json({ message: "", data: good });
-    } catch (error) {
-      return next(error);
-    }
+async function updateById(
+  req: UpdateByIdRequest,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    await goodService.updateById(req.params.id, req.body);
+    return res.status(204).end();
+  } catch (error) {
+    return next(error);
   }
+}
 
-  public static async delete(
-    req: DeleteRequest,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      await GoodsService.deleteById(req.params.id);
-      return res.status(204).end();
-    } catch (error) {
-      return next(error);
-    }
+async function removeById(
+  req: RemoveByIdRequest,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    await goodService.removeById(req.params.id);
+    return res.status(204).end();
+  } catch (error) {
+    return next(error);
   }
 }

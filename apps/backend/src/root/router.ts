@@ -1,7 +1,6 @@
 import { Router } from "express";
+import { rootController } from "./controller";
 
 export const rootRouter: Router = Router();
 
-rootRouter.get("/healthz", (_, res) => {
-  return res.status(200).json({ message: "", data: null });
-});
+rootRouter.get("/healthz", rootController.checkHealth);

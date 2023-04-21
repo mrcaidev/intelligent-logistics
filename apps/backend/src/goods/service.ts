@@ -1,44 +1,46 @@
 import { generateRandomId } from "common";
-import { HttpError } from "src/utils/error";
-import { GoodsRepository } from "./repository";
-import type { CreateRequest, Good, UpdateRequest } from "./types";
+import { NotFoundError } from "utils/http-error";
+import { goodRepository } from "./repository";
+import { CreateRequest, UpdateByIdRequest } from "./types";
 
-export class GoodsService {
-  public static async findAll() {
-    return GoodsRepository.findAll();
+export const goodService = {
+  findAll,
+  create,
+  updateById,
+  removeById,
+};
+
+async function findAll() {
+  return goodRepository.findAll();
+}
+
+async function create(creator: CreateRequest["body"]) {
+  const id = generateRandomId();
+  const createdAt = new Date().getTime();
+
+  const good = { ...creator, id, createdAt };
+
+  await goodRepository.create(good);
+
+  return good;
+}
+
+async function updateById(id: string, updater: UpdateByIdRequest["body"]) {
+  const oldGood = await goodRepository.findById(id);
+
+  if (!oldGood) {
+    throw new NotFoundError("物品不存在");
   }
 
-  public static async create(dto: CreateRequest["body"]) {
-    const id = generateRandomId();
-    const createdAt = new Date().toISOString();
-    const good = { ...dto, id, createdAt };
+  await goodRepository.updateById(id, { ...oldGood, ...updater });
+}
 
-    await GoodsRepository.create(good);
+async function removeById(id: string) {
+  const oldGood = await goodRepository.findById(id);
 
-    return good;
+  if (!oldGood) {
+    throw new NotFoundError("物品不存在");
   }
 
-  public static async updateById(id: string, dto: UpdateRequest["body"]) {
-    const oldGood = await GoodsRepository.findById(id);
-
-    if (!oldGood) {
-      throw new HttpError(404, `Good ${id} not found`);
-    }
-
-    const newGood = { ...oldGood, ...dto } as Good;
-
-    await GoodsRepository.updateById(id, newGood);
-
-    return newGood;
-  }
-
-  public static async deleteById(id: string) {
-    const good = await GoodsRepository.findById(id);
-
-    if (!good) {
-      throw new HttpError(404, `Good ${id} not found`);
-    }
-
-    await GoodsRepository.deleteById(id);
-  }
+  await goodRepository.removeById(id);
 }
