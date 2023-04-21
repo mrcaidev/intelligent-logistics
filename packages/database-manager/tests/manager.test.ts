@@ -1,4 +1,4 @@
-import type { Database } from "common";
+import { Database } from "common";
 import { DatabaseManagerError } from "error";
 import { Manager } from "manager";
 import { describe, expect, it } from "vitest";

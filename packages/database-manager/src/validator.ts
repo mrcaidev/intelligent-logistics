@@ -1,4 +1,4 @@
-import type {
+import {
   Assignment,
   AST,
   Condition,
