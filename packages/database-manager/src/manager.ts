@@ -268,8 +268,8 @@ export abstract class Manager {
   }
 
   /**
-   * Builds rows according to the given fields and values,
-   * each of which is an object with the fields as keys
+   * Builds a row according to the given fields and values,
+   * which is an object with the fields as keys
    * and the values as values.
    */
   private static buildRow(
