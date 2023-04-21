@@ -1,123 +1,77 @@
 /**
- * An edge in a graph, which has two ends and a cost.
+ * An undirected edge in a graph.
  */
-type Edge = {
-  from: string;
-  to: string;
+export type Edge = {
+  source: string;
+  target: string;
   cost: number;
 };
 
 /**
- * The shortest path between two nodes,
- * represented by every node in the path and the total cost.
+ * Returns the shortest path between two nodes,
+ * using Dijkstra's algorithm.
+ *
+ * @param edges The edges in the graph.
+ * @param source The starting node.
+ * @param target The ending node.
  */
-type ShortestPath = {
-  path: string[];
-  cost: number;
-};
-
-/**
- * The shortest paths from each node to each other node.
- */
-type ShortestPaths = Record<string, Record<string, ShortestPath>>;
-
-/**
- * Represents the map of logistics centers and the roads between them.
- */
-export class Graph {
-  /**
-   * The shortest paths from each node to each other node.
-   */
-  private shortestPaths: ShortestPaths = {};
-
-  constructor(private edges: Edge[]) {
-    this.shortestPaths = Graph.calculateShortestPaths(edges);
+export function getShortestPath(edges: Edge[], source: string, target: string) {
+  const unvisitedNodes = new Set<string>();
+  for (const { source, target } of edges) {
+    unvisitedNodes.add(source);
+    unvisitedNodes.add(target);
   }
 
-  /**
-   * Returns the shortest path between two nodes.
-   */
-  public getShortestPath(from: string, to: string) {
-    return this.shortestPaths[from]![to]!;
+  const distances: Record<string, number> = {};
+  for (const node of unvisitedNodes) {
+    distances[node] = Infinity;
   }
+  distances[source] = 0;
 
-  /**
-   * Updates an edge between two nodes,
-   * or creates it if it does not exist.
-   */
-  public setEdge(from: string, to: string, cost: number) {
-    const edge = this.edges.find(
-      (edge) => edge.from === from && edge.to === to
-    );
+  const previousNodes: Record<string, string> = {};
 
-    if (edge) {
-      edge.cost = cost;
-    } else {
-      this.edges.push({ from, to, cost });
-    }
-
-    this.shortestPaths = Graph.calculateShortestPaths(this.edges);
-  }
-
-  /**
-   * Calculates the shortest paths from each node to each other node,
-   * using Floyd-Warshall algorithm.
-   */
-  private static calculateShortestPaths(edges: Edge[]) {
-    const nodes = Graph.collectNodesFromEdges(edges);
-
-    const paths: ShortestPaths = {};
-
-    for (const from of nodes) {
-      paths[from] = {};
-      for (const to of nodes) {
-        paths[from]![to] = {
-          path: [from, to],
-          cost: from === to ? 0 : Infinity,
-        };
+  while (unvisitedNodes.size > 0) {
+    let nearestNode = unvisitedNodes.values().next().value as string;
+    for (const node of unvisitedNodes) {
+      if (distances[node]! < distances[nearestNode]!) {
+        nearestNode = node;
       }
     }
 
-    for (const { from, to, cost } of edges) {
-      paths[from]![to]!.cost = cost;
-      paths[to]![from]!.cost = cost;
+    if (nearestNode === target) {
+      break;
     }
 
-    for (const middle of nodes) {
-      for (const [fromIndex, from] of nodes.entries()) {
-        for (const to of nodes.slice(fromIndex + 1)) {
-          const newWeight =
-            paths[from]![middle]!.cost + paths[middle]![to]!.cost;
+    unvisitedNodes.delete(nearestNode);
 
-          if (newWeight >= paths[from]![to]!.cost) {
-            continue;
-          }
-
-          paths[from]![to] = {
-            path: [
-              ...paths[from]![middle]!.path,
-              ...paths[middle]![to]!.path.slice(1),
-            ],
-            cost: newWeight,
-          };
-          paths[to]![from] = {
-            path: [
-              ...paths[to]![middle]!.path,
-              ...paths[middle]![from]!.path.slice(1),
-            ],
-            cost: newWeight,
-          };
-        }
+    const neighbors: [string, number][] = [];
+    for (const { source, target, cost } of edges) {
+      if (source === nearestNode && unvisitedNodes.has(target)) {
+        neighbors.push([target, cost]);
+      } else if (target === nearestNode && unvisitedNodes.has(source)) {
+        neighbors.push([source, cost]);
       }
     }
 
-    return paths;
+    for (const [neighbor, cost] of neighbors) {
+      const newDistance = distances[nearestNode]! + cost;
+      if (newDistance < distances[neighbor]!) {
+        distances[neighbor] = newDistance;
+        previousNodes[neighbor] = nearestNode;
+      }
+    }
   }
 
-  /**
-   * Collects every node that appears in the given edges.
-   */
-  private static collectNodesFromEdges(edges: Edge[]) {
-    return [...new Set(edges.flatMap((edge) => [edge.from, edge.to]))];
+  if (unvisitedNodes.size === 0) {
+    return [];
   }
+
+  const path = [target];
+  let previousNode = previousNodes[target];
+  while (previousNode) {
+    path.unshift(previousNode);
+    previousNode = previousNodes[previousNode];
+  }
+
+  return path;
 }

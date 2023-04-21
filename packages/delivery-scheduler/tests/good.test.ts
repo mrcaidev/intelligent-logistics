@@ -1,42 +1,46 @@
-import { Good } from "src/good";
-import { Graph } from "src/graph";
+import { Good, getGoodWithHighestPriority } from "good";
 import { expect, it } from "vitest";
 
-const strategyA = new Graph([
-  { from: "A", to: "B", cost: 2 },
-  { from: "A", to: "C", cost: 1 },
-  { from: "A", to: "D", cost: 6 },
-  { from: "B", to: "C", cost: 7 },
-  { from: "C", to: "D", cost: 4 },
-]);
+it("delivers goods by created time by default", () => {
+  const now = new Date().getTime();
 
-const strategyB = new Graph([
-  { from: "A", to: "B", cost: 1 },
-  { from: "A", to: "C", cost: 1 },
-  { from: "A", to: "D", cost: 1 },
-  { from: "B", to: "C", cost: 1 },
-  { from: "C", to: "D", cost: 1 },
-]);
+  const goods = [
+    { name: "Beef", createdAt: now - 3, isVip: false },
+    { name: "Pork", createdAt: now - 2, isVip: false },
+    { name: "Milk", createdAt: now - 1, isVip: false },
+  ] as Good[];
 
-it("knows the best path", () => {
-  const good = new Good({
-    name: "good",
-    source: "B",
-    target: "C",
-    strategy: strategyA,
-  });
-  expect(good.getPath()).toEqual({ path: ["B", "A", "C"], cost: 3 });
+  const first = getGoodWithHighestPriority(goods);
+  goods.splice(goods.indexOf(first), 1);
+  expect(first.name).toEqual("Beef");
+
+  const second = getGoodWithHighestPriority(goods);
+  goods.splice(goods.indexOf(second), 1);
+  expect(second.name).toEqual("Pork");
+
+  const third = getGoodWithHighestPriority(goods);
+  goods.splice(goods.indexOf(third), 1);
+  expect(third.name).toEqual("Milk");
 });
 
-it("can change strategy", () => {
-  const good = new Good({
-    name: "good",
-    source: "B",
-    target: "C",
-    strategy: strategyA,
-  });
-  expect(good.getPath()).toEqual({ path: ["B", "A", "C"], cost: 3 });
+it("raises VIP good's priority", () => {
+  const now = new Date().getTime();
 
-  good.setStrategy(strategyB);
-  expect(good.getPath()).toEqual({ path: ["B", "C"], cost: 1 });
+  const goods = [
+    { name: "Beef", createdAt: now - 3, isVip: false },
+    { name: "Pork", createdAt: now - 2, isVip: true },
+    { name: "Milk", createdAt: now - 1, isVip: false },
+  ] as Good[];
+
+  const first = getGoodWithHighestPriority(goods);
+  goods.splice(goods.indexOf(first), 1);
+  expect(first.name).toEqual("Pork");
+
+  const second = getGoodWithHighestPriority(goods);
+  goods.splice(goods.indexOf(second), 1);
+  expect(second.name).toEqual("Beef");
+
+  const third = getGoodWithHighestPriority(goods);
+  goods.splice(goods.indexOf(third), 1);
+  expect(third.name).toEqual("Milk");
 });

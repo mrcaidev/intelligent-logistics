@@ -1,3 +1,2 @@
-export { Good } from "./good";
-export { GoodQueue } from "./good-queue";
-export { Graph } from "./graph";
+export { getGoodWithHighestPriority, type Good } from "./good";
+export { getShortestPath, type Edge } from "./graph";
