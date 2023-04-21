@@ -1,7 +1,7 @@
 import cors from "cors";
 import express, { Express } from "express";
 import { rateLimit } from "express-rate-limit";
-import { goodRouter } from "goods/router";
+import { goodRouter } from "good/router";
 import { rootRouter } from "root/router";
 import { bootstrap } from "./bootstrap";
 import { handleError } from "./middlewares/handle-error";
