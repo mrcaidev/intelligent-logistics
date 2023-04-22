@@ -1,17 +1,19 @@
+import clsx from "clsx";
+
 type Props = {
   isOpen: boolean;
   toggle: () => void;
 };
 
-export const Toggler = ({ isOpen, toggle }: Props) => {
+export function SidebarToggler({ isOpen, toggle }: Props) {
   return (
     <button
       type="button"
       onClick={toggle}
-      className={
-        "fixed right-6 top-4 p-2 rounded transition-colors z-10" +
-        (isOpen ? " hover:bg-gray-700" : " hover:bg-gray-800")
-      }
+      className={clsx(
+        "fixed right-4 top-3 p-2 rounded transition-colors z-20",
+        isOpen ? "hover:bg-gray-300" : "hover:bg-gray-200"
+      )}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -24,22 +26,15 @@ export const Toggler = ({ isOpen, toggle }: Props) => {
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden="true"
+        className={clsx(isOpen && "open")}
       >
-        <g
-          className={
-            "origin-center transition-transform" +
-            (isOpen ? " rotate-45 delay-150" : "")
-          }
-        >
+        <g className="[.open_&]:rotate-45 [.open_&]:delay-150 origin-center transition-transform">
           <line
             x1="3"
             y1="6"
             x2="21"
             y2="6"
-            className={
-              "delay-150 transition-transform" +
-              (isOpen ? " translate-y-[6px] delay-[0s]" : "")
-            }
+            className="[.open_&]:translate-y-[6px] delay-150 [.open_&]:delay-[0s] transition-transform"
           ></line>
         </g>
         <line
@@ -47,30 +42,19 @@ export const Toggler = ({ isOpen, toggle }: Props) => {
           y1="12"
           x2="21"
           y2="12"
-          className={
-            "delay-150 transition-opacity" +
-            (isOpen ? " opacity-0 delay-[0s]" : "")
-          }
+          className="[.open_&]:opacity-0 delay-150 [.open_&]:delay-[0s] transition-opacity"
         ></line>
-        <g
-          className={
-            "origin-center transition-transform" +
-            (isOpen ? " -rotate-45 delay-150" : "")
-          }
-        >
+        <g className="[.open_&]:-rotate-45 [.open_&]:delay-150 origin-center transition-transform">
           <line
             x1="3"
             y1="18"
             x2="21"
             y2="18"
-            className={
-              "delay-150 transition-transform" +
-              (isOpen ? " -translate-y-[6px] delay-[0s]" : "")
-            }
+            className="[.open_&]:-translate-y-[6px] delay-150 [.open_&]:delay-[0s] transition-transform"
           ></line>
         </g>
       </svg>
-      <span className="sr-only">{isOpen ? "Close" : "Open"} the sidebar</span>
+      <span className="sr-only">{isOpen ? "关闭" : "打开"}侧边栏</span>
     </button>
   );
-};
+}

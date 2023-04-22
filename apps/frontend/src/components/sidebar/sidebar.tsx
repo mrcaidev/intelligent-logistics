@@ -1,23 +1,31 @@
-import { PropsWithChildren, useState } from "react";
-import { Toggler } from "./toggler";
+import clsx from "clsx";
+import { PropsWithChildren, useEffect, useState } from "react";
+import { createPortal } from "react-dom";
+import { SidebarToggler } from "./toggler";
 
-type Props = PropsWithChildren;
-
-export const Sidebar = ({ children }: Props) => {
+export function Sidebar({ children }: PropsWithChildren) {
   const [isOpen, setIsOpen] = useState(false);
   const toggle = () => setIsOpen((isOpen) => !isOpen);
 
+  useEffect(() => {
+    const isLaptop = window.matchMedia("(min-width: 768px)").matches;
+    setIsOpen(isLaptop);
+  }, []);
+
   return (
-    <aside>
-      <Toggler isOpen={isOpen} toggle={toggle} />
-      <div
-        className={
-          "fixed right-0 top-0 bottom-0 flex flex-col w-screen md:w-80 h-full px-6 pt-16 pb-4 bg-gray-800 transition-transform" +
-          (isOpen ? " translate-x-0" : " translate-x-full")
-        }
-      >
-        {children}
-      </div>
-    </aside>
+    <>
+      <SidebarToggler isOpen={isOpen} toggle={toggle} />
+      {createPortal(
+        <aside
+          className={clsx(
+            "flex flex-col fixed right-0 top-0 bottom-0 w-screen sm:w-90 pt-15 pb-4 border-l border-gray-300 bg-gray-200 shadow-lg transition-transform z-10",
+            isOpen ? "translate-x-0" : "translate-x-full"
+          )}
+        >
+          {children}
+        </aside>,
+        document.body
+      )}
+    </>
   );
-};
+}
