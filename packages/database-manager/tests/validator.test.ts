@@ -52,6 +52,7 @@ describe("condition", () => {
         type: "delete",
         table: "users",
         conditions: [[{ field: "id", operator: "=", value: 1 }]],
+        returning: [],
       });
     }).not.toThrowError(DatabaseManagerError);
   });
@@ -62,6 +63,7 @@ describe("condition", () => {
         type: "delete",
         table: "users",
         conditions: [[{ field: "unknown", operator: "=", value: 1 }]],
+        returning: [],
       });
     }).toThrowError(DatabaseManagerError);
   });
@@ -72,6 +74,7 @@ describe("condition", () => {
         type: "delete",
         table: "users",
         conditions: [[{ field: "id", operator: "=", value: "John" }]],
+        returning: [],
       });
     }).toThrowError(DatabaseManagerError);
   });
@@ -88,6 +91,7 @@ describe("ordered values", () => {
           [1, "John", 20],
           [2, "Jane", 25],
         ],
+        returning: [],
       });
     }).not.toThrowError(DatabaseManagerError);
   });
@@ -99,6 +103,7 @@ describe("ordered values", () => {
         table: "users",
         fields: "*",
         values: [[1]],
+        returning: [],
       });
     }).toThrowError(DatabaseManagerError);
   });
@@ -110,6 +115,7 @@ describe("ordered values", () => {
         table: "users",
         fields: "*",
         values: [["1", 20, "John"]],
+        returning: [],
       });
     }).toThrowError(DatabaseManagerError);
   });
@@ -123,6 +129,7 @@ describe("named values", () => {
         table: "users",
         fields: ["id", "name"],
         values: [[1, "John"]],
+        returning: [],
       });
     }).not.toThrowError(DatabaseManagerError);
   });
@@ -134,6 +141,7 @@ describe("named values", () => {
         table: "users",
         fields: ["email"],
         values: [["test"]],
+        returning: [],
       });
     }).toThrowError(DatabaseManagerError);
   });
@@ -145,6 +153,7 @@ describe("named values", () => {
         table: "users",
         fields: ["id"],
         values: [["1"]],
+        returning: [],
       });
     }).toThrowError(DatabaseManagerError);
   });
@@ -156,6 +165,45 @@ describe("named values", () => {
         table: "users",
         fields: ["id", "name"],
         values: [[1]],
+        returning: [],
+      });
+    }).toThrowError(DatabaseManagerError);
+  });
+});
+
+describe("validates returning fields", () => {
+  it("permits wildcard returning fields", () => {
+    expect(() => {
+      validator.validate({
+        type: "insert",
+        table: "users",
+        fields: "*",
+        values: [[1, "John", 20]],
+        returning: "*",
+      });
+    }).not.toThrowError(DatabaseManagerError);
+  });
+
+  it("permits valid returning fields", () => {
+    expect(() => {
+      validator.validate({
+        type: "insert",
+        table: "users",
+        fields: "*",
+        values: [[1, "John", 20]],
+        returning: ["id"],
+      });
+    }).not.toThrowError(DatabaseManagerError);
+  });
+
+  it("throws error when fields are invalid", () => {
+    expect(() => {
+      validator.validate({
+        type: "insert",
+        table: "users",
+        fields: "*",
+        values: [[1, "John", 20]],
+        returning: ["email"],
       });
     }).toThrowError(DatabaseManagerError);
   });
@@ -169,6 +217,7 @@ describe("validates assignments", () => {
         table: "users",
         assignments: [{ field: "id", value: 1 }],
         conditions: [],
+        returning: [],
       });
     }).not.toThrowError(DatabaseManagerError);
   });
@@ -180,6 +229,7 @@ describe("validates assignments", () => {
         table: "users",
         assignments: [{ field: "email", value: "test" }],
         conditions: [],
+        returning: [],
       });
     }).toThrowError(DatabaseManagerError);
   });
@@ -191,6 +241,7 @@ describe("validates assignments", () => {
         table: "users",
         assignments: [{ field: "name", value: 1 }],
         conditions: [],
+        returning: [],
       });
     }).toThrowError(DatabaseManagerError);
   });

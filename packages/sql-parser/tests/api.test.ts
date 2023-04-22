@@ -17,7 +17,8 @@ it("parses an input into a list of ASTs", () => {
     FROM goods;
 
     INSERT INTO goods (id, name) VALUES
-    (3, 'Chicken');
+    (3, 'Chicken')
+    RETURNING id, name;
 
     UPDATE goods
     SET name = 'Milk'
@@ -49,6 +50,7 @@ it("parses an input into a list of ASTs", () => {
         [1, "Beef"],
         [2, "Pork"],
       ],
+      returning: [],
     },
     {
       type: "select",
@@ -61,6 +63,7 @@ it("parses an input into a list of ASTs", () => {
       table: "goods",
       fields: ["id", "name"],
       values: [[3, "Chicken"]],
+      returning: ["id", "name"],
     },
     {
       type: "update",
@@ -72,6 +75,7 @@ it("parses an input into a list of ASTs", () => {
           { field: "name", operator: "!=", value: "Milk" },
         ],
       ],
+      returning: [],
     },
     {
       type: "select",
@@ -83,6 +87,7 @@ it("parses an input into a list of ASTs", () => {
       type: "delete",
       table: "goods",
       conditions: [[{ field: "id", operator: ">", value: 3 }]],
+      returning: [],
     },
     {
       type: "drop",

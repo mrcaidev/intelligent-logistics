@@ -17,6 +17,7 @@ export enum TokenType {
   IF = "IF",
   EXISTS = "EXISTS",
   DROP = "DROP",
+  RETURNING = "RETURNING",
   NUMERIC = "NUMERIC",
   TEXT = "TEXT",
   BOOLEAN = "BOOLEAN",

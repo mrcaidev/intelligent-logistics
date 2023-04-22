@@ -44,12 +44,13 @@ async function createManager() {
       [2, "Jane", 25],
       [3, "Jack", 30],
     ],
+    returning: [],
   });
   return manager;
 }
 
 describe("SELECT", () => {
-  it("can select all fields", async () => {
+  it("can select wildcard fields", async () => {
     const manager = await createManager();
     const result = await manager.run({
       type: "select",
@@ -143,6 +144,7 @@ describe("INSERT", () => {
       table: "users",
       fields: "*",
       values: [[4, "July", 35]],
+      returning: [],
     });
     expect(result).toEqual([]);
     expect(manager.database.users?.rows.length).toEqual(4);
@@ -155,9 +157,34 @@ describe("INSERT", () => {
       table: "users",
       fields: ["id", "name", "age"],
       values: [[4, "July", 35]],
+      returning: [],
     });
     expect(result).toEqual([]);
     expect(manager.database.users?.rows.length).toEqual(4);
+  });
+
+  it("can return wildcard fields", async () => {
+    const manager = await createManager();
+    const result = await manager.run({
+      type: "insert",
+      table: "users",
+      fields: "*",
+      values: [[4, "July", 35]],
+      returning: "*",
+    });
+    expect(result).toEqual([{ id: 4, name: "July", age: 35 }]);
+  });
+
+  it("can return specific fields", async () => {
+    const manager = await createManager();
+    const result = await manager.run({
+      type: "insert",
+      table: "users",
+      fields: "*",
+      values: [[4, "July", 35]],
+      returning: ["id"],
+    });
+    expect(result).toEqual([{ id: 4 }]);
   });
 
   it("throws error when table does not exist", async () => {
@@ -168,6 +195,7 @@ describe("INSERT", () => {
         table: "posts",
         fields: "*",
         values: [[4, "July", 35]],
+        returning: [],
       });
     await expect(result).rejects.toThrowError(DatabaseManagerError);
   });
@@ -181,6 +209,7 @@ describe("UPDATE", () => {
       table: "users",
       assignments: [{ field: "age", value: 35 }],
       conditions: [[{ field: "id", operator: "=", value: 2 }]],
+      returning: [],
     });
     expect(result).toEqual([]);
     expect(manager.database.users?.rows[1]?.age).toEqual(35);
@@ -193,10 +222,35 @@ describe("UPDATE", () => {
       table: "users",
       assignments: [{ field: "age", value: 40 }],
       conditions: [[{ field: "id", operator: ">=", value: 2 }]],
+      returning: [],
     });
     expect(result).toEqual([]);
     expect(manager.database.users?.rows[1]?.age).toEqual(40);
     expect(manager.database.users?.rows[2]?.age).toEqual(40);
+  });
+
+  it("can return wildcard fields", async () => {
+    const manager = await createManager();
+    const result = await manager.run({
+      type: "update",
+      table: "users",
+      assignments: [{ field: "age", value: 35 }],
+      conditions: [[{ field: "id", operator: "=", value: 2 }]],
+      returning: "*",
+    });
+    expect(result).toEqual([{ id: 2, name: "Jane", age: 35 }]);
+  });
+
+  it("can return specific fields", async () => {
+    const manager = await createManager();
+    const result = await manager.run({
+      type: "update",
+      table: "users",
+      assignments: [{ field: "age", value: 35 }],
+      conditions: [[{ field: "id", operator: "=", value: 2 }]],
+      returning: ["id"],
+    });
+    expect(result).toEqual([{ id: 2 }]);
   });
 
   it("throws error when table does not exist", async () => {
@@ -207,6 +261,7 @@ describe("UPDATE", () => {
         table: "posts",
         assignments: [{ field: "age", value: 40 }],
         conditions: [[{ field: "id", operator: ">", value: 1 }]],
+        returning: [],
       });
     await expect(result).rejects.toThrowError(DatabaseManagerError);
   });
@@ -219,6 +274,7 @@ describe("DELETE", () => {
       type: "delete",
       table: "users",
       conditions: [],
+      returning: [],
     });
     expect(result).toEqual([]);
     expect(manager.database.users?.rows.length).toEqual(0);
@@ -230,9 +286,32 @@ describe("DELETE", () => {
       type: "delete",
       table: "users",
       conditions: [[{ field: "id", operator: "<=", value: 1 }]],
+      returning: [],
     });
     expect(result).toEqual([]);
     expect(manager.database.users?.rows.length).toEqual(2);
+  });
+
+  it("can return wildcard fields", async () => {
+    const manager = await createManager();
+    const result = await manager.run({
+      type: "delete",
+      table: "users",
+      conditions: [[{ field: "id", operator: "=", value: 3 }]],
+      returning: "*",
+    });
+    expect(result).toEqual([{ id: 3, name: "Jack", age: 30 }]);
+  });
+
+  it("can return specific fields", async () => {
+    const manager = await createManager();
+    const result = await manager.run({
+      type: "delete",
+      table: "users",
+      conditions: [[{ field: "id", operator: "=", value: 3 }]],
+      returning: ["id"],
+    });
+    expect(result).toEqual([{ id: 3 }]);
   });
 
   it("throws error when table does not exist", async () => {
@@ -242,6 +321,7 @@ describe("DELETE", () => {
         type: "delete",
         table: "posts",
         conditions: [[{ field: "id", operator: ">", value: 1 }]],
+        returning: [],
       });
     await expect(result).rejects.toThrowError(DatabaseManagerError);
   });

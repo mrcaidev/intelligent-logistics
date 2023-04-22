@@ -258,6 +258,8 @@ function getKeywordType(value: string) {
       return TokenType.EXISTS;
     case "DROP":
       return TokenType.DROP;
+    case "RETURNING":
+      return TokenType.RETURNING;
     case "NUMERIC":
       return TokenType.NUMERIC;
     case "TEXT":

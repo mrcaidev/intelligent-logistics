@@ -41,6 +41,7 @@ export type InsertAST = {
   table: string;
   fields: "*" | string[];
   values: unknown[][];
+  returning: "*" | string[];
 };
 
 /**
@@ -51,6 +52,7 @@ export type UpdateAST = {
   table: string;
   assignments: Assignment[];
   conditions: Condition[][];
+  returning: "*" | string[];
 };
 
 /**
@@ -60,6 +62,7 @@ export type DeleteAST = {
   type: "delete";
   table: string;
   conditions: Condition[][];
+  returning: "*" | string[];
 };
 
 /**

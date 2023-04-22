@@ -50,37 +50,40 @@ export class Validator {
    * Validates the AST of an INSERT statement.
    */
   private validateInsert(ast: InsertAST) {
-    const { fields, values } = ast;
+    const { fields, values, returning } = ast;
 
     if (fields === "*") {
       for (const value of values) {
         this.validateOrderedValues(value);
       }
-      return;
+    } else {
+      for (const value of values) {
+        this.validateNamedValues(fields, value);
+      }
     }
 
-    for (const value of values) {
-      this.validateNamedValues(fields, value);
-    }
+    this.validateFields(returning);
   }
 
   /**
    * Validates the AST of an UPDATE statement.
    */
   private validateUpdate(ast: UpdateAST) {
-    const { assignments, conditions } = ast;
+    const { assignments, conditions, returning } = ast;
 
     this.validateAssignments(assignments);
     this.validateConditions(conditions);
+    this.validateFields(returning);
   }
 
   /**
    * Validates the AST of a DELETE statement.
    */
   private validateDelete(ast: DeleteAST) {
-    const { conditions } = ast;
+    const { conditions, returning } = ast;
 
     this.validateConditions(conditions);
+    this.validateFields(returning);
   }
 
   /**

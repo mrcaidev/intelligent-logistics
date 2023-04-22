@@ -92,7 +92,7 @@ export abstract class Manager {
    * Runs the AST of an INSERT statement.
    */
   private async insert<T extends Row>(ast: InsertAST) {
-    const { table: tableName, fields, values } = ast;
+    const { table: tableName, fields, values, returning } = ast;
 
     const database = await this.readDatabase();
     const table = database[tableName];
@@ -116,14 +116,19 @@ export abstract class Manager {
 
     guard.finishWriting();
 
-    return [] as T[];
+    if (Array.isArray(returning) && returning.length === 0) {
+      return [] as T[];
+    }
+
+    const selector = Manager.buildSelector(returning);
+    return insertedRows.map(selector) as T[];
   }
 
   /**
    * Runs the AST of an UPDATE statement.
    */
   private async update<T extends Row>(ast: UpdateAST) {
-    const { table: tableName, assignments, conditions } = ast;
+    const { table: tableName, assignments, conditions, returning } = ast;
 
     const database = await this.readDatabase();
     const table = database[tableName];
@@ -140,20 +145,26 @@ export abstract class Manager {
 
     const filter = Manager.buildFilter(conditions);
     const updater = Manager.buildUpdater(assignments);
-    table.rows.filter(filter).forEach(updater);
+    const updatedRows = table.rows.filter(filter);
+    updatedRows.forEach(updater);
 
     await this.writeDatabase(database);
 
     guard.finishWriting();
 
-    return [] as T[];
+    if (Array.isArray(returning) && returning.length === 0) {
+      return [] as T[];
+    }
+
+    const selector = Manager.buildSelector(returning);
+    return updatedRows.map(selector) as T[];
   }
 
   /**
    * Runs the AST of a DELETE statement.
    */
   private async delete<T extends Row>(ast: DeleteAST) {
-    const { table: tableName, conditions } = ast;
+    const { table: tableName, conditions, returning } = ast;
 
     const database = await this.readDatabase();
     const table = database[tableName];
@@ -169,13 +180,19 @@ export abstract class Manager {
     validator.validate(ast);
 
     const filter = Manager.buildFilter(conditions);
+    const deletedRows = table.rows.filter(filter);
     table.rows = table.rows.filter((row) => !filter(row));
 
     await this.writeDatabase(database);
 
     guard.finishWriting();
 
-    return [] as T[];
+    if (Array.isArray(returning) && returning.length === 0) {
+      return [] as T[];
+    }
+
+    const selector = Manager.buildSelector(returning);
+    return deletedRows.map(selector) as T[];
   }
 
   /**

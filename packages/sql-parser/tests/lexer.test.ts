@@ -89,6 +89,11 @@ describe("keyword", () => {
     expect(result).toEqual([{ type: TokenType.DROP }]);
   });
 
+  it("parses RETURNING", () => {
+    const result = new Lexer("RETURNING").tokenize();
+    expect(result).toEqual([{ type: TokenType.RETURNING }]);
+  });
+
   it("parses NUMERIC", () => {
     const result = new Lexer("NUMERIC").tokenize();
     expect(result).toEqual([{ type: TokenType.NUMERIC }]);

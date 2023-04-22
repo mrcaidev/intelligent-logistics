@@ -269,6 +269,7 @@ describe("INSERT statement", () => {
       table: "users",
       fields: "*",
       values: [[1]],
+      returning: [],
     });
   });
 
@@ -290,6 +291,7 @@ describe("INSERT statement", () => {
       table: "users",
       fields: ["id"],
       values: [[1]],
+      returning: [],
     });
   });
 
@@ -315,6 +317,7 @@ describe("INSERT statement", () => {
       table: "users",
       fields: ["id", "name", "age"],
       values: [[1]],
+      returning: [],
     });
   });
 
@@ -337,6 +340,7 @@ describe("INSERT statement", () => {
       table: "users",
       fields: "*",
       values: [[1, 2, 3]],
+      returning: [],
     });
   });
 
@@ -359,6 +363,74 @@ describe("INSERT statement", () => {
       table: "users",
       fields: "*",
       values: [[1], [2]],
+      returning: [],
+    });
+  });
+
+  it("parses wildcard returning fields", () => {
+    const result = new Parser([
+      { type: TokenType.INSERT },
+      { type: TokenType.INTO },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.VALUES },
+      { type: TokenType.LEFT_PARENTHESIS },
+      { type: TokenType.LITERAL, value: 1 },
+      { type: TokenType.RIGHT_PARENTHESIS },
+      { type: TokenType.RETURNING },
+      { type: TokenType.MULTIPLY },
+    ]).parse();
+    expect(result).toEqual({
+      type: "insert",
+      table: "users",
+      fields: "*",
+      values: [[1]],
+      returning: "*",
+    });
+  });
+
+  it("parses single returning field", () => {
+    const result = new Parser([
+      { type: TokenType.INSERT },
+      { type: TokenType.INTO },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.VALUES },
+      { type: TokenType.LEFT_PARENTHESIS },
+      { type: TokenType.LITERAL, value: 1 },
+      { type: TokenType.RIGHT_PARENTHESIS },
+      { type: TokenType.RETURNING },
+      { type: TokenType.IDENTIFIER, value: "id" },
+    ]).parse();
+    expect(result).toEqual({
+      type: "insert",
+      table: "users",
+      fields: "*",
+      values: [[1]],
+      returning: ["id"],
+    });
+  });
+
+  it("parses multiple returning fields", () => {
+    const result = new Parser([
+      { type: TokenType.INSERT },
+      { type: TokenType.INTO },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.VALUES },
+      { type: TokenType.LEFT_PARENTHESIS },
+      { type: TokenType.LITERAL, value: 1 },
+      { type: TokenType.RIGHT_PARENTHESIS },
+      { type: TokenType.RETURNING },
+      { type: TokenType.IDENTIFIER, value: "id" },
+      { type: TokenType.COMMA },
+      { type: TokenType.IDENTIFIER, value: "name" },
+      { type: TokenType.COMMA },
+      { type: TokenType.IDENTIFIER, value: "age" },
+    ]).parse();
+    expect(result).toEqual({
+      type: "insert",
+      table: "users",
+      fields: "*",
+      values: [[1]],
+      returning: ["id", "name", "age"],
     });
   });
 
@@ -421,6 +493,38 @@ describe("INSERT statement", () => {
       ]).parse();
     expect(result).toThrowError(SqlParserError);
   });
+
+  it("throws error when no field follows RETURNING", () => {
+    const result = () =>
+      new Parser([
+        { type: TokenType.INSERT },
+        { type: TokenType.INTO },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.VALUES },
+        { type: TokenType.LEFT_PARENTHESIS },
+        { type: TokenType.LITERAL, value: 1 },
+        { type: TokenType.RIGHT_PARENTHESIS },
+        { type: TokenType.RETURNING },
+      ]).parse();
+    expect(result).toThrowError(SqlParserError);
+  });
+
+  it("throws error when returning fields are not seperated by commas", () => {
+    const result = () =>
+      new Parser([
+        { type: TokenType.INSERT },
+        { type: TokenType.INTO },
+        { type: TokenType.IDENTIFIER, value: "users" },
+        { type: TokenType.VALUES },
+        { type: TokenType.LEFT_PARENTHESIS },
+        { type: TokenType.LITERAL, value: 1 },
+        { type: TokenType.RIGHT_PARENTHESIS },
+        { type: TokenType.RETURNING },
+        { type: TokenType.IDENTIFIER, value: "id" },
+        { type: TokenType.IDENTIFIER, value: "name" },
+      ]).parse();
+    expect(result).toThrowError(SqlParserError);
+  });
 });
 
 describe("UPDATE statement", () => {
@@ -438,6 +542,7 @@ describe("UPDATE statement", () => {
       table: "users",
       assignments: [{ field: "id", value: 1 }],
       conditions: [],
+      returning: [],
     });
   });
 
@@ -462,6 +567,7 @@ describe("UPDATE statement", () => {
         { field: "age", value: 30 },
       ],
       conditions: [],
+      returning: [],
     });
   });
 
@@ -483,6 +589,27 @@ describe("UPDATE statement", () => {
       table: "users",
       assignments: [{ field: "age", value: 30 }],
       conditions: [[{ field: "id", operator: "=", value: 1 }]],
+      returning: [],
+    });
+  });
+
+  it("parses returning fields", () => {
+    const result = new Parser([
+      { type: TokenType.UPDATE },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.SET },
+      { type: TokenType.IDENTIFIER, value: "id" },
+      { type: TokenType.EQUAL },
+      { type: TokenType.LITERAL, value: 1 },
+      { type: TokenType.RETURNING },
+      { type: TokenType.MULTIPLY },
+    ]).parse();
+    expect(result).toEqual({
+      type: "update",
+      table: "users",
+      assignments: [{ field: "id", value: 1 }],
+      conditions: [],
+      returning: "*",
     });
   });
 
@@ -562,6 +689,7 @@ describe("DELETE statement", () => {
       type: "delete",
       table: "users",
       conditions: [],
+      returning: [],
     });
   });
 
@@ -579,6 +707,23 @@ describe("DELETE statement", () => {
       type: "delete",
       table: "users",
       conditions: [[{ field: "id", operator: "=", value: 1 }]],
+      returning: [],
+    });
+  });
+
+  it("parses returning fields", () => {
+    const result = new Parser([
+      { type: TokenType.DELETE },
+      { type: TokenType.FROM },
+      { type: TokenType.IDENTIFIER, value: "users" },
+      { type: TokenType.RETURNING },
+      { type: TokenType.MULTIPLY },
+    ]).parse();
+    expect(result).toEqual({
+      type: "delete",
+      table: "users",
+      conditions: [],
+      returning: "*",
     });
   });
 
