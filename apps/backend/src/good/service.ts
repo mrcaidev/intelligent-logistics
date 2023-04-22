@@ -13,18 +13,18 @@ async function findAll() {
   return goodRepository.findAll();
 }
 
-async function create(creator: CreateRequest["body"]) {
-  return goodRepository.create(creator);
+async function create(body: CreateRequest["body"]) {
+  return goodRepository.create(body);
 }
 
-async function updateById(id: string, updater: UpdateByIdRequest["body"]) {
+async function updateById(id: string, body: UpdateByIdRequest["body"]) {
   const oldGood = await goodRepository.findById(id);
 
   if (!oldGood) {
     throw new NotFoundError("物品不存在");
   }
 
-  await goodRepository.updateById(id, { ...oldGood, ...updater });
+  await goodRepository.updateById(id, { ...oldGood, ...body });
 }
 
 async function removeById(id: string) {

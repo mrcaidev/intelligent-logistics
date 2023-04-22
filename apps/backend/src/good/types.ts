@@ -1,3 +1,4 @@
+import { graphSchema } from "graph/types";
 import { Infer } from "utils/types";
 import { z } from "zod";
 
@@ -8,7 +9,7 @@ export const goodSchema = z.object({
   source: z.string(),
   target: z.string(),
   isVip: z.boolean(),
-  graphId: z.string(),
+  graphId: graphSchema.shape.id,
 });
 
 export type Good = Infer<typeof goodSchema>;

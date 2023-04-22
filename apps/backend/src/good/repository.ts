@@ -20,14 +20,14 @@ async function findAll() {
 }
 
 async function findById(id: string) {
-  const [good] = await query<Good>(
+  const rows = await query<Good>(
     `
       SELECT * FROM good
       WHERE id = $1
     `,
     [id]
   );
-  return good;
+  return rows[0];
 }
 
 async function create(creator: Omit<Good, "id" | "createdAt">) {
@@ -35,7 +35,7 @@ async function create(creator: Omit<Good, "id" | "createdAt">) {
 
   const rows = await query<Good>(
     `
-      INSERT INTO good
+      INSERT INTO good (id, name, createdAt, source, target, isVip, graphId)
       VALUES (RANDOM_ID, $1, CURRENT_TIMESTAMP, $2, $3, $4, $5)
       RETURNING *
     `,
