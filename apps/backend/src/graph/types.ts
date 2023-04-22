@@ -2,8 +2,8 @@ import { Infer } from "utils/types";
 import { z } from "zod";
 
 export const graphSchema = z.object({
-  id: z.string(),
-  name: z.string(),
+  id: z.string().nonempty(),
+  name: z.string().nonempty(),
 });
 
 export type Graph = Infer<typeof graphSchema>;

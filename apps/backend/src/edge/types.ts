@@ -3,9 +3,9 @@ import { Infer } from "utils/types";
 import { z } from "zod";
 
 export const edgeSchema = z.object({
-  id: z.string(),
-  source: z.string(),
-  target: z.string(),
+  id: z.string().nonempty(),
+  source: z.string().nonempty(),
+  target: z.string().nonempty(),
   cost: z.number().nonnegative(),
   graphId: graphSchema.shape.id,
 });

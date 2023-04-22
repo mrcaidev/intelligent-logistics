@@ -3,11 +3,11 @@ import { Infer } from "utils/types";
 import { z } from "zod";
 
 export const goodSchema = z.object({
-  id: z.string(),
-  name: z.string(),
+  id: z.string().nonempty(),
+  name: z.string().nonempty(),
   createdAt: z.number().positive().int(),
-  source: z.string(),
-  target: z.string(),
+  source: z.string().nonempty(),
+  target: z.string().nonempty(),
   isVip: z.boolean(),
   graphId: graphSchema.shape.id,
 });
