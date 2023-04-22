@@ -193,6 +193,13 @@ describe("number literal", () => {
     expect(result).toEqual([{ type: TokenType.LITERAL, value: -1.1 }]);
   });
 
+  it("parses CURRENT_TIMESTAMP", () => {
+    const result = new Lexer("CURRENT_TIMESTAMP").tokenize();
+    const now = new Date().getTime();
+    expect(result[0]?.type).toEqual(TokenType.LITERAL);
+    expect((result[0]?.value as number) / 100).toBeCloseTo(now / 100, 0);
+  });
+
   it("throws error when number is invalid", () => {
     const result = () => new Lexer("1.1.1").tokenize();
     expect(result).toThrowError(SqlParserError);
@@ -218,6 +225,12 @@ describe("string literal", () => {
   it("parses empty double quoted string", () => {
     const result = new Lexer('""').tokenize();
     expect(result).toEqual([{ type: TokenType.LITERAL, value: "" }]);
+  });
+
+  it("parses RANDOM_ID", () => {
+    const result = new Lexer("RANDOM_ID").tokenize();
+    expect(result[0]?.type).toEqual(TokenType.LITERAL);
+    expect(result[0]?.value).toHaveLength(10);
   });
 
   it("throws error when single quoted string is not terminated", () => {

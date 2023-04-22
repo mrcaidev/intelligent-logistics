@@ -55,6 +55,16 @@ export class Lexer extends Cursor<string> {
         return { type: TokenType.LITERAL, value: nullLiteral };
       }
 
+      const randomId = getRandomId(value);
+      if (randomId !== undefined) {
+        return { type: TokenType.LITERAL, value: randomId };
+      }
+
+      const currentTimestamp = getCurrentTimestamp(value);
+      if (currentTimestamp !== undefined) {
+        return { type: TokenType.LITERAL, value: currentTimestamp };
+      }
+
       const keywordType = getKeywordType(value);
       if (keywordType !== undefined) {
         return { type: keywordType };
@@ -269,4 +279,20 @@ function getKeywordType(value: string) {
     default:
       return undefined;
   }
+}
+
+function getRandomId(value: string) {
+  if (value.toUpperCase() !== "RANDOM_ID") {
+    return undefined;
+  }
+
+  return Math.random().toString(36).substring(2, 12);
+}
+
+function getCurrentTimestamp(value: string) {
+  if (value.toUpperCase() !== "CURRENT_TIMESTAMP") {
+    return undefined;
+  }
+
+  return new Date().getTime();
 }
