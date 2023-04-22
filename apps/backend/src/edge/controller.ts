@@ -1,6 +1,11 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Response } from "express";
 import { edgeService } from "./service";
-import { CreateRequest, RemoveByIdRequest, UpdateByIdRequest } from "./types";
+import {
+  CreateRequest,
+  FindAllRequest,
+  RemoveByIdRequest,
+  UpdateByIdRequest,
+} from "./types";
 
 export const edgeController = {
   findAll,
@@ -9,9 +14,9 @@ export const edgeController = {
   removeById,
 };
 
-async function findAll(_: Request, res: Response, next: NextFunction) {
+async function findAll(req: FindAllRequest, res: Response, next: NextFunction) {
   try {
-    const edges = await edgeService.findAll();
+    const edges = await edgeService.findAll(req.query);
     return res.status(200).json({ data: edges });
   } catch (error) {
     return next(error);

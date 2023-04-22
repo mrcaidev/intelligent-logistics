@@ -12,6 +12,12 @@ export const edgeSchema = z.object({
 
 export type Edge = Infer<typeof edgeSchema>;
 
+export const findAllRequestSchema = z.object({
+  query: edgeSchema.pick({ graphId: true }).partial(),
+});
+
+export type FindAllRequest = Infer<typeof findAllRequestSchema>;
+
 export const createRequestSchema = z.object({
   body: edgeSchema.omit({ id: true }),
 });

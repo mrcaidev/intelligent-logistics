@@ -3,13 +3,14 @@ import { validate } from "middlewares/validate";
 import { edgeController } from "./controller";
 import {
   createRequestSchema,
+  findAllRequestSchema,
   removeByIdRequestSchema,
   updateByIdRequestSchema,
 } from "./types";
 
 export const edgeRouter: Router = Router();
 
-edgeRouter.get("/", edgeController.findAll);
+edgeRouter.get("/", validate(findAllRequestSchema), edgeController.findAll);
 
 edgeRouter.post("/", validate(createRequestSchema), edgeController.create);
 

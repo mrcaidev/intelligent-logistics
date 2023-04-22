@@ -1,7 +1,7 @@
 import { graphRepository } from "graph/repository";
 import { NotFoundError } from "utils/http-error";
 import { edgeRepository } from "./repository";
-import { CreateRequest, UpdateByIdRequest } from "./types";
+import { CreateRequest, FindAllRequest, UpdateByIdRequest } from "./types";
 
 export const edgeService = {
   findAll,
@@ -10,7 +10,13 @@ export const edgeService = {
   removeById,
 };
 
-async function findAll() {
+async function findAll(query: FindAllRequest["query"]) {
+  const { graphId } = query;
+
+  if (graphId) {
+    return edgeRepository.findByGraphId(graphId);
+  }
+
   return edgeRepository.findAll();
 }
 

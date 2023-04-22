@@ -18,6 +18,20 @@ describe("GET /edges", () => {
       });
     }
   });
+
+  it("finds all edges with specified graph id", async () => {
+    const response = await request.get("/edges").query({ graphId: "g1" });
+    expect(response.status).toEqual(200);
+    for (const item of response.body.data) {
+      expect(item).toMatchObject({
+        id: expect.any(String),
+        source: expect.any(String),
+        target: expect.any(String),
+        cost: expect.any(Number),
+        graphId: "g1",
+      });
+    }
+  });
 });
 
 describe("POST /edges", () => {
