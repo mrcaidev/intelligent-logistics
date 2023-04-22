@@ -24,3 +24,5 @@ goodRouter.delete(
   validate(removeByIdRequestSchema),
   goodController.removeById
 );
+
+goodRouter.post("/deliver", goodController.deliver);

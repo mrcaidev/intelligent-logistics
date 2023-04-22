@@ -5,6 +5,7 @@ import { Edge } from "./types";
 export const edgeRepository = {
   findAll,
   findById,
+  findByGraphId,
   create,
   updateById,
   removeById,
@@ -29,6 +30,17 @@ async function findById(id: string) {
     [id]
   );
   return rows[0];
+}
+
+async function findByGraphId(graphId: string) {
+  return query<Edge>(
+    `
+      SELECT *
+      FROM edge
+      WHERE graphId = $1
+    `,
+    [graphId]
+  );
 }
 
 async function create(creator: Omit<Edge, "id">) {

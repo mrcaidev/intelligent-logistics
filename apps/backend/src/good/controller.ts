@@ -7,6 +7,7 @@ export const goodController = {
   create,
   updateById,
   removeById,
+  deliver,
 };
 
 async function findAll(_: Request, res: Response, next: NextFunction) {
@@ -48,6 +49,15 @@ async function removeById(
   try {
     await goodService.removeById(req.params.id);
     return res.status(204).end();
+  } catch (error) {
+    return next(error);
+  }
+}
+
+async function deliver(_: Request, res: Response, next: NextFunction) {
+  try {
+    const data = await goodService.deliver();
+    return res.status(200).json({ data });
   } catch (error) {
     return next(error);
   }
