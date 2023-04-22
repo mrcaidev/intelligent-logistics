@@ -1,12 +1,4 @@
-export type Good = {
-  id: string;
-  name: string;
-  createdAt: number;
-  source: string;
-  target: string;
-  isVip: boolean;
-  graphId: string;
-};
+import { Good } from "common";
 
 /**
  * Returns the good with the highest priority.

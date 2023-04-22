@@ -1,11 +1,4 @@
-/**
- * An undirected edge in a graph.
- */
-export type Edge = {
-  source: string;
-  target: string;
-  cost: number;
-};
+import { Edge } from "common";
 
 /**
  * Returns the shortest path between two nodes,
