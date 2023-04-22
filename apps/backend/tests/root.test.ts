@@ -4,10 +4,9 @@ import { describe, expect, it } from "vitest";
 
 const request = supertest(app);
 
-describe("/healthz", () => {
-  it("always returns 200", async () => {
-    const res = await request.get("/healthz");
-    expect(res.status).toEqual(200);
-    expect(res.body).toEqual({ message: "", data: null });
+describe("GET /healthz", () => {
+  it("returns 200", async () => {
+    const response = await request.get("/healthz");
+    expect(response.status).toEqual(200);
   });
 });

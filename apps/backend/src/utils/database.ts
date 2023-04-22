@@ -4,9 +4,15 @@ import { existsSync } from "fs";
 import { readFile, writeFile } from "fs/promises";
 import { parse } from "sql-parser";
 
+const fileName = import.meta.env.TEST
+  ? "database.test.json"
+  : import.meta.env.DEV
+  ? "database.dev.json"
+  : "database.json";
+
 class NodeManager extends Manager {
   constructor() {
-    super("database.json");
+    super(fileName);
   }
 
   protected async readDatabase() {
