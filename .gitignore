@@ -30,12 +30,12 @@ logs
 next-env.d.ts
 .astro
 
-# project specific
-database.json
-
 # misc
 temp
 *.tgz
 *.tsbuildinfo
 .DS_Store
 *.pem
+
+# project specific
+database*.json
