@@ -1,7 +1,9 @@
 import cors from "cors";
+import { edgeRouter } from "edge/router";
 import express, { Express } from "express";
 import { rateLimit } from "express-rate-limit";
 import { goodRouter } from "good/router";
+import { graphRouter } from "graph/router";
 import { rootRouter } from "root/router";
 import { bootstrap } from "./bootstrap";
 import { handleError } from "./middlewares/handle-error";
@@ -23,6 +25,8 @@ app.use(
 app.use(express.json());
 
 app.use("/", rootRouter);
+app.use("/graphs", graphRouter);
+app.use("/edges", edgeRouter);
 app.use("/goods", goodRouter);
 
 app.use(handleError);
