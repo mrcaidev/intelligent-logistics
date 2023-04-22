@@ -1,4 +1,3 @@
-import { generateRandomId } from "common";
 import { NotFoundError } from "utils/http-error";
 import { goodRepository } from "./repository";
 import { CreateRequest, UpdateByIdRequest } from "./types";
@@ -15,14 +14,7 @@ async function findAll() {
 }
 
 async function create(creator: CreateRequest["body"]) {
-  const id = generateRandomId();
-  const createdAt = new Date().getTime();
-
-  const good = { ...creator, id, createdAt };
-
-  await goodRepository.create(good);
-
-  return good;
+  return goodRepository.create(creator);
 }
 
 async function updateById(id: string, updater: UpdateByIdRequest["body"]) {

@@ -1,4 +1,5 @@
 import { query } from "utils/database";
+import { ServiceUnavailableError } from "utils/http-error";
 import { Good } from "./types";
 
 export const goodRepository = {
@@ -29,16 +30,23 @@ async function findById(id: string) {
   return good;
 }
 
-async function create(good: Good) {
-  const { id, name, createdAt, source, target, isVip, graphId } = good;
+async function create(creator: Omit<Good, "id" | "createdAt">) {
+  const { name, source, target, isVip, graphId } = creator;
 
-  await query(
+  const rows = await query<Good>(
     `
       INSERT INTO good
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      VALUES (RANDOM_ID, $1, CURRENT_TIMESTAMP, $2, $3, $4, $5)
+      RETURNING *
     `,
-    [id, name, createdAt, source, target, isVip, graphId]
+    [name, source, target, isVip, graphId]
   );
+
+  if (!rows[0]) {
+    throw new ServiceUnavailableError("添加失败，请稍后再试");
+  }
+
+  return rows[0];
 }
 
 async function updateById(id: string, good: Good) {
