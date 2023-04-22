@@ -1,30 +1,21 @@
-import { Good } from "./good";
+import { useGoods } from "hooks/use-goods";
+import { Loader } from "react-feather";
+import { GoodCard } from "./card";
 
-export function GoodQueue() {
+export function GoodList() {
+  const { data, isLoading } = useGoods();
+
+  if (isLoading) {
+    return <Loader className="mx-auto animate-spin" />;
+  }
+
   return (
-    <ul className="space-y-1 px-4 mr-0.5 overflow-auto scrollbar scrollbar-rounded scrollbar-track-color-transparent scrollbar-thumb-color-gray-400">
-      <li>
-        <Good
-          id="lwjkl2jk3j"
-          name="牛肉"
-          createdAt={new Date().getTime()}
-          sourceId="上海"
-          targetId="巴黎"
-          isVip={true}
-          graphId="23jkh4hwef"
-        />
-      </li>
-      <li>
-        <Good
-          id="ldsafrggeg"
-          name="牛肉"
-          createdAt={new Date().getTime()}
-          sourceId="上海"
-          targetId="巴黎"
-          isVip={true}
-          graphId="23jkh4hwef"
-        />
-      </li>
+    <ul className="space-y-2 px-4 mr-0.5 overflow-auto scrollbar scrollbar-rounded scrollbar-track-color-transparent scrollbar-thumb-color-gray-400">
+      {data?.map((good) => (
+        <li key={good.id}>
+          <GoodCard {...good} />
+        </li>
+      ))}
     </ul>
   );
 }
