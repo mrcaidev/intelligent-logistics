@@ -31,7 +31,7 @@ export function GoodCard({
           className="ml-auto group-open:rotate-90 transition-transform"
         />
       </summary>
-      <ul className="mx-2 py-1 border-t border-gray-400 text-xs">
+      <ul className="mx-2 py-1 border-t border-gray-400/40 text-xs">
         <li className="flex items-center gap-3 p-2">
           <Calendar size={16} />
           {new Date(createdAt).toLocaleString("zh")}
