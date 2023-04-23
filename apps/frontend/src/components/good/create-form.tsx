@@ -1,4 +1,3 @@
-import { Good } from "common";
 import { Button, Checkbox, Input, Option, Select } from "components/form";
 import { useGraph } from "components/graph";
 import { useGoods } from "hooks/use-goods";
@@ -6,6 +5,7 @@ import { useGraphs } from "hooks/use-graphs";
 import { FormEventHandler, useReducer, useState } from "react";
 import { Check, X } from "react-feather";
 import { toast } from "react-toastify";
+import { Good } from "shared-types";
 import { fetcher } from "utils/fetch";
 
 type State = {

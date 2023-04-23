@@ -9,7 +9,6 @@
     "start": "node dist/app.js"
   },
   "dependencies": {
-    "common": "workspace:^0.0.0",
     "cors": "^2.8.5",
     "database-manager": "workspace:^0.0.0",
     "delivery-scheduler": "workspace:^0.0.0",
@@ -23,6 +22,7 @@
     "@types/express": "^4.17.17",
     "@types/node": "^18.15.13",
     "@types/supertest": "^2.0.12",
+    "shared-types": "workspace:^",
     "supertest": "^6.3.3",
     "vite": "^4.3.1",
     "vite-plugin-node": "^3.0.2",

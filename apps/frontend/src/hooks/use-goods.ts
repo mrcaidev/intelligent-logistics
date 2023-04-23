@@ -1,4 +1,4 @@
-import { Good } from "common";
+import { Good } from "shared-types";
 import useSwr from "swr";
 
 export function useGoods() {

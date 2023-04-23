@@ -1,4 +1,4 @@
-import { Good } from "common";
+import { Good } from "shared-types";
 
 /**
  * Returns the good with the highest priority.

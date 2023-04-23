@@ -1,4 +1,4 @@
-import { Edge } from "common";
+import { Edge } from "shared-types";
 
 /**
  * Returns the shortest path between two nodes,

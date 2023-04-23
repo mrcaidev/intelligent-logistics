@@ -1,10 +1,10 @@
-import { Good } from "common";
 import { Button } from "components/form";
 import { useGraph } from "components/graph";
 import { useGoods } from "hooks/use-goods";
 import { useState } from "react";
 import { Send } from "react-feather";
 import { toast } from "react-toastify";
+import { Good } from "shared-types";
 import { fetcher } from "utils/fetch";
 
 export function GoodDeliverer() {

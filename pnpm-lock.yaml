@@ -58,9 +58,6 @@ importers:
 
   apps/backend:
     dependencies:
-      common:
-        specifier: workspace:^0.0.0
-        version: link:../../packages/common
       cors:
         specifier: ^2.8.5
         version: 2.8.5
@@ -95,6 +92,9 @@ importers:
       '@types/supertest':
         specifier: ^2.0.12
         version: 2.0.12
+      shared-types:
+        specifier: workspace:^
+        version: link:../../packages/shared-types
       supertest:
         specifier: ^6.3.3
         version: 6.3.3
@@ -113,9 +113,6 @@ importers:
       clsx:
         specifier: ^1.2.1
         version: 1.2.1
-      common:
-        specifier: workspace:^0.0.0
-        version: link:../../packages/common
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -147,6 +144,9 @@ importers:
       '@vitejs/plugin-react-swc':
         specifier: ^3.3.0
         version: 3.3.0(vite@4.3.1)
+      shared-types:
+        specifier: workspace:^
+        version: link:../../packages/shared-types
       unocss:
         specifier: ^0.51.5
         version: 0.51.5(postcss@8.4.23)(vite@4.3.1)
@@ -160,24 +160,11 @@ importers:
         specifier: ^4.2.0
         version: 4.2.0(typescript@5.0.4)(vite@4.3.1)
 
-  packages/common:
-    devDependencies:
-      vite:
-        specifier: ^4.3.1
-        version: 4.3.1(@types/node@18.15.13)
-      vite-plugin-dts:
-        specifier: ^2.3.0
-        version: 2.3.0(@types/node@18.15.13)(vite@4.3.1)
-      vite-tsconfig-paths:
-        specifier: ^4.2.0
-        version: 4.2.0(typescript@5.0.4)(vite@4.3.1)
-
   packages/database-manager:
-    dependencies:
-      common:
-        specifier: workspace:^0.0.0
-        version: link:../common
     devDependencies:
+      shared-types:
+        specifier: workspace:^
+        version: link:../shared-types
       vite:
         specifier: ^4.3.1
         version: 4.3.1(@types/node@18.15.13)
@@ -189,10 +176,21 @@ importers:
         version: 4.2.0(typescript@5.0.4)(vite@4.3.1)
 
   packages/delivery-scheduler:
-    dependencies:
-      common:
-        specifier: workspace:^0.0.0
-        version: link:../common
+    devDependencies:
+      shared-types:
+        specifier: workspace:^
+        version: link:../shared-types
+      vite:
+        specifier: ^4.3.1
+        version: 4.3.1(@types/node@18.15.13)
+      vite-plugin-dts:
+        specifier: ^2.3.0
+        version: 2.3.0(@types/node@18.15.13)(vite@4.3.1)
+      vite-tsconfig-paths:
+        specifier: ^4.2.0
+        version: 4.2.0(typescript@5.0.4)(vite@4.3.1)
+
+  packages/shared-types:
     devDependencies:
       vite:
         specifier: ^4.3.1
@@ -205,11 +203,10 @@ importers:
         version: 4.2.0(typescript@5.0.4)(vite@4.3.1)
 
   packages/sql-parser:
-    dependencies:
-      common:
-        specifier: workspace:^0.0.0
-        version: link:../common
     devDependencies:
+      shared-types:
+        specifier: workspace:^
+        version: link:../shared-types
       vite:
         specifier: ^4.3.1
         version: 4.3.1(@types/node@18.15.13)
@@ -1242,6 +1239,15 @@ packages:
     dev: true
 
   /@ts-morph/common@0.19.0:
+    resolution: {integrity: sha512-Unz/WHmd4pGax91rdIKWi51wnVUW11QttMEPpBiBgIewnc9UQIX7UDLxr5vRlqeByXCwhkF6VabSsI0raWcyAQ==}
+    dependencies:
+      fast-glob: 3.2.12
+      minimatch: 7.4.6
+      mkdirp: 2.1.6
+      path-browserify: 1.0.1
+    dev: true
+
+  /@ts-morph/shared-types@0.19.0:
     resolution: {integrity: sha512-Unz/WHmd4pGax91rdIKWi51wnVUW11QttMEPpBiBgIewnc9UQIX7UDLxr5vRlqeByXCwhkF6VabSsI0raWcyAQ==}
     dependencies:
       fast-glob: 3.2.12
@@ -5712,6 +5718,7 @@ packages:
     resolution: {integrity: sha512-Kg5u0mk19PIIe4islUI/HWRvm9bC1lHejK4S0oh1zaZ77TMZAEmQC0sHQYiu2RgCQFZKXz1fMVi/7nOOeirznA==}
     dependencies:
       '@ts-morph/common': 0.19.0
+      '@ts-morph/shared-types': 0.19.0
       code-block-writer: 12.0.0
     dev: true
 

@@ -9,7 +9,7 @@ import {
   Schema,
   SelectAST,
   UpdateAST,
-} from "common";
+} from "shared-types";
 import { DatabaseManagerError } from "./error";
 
 /**

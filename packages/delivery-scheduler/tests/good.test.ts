@@ -1,5 +1,5 @@
-import { Good } from "common";
 import { getMostPrior } from "good";
+import { Good } from "shared-types";
 import { expect, it } from "vitest";
 
 it("delivers goods by created time by default", () => {

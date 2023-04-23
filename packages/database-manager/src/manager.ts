@@ -11,7 +11,7 @@ import {
   Schema,
   SelectAST,
   UpdateAST,
-} from "common";
+} from "shared-types";
 import { DatabaseManagerError } from "./error";
 import { Guard } from "./guard";
 import { Validator } from "./validator";

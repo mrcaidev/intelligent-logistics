@@ -1,4 +1,3 @@
-import { Edge } from "common";
 import { useGraphs } from "hooks/use-graphs";
 import {
   PropsWithChildren,
@@ -7,6 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
+import { Edge } from "shared-types";
 import useSwr, { SWRResponse } from "swr";
 
 type State = {

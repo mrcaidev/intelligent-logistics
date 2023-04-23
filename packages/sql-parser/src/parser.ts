@@ -1,3 +1,5 @@
+import { Cursor } from "cursor";
+import { SqlParserError } from "error";
 import {
   AST,
   Assignment,
@@ -9,9 +11,7 @@ import {
   InsertAST,
   SelectAST,
   UpdateAST,
-} from "common";
-import { Cursor } from "cursor";
-import { SqlParserError } from "error";
+} from "shared-types";
 import { Token, TokenType } from "token";
 
 /**

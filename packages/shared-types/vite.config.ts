@@ -7,7 +7,7 @@ export default defineConfig({
   build: {
     lib: {
       entry: "src/index.ts",
-      name: "common",
+      name: "shared-types",
       fileName: "index",
       formats: ["es"],
     },

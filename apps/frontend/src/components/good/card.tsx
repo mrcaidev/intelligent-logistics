@@ -1,4 +1,3 @@
-import { Good } from "common";
 import { useGraphs } from "hooks/use-graphs";
 import {
   Calendar,
@@ -8,6 +7,7 @@ import {
   Package,
   User,
 } from "react-feather";
+import { Good } from "shared-types";
 
 export function GoodCard({
   name,

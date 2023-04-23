@@ -1,7 +1,7 @@
-import { Database, Row } from "common";
 import { Manager } from "database-manager";
 import { existsSync } from "fs";
 import { readFile, writeFile } from "fs/promises";
+import { Database, Row } from "shared-types";
 import { parse } from "sql-parser";
 
 const fileName = import.meta.env.TEST

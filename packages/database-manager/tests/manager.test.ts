@@ -1,6 +1,6 @@
-import { Database } from "common";
 import { DatabaseManagerError } from "error";
 import { Manager } from "manager";
+import { Database } from "shared-types";
 import { describe, expect, it } from "vitest";
 
 class TestManager extends Manager {

@@ -2,13 +2,13 @@
   "files": [],
   "references": [
     {
-      "path": "packages/common"
-    },
-    {
       "path": "packages/database-manager"
     },
     {
       "path": "packages/delivery-scheduler"
+    },
+    {
+      "path": "packages/shared-types"
     },
     {
       "path": "packages/sql-parser"
