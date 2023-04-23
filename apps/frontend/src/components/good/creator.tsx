@@ -1,3 +1,4 @@
+import { Button } from "components/form";
 import { Modal } from "components/modal";
 import { useState } from "react";
 import { Plus } from "react-feather";
@@ -10,14 +11,9 @@ export function GoodCreator() {
 
   return (
     <>
-      <button
-        type="button"
-        onClick={open}
-        className="flex justify-center items-center gap-2 px-4 py-3 rounded bg-gray-300 hover:bg-gray-400 font-bold transition-colors"
-      >
-        <Plus size={20} />
+      <Button variant="ghost" icon={Plus} onClick={open}>
         添加物品
-      </button>
+      </Button>
       <Modal isOpen={isOpen} onClose={close}>
         <CreateGoodForm onClose={close} />
       </Modal>

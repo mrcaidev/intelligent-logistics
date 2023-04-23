@@ -33,7 +33,7 @@ export function Button({
       type={type}
       disabled={isLoading || disabled}
       className={clsx(
-        "flex items-center disabled:bg-gray-600 disabled:hover:bg-gray-600 transition-colors",
+        "flex justify-center items-center disabled:bg-gray-600 disabled:hover:bg-gray-600 transition-colors",
         buttonColor,
         buttonSize,
         className
@@ -69,7 +69,7 @@ function getButtonSize(size: ButtonSize) {
 function getIconSize(size: ButtonSize) {
   switch (size) {
     case "normal":
-      return 18;
+      return 20;
     case "small":
       return 14;
   }
