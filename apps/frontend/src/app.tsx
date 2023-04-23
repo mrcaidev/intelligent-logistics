@@ -1,8 +1,11 @@
+import "@unocss/reset/tailwind.css";
 import { GoodCreator, GoodDeliverer, GoodList } from "components/good";
+import { Graph } from "components/graph";
 import { Sidebar } from "components/sidebar";
 import { ToastContainer, toast } from "react-toastify";
 import { SWRConfig } from "swr";
 import { fetcher } from "utils/fetch";
+import "virtual:uno.css";
 
 export function App() {
   return (
@@ -12,8 +15,8 @@ export function App() {
         onError: (error) => toast.error(error.message),
       }}
     >
-      <main className="h-screen">
-        <div>Graph</div>
+      <main className="relative h-screen sm:mr-90">
+        <Graph />
       </main>
       <Sidebar>
         <GoodList />
