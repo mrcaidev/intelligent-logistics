@@ -27,7 +27,7 @@ const theme: Theme = {
 export function Graph() {
   const { edges, nodes, activeIds } = useGraph();
 
-  if (!edges.data || edges.isLoading) {
+  if (edges.isLoading || !edges.data) {
     return (
       <div className="grid place-items-center h-full">
         <Loader size={36} className="animate-spin" />
@@ -48,10 +48,10 @@ export function Graph() {
         target,
       }))}
       actives={activeIds}
-      draggable
       edgeArrowPosition="none"
       edgeLabelPosition="natural"
       labelType="all"
+      layoutType="treeTd2d"
       theme={theme}
     />
   );

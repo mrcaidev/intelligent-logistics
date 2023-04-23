@@ -1,7 +1,6 @@
 import "@unocss/reset/tailwind.css";
-import { GoodCreator, GoodDeliverer, GoodList } from "components/good";
-import { Graph } from "components/graph";
-import { GraphProvider } from "components/graph/context";
+import { GoodScheduler } from "components/good-scheduler";
+import { Graph, GraphProvider } from "components/graph";
 import { Sidebar } from "components/sidebar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,14 +16,10 @@ export function App() {
           <Graph />
         </main>
         <Sidebar>
-          <GoodList />
-          <div className="grid grid-cols-2 gap-3 px-4 mt-auto">
-            <GoodCreator />
-            <GoodDeliverer />
-          </div>
+          <GoodScheduler />
         </Sidebar>
       </GraphProvider>
-      <ToastContainer />
+      <ToastContainer autoClose={3000} position="top-center" theme="colored" />
     </SWRConfig>
   );
 }

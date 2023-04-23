@@ -1,6 +1,6 @@
 import { Graph } from "shared-types";
-import useSwr from "swr";
+import useSWR from "swr";
 
 export function useGraphs() {
-  return useSwr<Graph[]>("/graphs");
+  return useSWR<Graph[]>("/graphs");
 }

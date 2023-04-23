@@ -5,7 +5,6 @@ import { SidebarToggler } from "./toggler";
 
 export function Sidebar({ children }: PropsWithChildren) {
   const [isOpen, setIsOpen] = useState(false);
-  const toggle = () => setIsOpen((isOpen) => !isOpen);
 
   useEffect(() => {
     const isLaptop = window.matchMedia("(min-width: 768px)").matches;
@@ -14,7 +13,10 @@ export function Sidebar({ children }: PropsWithChildren) {
 
   return (
     <>
-      <SidebarToggler isOpen={isOpen} toggle={toggle} />
+      <SidebarToggler
+        isOpen={isOpen}
+        toggle={() => setIsOpen((isOpen) => !isOpen)}
+      />
       {createPortal(
         <aside
           className={clsx(

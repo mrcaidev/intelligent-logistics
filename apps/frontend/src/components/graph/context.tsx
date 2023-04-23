@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { Edge } from "shared-types";
-import useSwr, { SWRResponse } from "swr";
+import useSWR, { SWRResponse } from "swr";
 
 type State = {
   graphId: string;
@@ -23,7 +23,7 @@ const GraphContext = createContext<State>({} as State);
 export function GraphProvider({ children }: PropsWithChildren) {
   const { data: graphs } = useGraphs();
   const [graphId, setGraphId] = useState("");
-  const edges = useSwr<Edge[]>(() => "/edges?graphId=" + graphId);
+  const edges = useSWR<Edge[]>(() => "/edges?graphId=" + graphId);
   const nodes = collectNodes(edges.data ?? []);
   const [activeIds, setActiveIds] = useState<string[]>([]);
 

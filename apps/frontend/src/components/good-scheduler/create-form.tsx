@@ -1,11 +1,11 @@
 import { Button, Checkbox, Input, Option, Select } from "components/form";
 import { useGraph } from "components/graph";
-import { useGoods } from "hooks/use-goods";
 import { useGraphs } from "hooks/use-graphs";
-import { FormEventHandler, useReducer, useState } from "react";
+import { FormEventHandler, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { toast } from "react-toastify";
 import { Good } from "shared-types";
+import useSWRMutation from "swr/mutation";
 import { fetcher } from "utils/fetch";
 
 type State = {
@@ -34,36 +34,39 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
   return { ...state, [type]: value };
 }
 
+async function createGood(url: string, { arg }: { arg: State }) {
+  return fetcher<Good>(url, {
+    method: "POST",
+    body: JSON.stringify(arg),
+  });
+}
+
 type Props = {
   onClose: () => void;
 };
 
 export function CreateGoodForm({ onClose }: Props) {
   const { data: graphs } = useGraphs();
-  const { mutate } = useGoods();
   const { nodes } = useGraph();
+
+  const { trigger, isMutating } = useSWRMutation("/goods", createGood);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const handleSubmit: FormEventHandler = async (e) => {
     e.preventDefault();
-
-    setIsSubmitting(true);
-
     try {
-      const good = await fetcher<Good>("/goods", {
-        method: "POST",
-        body: JSON.stringify(form),
-      });
-      mutate((goods) => (goods ? [...goods, good] : [good]));
+      const good = await trigger(form);
+      if (!good) {
+        return;
+      }
+      toast.success("成功添加物品：" + good.name);
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
       }
     } finally {
-      setIsSubmitting(false);
+      onClose();
     }
   };
 
@@ -75,7 +78,7 @@ export function CreateGoodForm({ onClose }: Props) {
         name="name"
         value={form.name}
         required
-        disabled={isSubmitting}
+        disabled={isMutating}
         onChange={(e) => dispatch({ type: "name", value: e.target.value })}
       />
       <Select
@@ -84,7 +87,7 @@ export function CreateGoodForm({ onClose }: Props) {
         value={form.source}
         placeholder="请选择出发地"
         required
-        disabled={isSubmitting}
+        disabled={isMutating}
         onChange={(e) => dispatch({ type: "source", value: e.target.value })}
       >
         {nodes.map((node) => (
@@ -99,7 +102,7 @@ export function CreateGoodForm({ onClose }: Props) {
         value={form.target}
         placeholder="请选择目的地"
         required
-        disabled={isSubmitting}
+        disabled={isMutating}
         onChange={(e) => dispatch({ type: "target", value: e.target.value })}
       >
         {nodes.map((node) => (
@@ -114,7 +117,7 @@ export function CreateGoodForm({ onClose }: Props) {
         value={form.graphId}
         placeholder="请选择物流方案"
         required
-        disabled={isSubmitting}
+        disabled={isMutating}
         onChange={(e) => dispatch({ type: "graphId", value: e.target.value })}
       >
         {graphs?.map((graph) => (
@@ -127,14 +130,14 @@ export function CreateGoodForm({ onClose }: Props) {
         label="是否是 VIP 用户"
         name="isVip"
         checked={form.isVip}
-        disabled={isSubmitting}
+        disabled={isMutating}
         onChange={(e) => dispatch({ type: "isVip", value: e.target.checked })}
       />
-      <div className="flex justify-end items-center gap-3 pt-2">
+      <div className="flex justify-end items-center gap-3">
         <Button variant="ghost" icon={X} onClick={onClose}>
           取消
         </Button>
-        <Button type="submit" icon={Check} isLoading={isSubmitting}>
+        <Button type="submit" icon={Check} isLoading={isMutating}>
           确认
         </Button>
       </div>

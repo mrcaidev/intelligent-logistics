@@ -40,7 +40,7 @@ export function Modal({ isOpen, onClose, children }: Props) {
           className="absolute right-6 top-6 p-1 rounded hover:bg-gray-300 transition-colors"
         >
           <X />
-          <span className="sr-only">关闭</span>
+          <span className="sr-only">关闭模态框</span>
         </button>
         {children}
       </div>
