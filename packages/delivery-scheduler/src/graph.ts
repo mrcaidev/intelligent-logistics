@@ -11,6 +11,10 @@ export function getShortestPath(edges: Edge[], source: string, target: string) {
     unvisitedNodes.add(target);
   }
 
+  if (!unvisitedNodes.has(source) || !unvisitedNodes.has(target)) {
+    return { nodes: [], edges: [] };
+  }
+
   const distances: Record<string, number> = {};
   for (const node of unvisitedNodes) {
     distances[node] = Infinity;
