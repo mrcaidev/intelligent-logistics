@@ -149,4 +149,19 @@ describe("POST /goods/deliver", () => {
     const response = await request.post("/goods/deliver");
     expect(response.status).toEqual(422);
   });
+
+  it("returns 422 when there is no path to deliver", async () => {
+    const createResponse = await request.post("/goods").send({
+      name: "Egg",
+      source: "E",
+      target: "F",
+      isVip: false,
+      graphId: "g1",
+    });
+
+    const response = await request.post("/goods/deliver");
+    expect(response.status).toEqual(422);
+
+    await request.delete("/goods/" + createResponse.body.data.id);
+  });
 });
