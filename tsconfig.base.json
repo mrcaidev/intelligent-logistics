@@ -21,7 +21,7 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "target": "ES6",
+    "target": "ES2017",
     "composite": true,
     "incremental": true,
     "skipLibCheck": true

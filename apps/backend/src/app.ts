@@ -8,7 +8,7 @@ import { rootRouter } from "root/router";
 import { bootstrap } from "./bootstrap";
 import { handleError } from "./middlewares/handle-error";
 
-bootstrap();
+await bootstrap();
 
 export const app: Express = express();
 
