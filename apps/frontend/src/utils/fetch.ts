@@ -1,5 +1,3 @@
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
 export async function fetcher<T>(url: string | URL, config?: RequestInit) {
   const input = new URL(url, import.meta.env.VITE_API_BASE_URL);
   const init = {
@@ -10,7 +8,9 @@ export async function fetcher<T>(url: string | URL, config?: RequestInit) {
     },
   };
 
-  await sleep(500);
+  if (import.meta.env.DEV) {
+    await new Promise((resolve) => setTimeout(resolve, 5000));
+  }
 
   const response = await fetch(input, init);
   const json = await response.json();

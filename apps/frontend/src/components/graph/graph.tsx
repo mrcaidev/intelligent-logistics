@@ -1,7 +1,6 @@
-import { Edge } from "common";
-import { useEdges } from "hooks/use-edges";
-import { useGraphs } from "hooks/use-graphs";
+import { Loader } from "react-feather";
 import { GraphCanvas, Theme, lightTheme } from "reagraph";
+import { useGraph } from "./context";
 
 const theme: Theme = {
   ...lightTheme,
@@ -26,19 +25,23 @@ const theme: Theme = {
 };
 
 export function Graph() {
-  const { data: graphs } = useGraphs();
-  const { data: edges, isLoading } = useEdges(graphs?.at(0)?.id);
+  const { edges, nodes } = useGraph();
 
-  if (!edges || isLoading) {
-    return <p>Loading...</p>;
+  if (!edges.data || edges.isLoading) {
+    return (
+      <div className="grid place-items-center h-full">
+        <Loader size={36} className="animate-spin" />
+      </div>
+    );
   }
-
-  const nodes = collectNodes(edges);
 
   return (
     <GraphCanvas
-      nodes={nodes.map((label) => ({ id: label, label }))}
-      edges={edges.map(({ id, source, target, cost }) => ({
+      nodes={nodes.map((label) => ({
+        id: label,
+        label,
+      }))}
+      edges={edges.data.map(({ id, source, target, cost }) => ({
         id,
         label: String(cost),
         source,
@@ -51,13 +54,4 @@ export function Graph() {
       theme={theme}
     />
   );
-}
-
-function collectNodes(edges: Edge[]) {
-  const nodes = new Set<string>();
-  for (const { source, target } of edges) {
-    nodes.add(source);
-    nodes.add(target);
-  }
-  return Array.from(nodes);
 }

@@ -18,7 +18,7 @@ export function Sidebar({ children }: PropsWithChildren) {
       {createPortal(
         <aside
           className={clsx(
-            "flex flex-col fixed right-0 top-0 bottom-0 w-screen sm:w-90 pt-15 pb-4 border-l border-gray-300 bg-gray-200 shadow-lg transition-transform z-10",
+            "flex flex-col gap-4 fixed right-0 top-0 bottom-0 w-screen sm:w-90 h-full pt-15 pb-4 border-l border-gray-300 bg-gray-200 shadow-lg transition-transform",
             isOpen ? "translate-x-0" : "translate-x-full"
           )}
         >

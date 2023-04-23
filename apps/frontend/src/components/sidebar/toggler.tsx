@@ -11,7 +11,7 @@ export function SidebarToggler({ isOpen, toggle }: Props) {
       type="button"
       onClick={toggle}
       className={clsx(
-        "fixed right-4 top-3 p-2 rounded transition-colors z-20",
+        "fixed right-4 top-3 p-2 rounded transition-colors z-10",
         isOpen ? "hover:bg-gray-300" : "hover:bg-gray-200"
       )}
     >

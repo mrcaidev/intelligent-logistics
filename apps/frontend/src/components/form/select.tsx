@@ -21,7 +21,6 @@ export function Select({
       <label htmlFor={id}>{label}</label>
       <select
         {...rest}
-        defaultValue=""
         id={id}
         className={clsx(
           "block min-w-0 w-full px-3 py-2 rounded border border-gray-400 outline-none focus:outline-teal-600 focus:-outline-offset-1 bg-transparent disabled:text-gray-600",

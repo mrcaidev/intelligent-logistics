@@ -28,11 +28,11 @@ export function Modal({ isOpen, onClose, children }: Props) {
       <div
         role="presentation"
         onClick={onClose}
-        className="fixed left-0 right-0 top-0 bottom-0 bg-gray-900/75 z-30"
+        className="fixed left-0 right-0 top-0 bottom-0 bg-gray-900/75 z-20"
       />
       <div
         role="dialog"
-        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-3/5 max-w-3xl px-8 py-6 m-8 rounded-lg bg-gray-200 z-30"
+        className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-3/5 max-w-3xl px-8 py-6 m-8 rounded-lg bg-gray-200 z-20"
       >
         <button
           type="button"

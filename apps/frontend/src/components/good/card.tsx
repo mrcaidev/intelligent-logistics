@@ -42,7 +42,7 @@ export function GoodCard({
         </li>
         <li className="flex items-center gap-3 p-2">
           <Map size={16} />
-          {graphName}
+          {graphName || "未知方案"}
         </li>
         {isVip && (
           <li className="flex items-center gap-3 p-2">
