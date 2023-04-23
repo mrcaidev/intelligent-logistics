@@ -3,10 +3,6 @@ import { Edge } from "common";
 /**
  * Returns the shortest path between two nodes,
  * using Dijkstra's algorithm.
- *
- * @param edges The edges in the graph.
- * @param source The starting node.
- * @param target The ending node.
  */
 export function getShortestPath(edges: Edge[], source: string, target: string) {
   const unvisitedNodes = new Set<string>();
@@ -24,9 +20,11 @@ export function getShortestPath(edges: Edge[], source: string, target: string) {
   const previousNodes: Record<string, string> = {};
 
   while (unvisitedNodes.size > 0) {
-    let nearestNode = unvisitedNodes.values().next().value as string;
+    let minDistance = Infinity;
+    let nearestNode = "";
     for (const node of unvisitedNodes) {
-      if (distances[node]! < distances[nearestNode]!) {
+      if (distances[node]! < minDistance) {
+        minDistance = distances[node]!;
         nearestNode = node;
       }
     }
@@ -56,15 +54,33 @@ export function getShortestPath(edges: Edge[], source: string, target: string) {
   }
 
   if (unvisitedNodes.size === 0) {
-    return [];
+    return { nodes: [], edges: [] };
   }
 
-  const path = [target];
+  const pathNodes = [target];
   let previousNode = previousNodes[target];
   while (previousNode) {
-    path.unshift(previousNode);
+    pathNodes.unshift(previousNode);
     previousNode = previousNodes[previousNode];
   }
 
-  return path;
+  const pathEdgeIds: string[] = [];
+  for (const [index, node] of pathNodes.entries()) {
+    if (index === 0) {
+      continue;
+    }
+
+    const previousNode = pathNodes[index - 1];
+    const edge = edges.find(
+      ({ source, target }) =>
+        (source === node && target === previousNode) ||
+        (source === previousNode && target === node)
+    );
+
+    if (edge) {
+      pathEdgeIds.push(edge.id);
+    }
+  }
+
+  return { nodes: pathNodes, edges: pathEdgeIds };
 }

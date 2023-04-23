@@ -3,7 +3,7 @@ import { Good } from "common";
 /**
  * Returns the good with the highest priority.
  */
-export function getGoodWithHighestPriority(goods: Good[]) {
+export function getMostPrior(goods: Good[]) {
   let highestPriority = 0;
   let result: Good | undefined = undefined;
 

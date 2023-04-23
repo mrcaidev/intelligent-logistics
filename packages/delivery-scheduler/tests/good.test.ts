@@ -1,4 +1,5 @@
-import { Good, getGoodWithHighestPriority } from "good";
+import { Good } from "common";
+import { getMostPrior } from "good";
 import { expect, it } from "vitest";
 
 it("delivers goods by created time by default", () => {
@@ -10,15 +11,15 @@ it("delivers goods by created time by default", () => {
     { name: "Milk", createdAt: now - 1, isVip: false },
   ] as Good[];
 
-  const first = getGoodWithHighestPriority(goods);
+  const first = getMostPrior(goods);
   goods.splice(goods.indexOf(first), 1);
   expect(first.name).toEqual("Beef");
 
-  const second = getGoodWithHighestPriority(goods);
+  const second = getMostPrior(goods);
   goods.splice(goods.indexOf(second), 1);
   expect(second.name).toEqual("Pork");
 
-  const third = getGoodWithHighestPriority(goods);
+  const third = getMostPrior(goods);
   goods.splice(goods.indexOf(third), 1);
   expect(third.name).toEqual("Milk");
 });
@@ -32,15 +33,15 @@ it("raises VIP good's priority", () => {
     { name: "Milk", createdAt: now - 1, isVip: false },
   ] as Good[];
 
-  const first = getGoodWithHighestPriority(goods);
+  const first = getMostPrior(goods);
   goods.splice(goods.indexOf(first), 1);
   expect(first.name).toEqual("Pork");
 
-  const second = getGoodWithHighestPriority(goods);
+  const second = getMostPrior(goods);
   goods.splice(goods.indexOf(second), 1);
   expect(second.name).toEqual("Beef");
 
-  const third = getGoodWithHighestPriority(goods);
+  const third = getMostPrior(goods);
   goods.splice(goods.indexOf(third), 1);
   expect(third.name).toEqual("Milk");
 });

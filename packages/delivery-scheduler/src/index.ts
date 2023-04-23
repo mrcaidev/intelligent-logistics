@@ -1,2 +1,2 @@
-export { getGoodWithHighestPriority } from "./good";
+export { getMostPrior } from "./good";
 export { getShortestPath } from "./graph";
