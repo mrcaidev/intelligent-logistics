@@ -11,67 +11,67 @@ it("finds the shortest path in graph #1", () => {
   ];
   expect(getShortestPath(edges, "A", "A")).toEqual({
     nodes: ["A"],
-    edges: [],
+    edgeIds: [],
   });
   expect(getShortestPath(edges, "A", "B")).toEqual({
     nodes: ["A", "B"],
-    edges: ["1"],
+    edgeIds: ["1"],
   });
   expect(getShortestPath(edges, "A", "C")).toEqual({
     nodes: ["A", "C"],
-    edges: ["2"],
+    edgeIds: ["2"],
   });
   expect(getShortestPath(edges, "A", "D")).toEqual({
     nodes: ["A", "C", "D"],
-    edges: ["2", "5"],
+    edgeIds: ["2", "5"],
   });
   expect(getShortestPath(edges, "B", "A")).toEqual({
     nodes: ["B", "A"],
-    edges: ["1"],
+    edgeIds: ["1"],
   });
   expect(getShortestPath(edges, "B", "B")).toEqual({
     nodes: ["B"],
-    edges: [],
+    edgeIds: [],
   });
   expect(getShortestPath(edges, "B", "C")).toEqual({
     nodes: ["B", "A", "C"],
-    edges: ["1", "2"],
+    edgeIds: ["1", "2"],
   });
   expect(getShortestPath(edges, "B", "D")).toEqual({
     nodes: ["B", "A", "C", "D"],
-    edges: ["1", "2", "5"],
+    edgeIds: ["1", "2", "5"],
   });
   expect(getShortestPath(edges, "C", "A")).toEqual({
     nodes: ["C", "A"],
-    edges: ["2"],
+    edgeIds: ["2"],
   });
   expect(getShortestPath(edges, "C", "B")).toEqual({
     nodes: ["C", "A", "B"],
-    edges: ["2", "1"],
+    edgeIds: ["2", "1"],
   });
   expect(getShortestPath(edges, "C", "C")).toEqual({
     nodes: ["C"],
-    edges: [],
+    edgeIds: [],
   });
   expect(getShortestPath(edges, "C", "D")).toEqual({
     nodes: ["C", "D"],
-    edges: ["5"],
+    edgeIds: ["5"],
   });
   expect(getShortestPath(edges, "D", "A")).toEqual({
     nodes: ["D", "C", "A"],
-    edges: ["5", "2"],
+    edgeIds: ["5", "2"],
   });
   expect(getShortestPath(edges, "D", "B")).toEqual({
     nodes: ["D", "C", "A", "B"],
-    edges: ["5", "2", "1"],
+    edgeIds: ["5", "2", "1"],
   });
   expect(getShortestPath(edges, "D", "C")).toEqual({
     nodes: ["D", "C"],
-    edges: ["5"],
+    edgeIds: ["5"],
   });
   expect(getShortestPath(edges, "D", "D")).toEqual({
     nodes: ["D"],
-    edges: [],
+    edgeIds: [],
   });
 });
 
@@ -87,83 +87,83 @@ it("finds the shortest path in graph #2", () => {
   ];
   expect(getShortestPath(edges, "A", "A")).toEqual({
     nodes: ["A"],
-    edges: [],
+    edgeIds: [],
   });
   expect(getShortestPath(edges, "A", "B")).toEqual({
     nodes: ["A", "B"],
-    edges: ["1"],
+    edgeIds: ["1"],
   });
   expect(getShortestPath(edges, "A", "C")).toEqual({
     nodes: ["A", "C"],
-    edges: ["2"],
+    edgeIds: ["2"],
   });
   expect(getShortestPath(edges, "A", "D")).toEqual({
     nodes: ["A", "C", "D"],
-    edges: ["2", "6"],
+    edgeIds: ["2", "6"],
   });
   expect(getShortestPath(edges, "A", "E")).toEqual({
     nodes: ["A", "B", "E"],
-    edges: ["1", "5"],
+    edgeIds: ["1", "5"],
   });
   expect(getShortestPath(edges, "B", "A")).toEqual({
     nodes: ["B", "A"],
-    edges: ["1"],
+    edgeIds: ["1"],
   });
   expect(getShortestPath(edges, "B", "B")).toEqual({
     nodes: ["B"],
-    edges: [],
+    edgeIds: [],
   });
   expect(getShortestPath(edges, "B", "C")).toEqual({
     nodes: ["B", "A", "C"],
-    edges: ["1", "2"],
+    edgeIds: ["1", "2"],
   });
   expect(getShortestPath(edges, "B", "D")).toEqual({
     nodes: ["B", "D"],
-    edges: ["4"],
+    edgeIds: ["4"],
   });
   expect(getShortestPath(edges, "B", "E")).toEqual({
     nodes: ["B", "E"],
-    edges: ["5"],
+    edgeIds: ["5"],
   });
   expect(getShortestPath(edges, "C", "A")).toEqual({
     nodes: ["C", "A"],
-    edges: ["2"],
+    edgeIds: ["2"],
   });
   expect(getShortestPath(edges, "C", "B")).toEqual({
     nodes: ["C", "A", "B"],
-    edges: ["2", "1"],
+    edgeIds: ["2", "1"],
   });
   expect(getShortestPath(edges, "C", "C")).toEqual({
     nodes: ["C"],
-    edges: [],
+    edgeIds: [],
   });
   expect(getShortestPath(edges, "C", "D")).toEqual({
     nodes: ["C", "D"],
-    edges: ["6"],
+    edgeIds: ["6"],
   });
   expect(getShortestPath(edges, "C", "E")).toEqual({
     nodes: ["C", "A", "B", "E"],
-    edges: ["2", "1", "5"],
+    edgeIds: ["2", "1", "5"],
   });
   expect(getShortestPath(edges, "D", "A")).toEqual({
     nodes: ["D", "C", "A"],
-    edges: ["6", "2"],
+    edgeIds: ["6", "2"],
   });
   expect(getShortestPath(edges, "D", "B")).toEqual({
     nodes: ["D", "B"],
-    edges: ["4"],
+    edgeIds: ["4"],
   });
   expect(getShortestPath(edges, "D", "C")).toEqual({
     nodes: ["D", "C"],
-    edges: ["6"],
+    edgeIds: ["6"],
   });
   expect(getShortestPath(edges, "D", "D")).toEqual({
     nodes: ["D"],
-    edges: [],
+    edgeIds: [],
   });
   expect(getShortestPath(edges, "D", "E")).toEqual({
     nodes: ["D", "B", "E"],
-    edges: ["4", "5"],
+    edgeIds: ["4", "5"],
   });
 });
 
@@ -180,150 +180,150 @@ it("finds the shortest path in graph #3", () => {
   ];
   expect(getShortestPath(edges, "A", "A")).toEqual({
     nodes: ["A"],
-    edges: [],
+    edgeIds: [],
   });
   expect(getShortestPath(edges, "A", "B")).toEqual({
     nodes: ["A", "B"],
-    edges: ["1"],
+    edgeIds: ["1"],
   });
   expect(getShortestPath(edges, "A", "C")).toEqual({
     nodes: ["A", "C"],
-    edges: ["2"],
+    edgeIds: ["2"],
   });
   expect(getShortestPath(edges, "A", "D")).toEqual({
     nodes: ["A", "C", "D"],
-    edges: ["2", "4"],
+    edgeIds: ["2", "4"],
   });
   expect(getShortestPath(edges, "A", "E")).toEqual({
     nodes: ["A", "C", "E"],
-    edges: ["2", "5"],
+    edgeIds: ["2", "5"],
   });
   expect(getShortestPath(edges, "A", "F")).toEqual({
     nodes: ["A", "C", "E", "F"],
-    edges: ["2", "5", "8"],
+    edgeIds: ["2", "5", "8"],
   });
   expect(getShortestPath(edges, "B", "A")).toEqual({
     nodes: ["B", "A"],
-    edges: ["1"],
+    edgeIds: ["1"],
   });
   expect(getShortestPath(edges, "B", "B")).toEqual({
     nodes: ["B"],
-    edges: [],
+    edgeIds: [],
   });
   expect(getShortestPath(edges, "B", "C")).toEqual({
     nodes: ["B", "C"],
-    edges: ["3"],
+    edgeIds: ["3"],
   });
   expect(getShortestPath(edges, "B", "D")).toEqual({
     nodes: ["B", "C", "D"],
-    edges: ["3", "4"],
+    edgeIds: ["3", "4"],
   });
   expect(getShortestPath(edges, "B", "E")).toEqual({
     nodes: ["B", "C", "E"],
-    edges: ["3", "5"],
+    edgeIds: ["3", "5"],
   });
   expect(getShortestPath(edges, "B", "F")).toEqual({
     nodes: ["B", "C", "E", "F"],
-    edges: ["3", "5", "8"],
+    edgeIds: ["3", "5", "8"],
   });
   expect(getShortestPath(edges, "C", "A")).toEqual({
     nodes: ["C", "A"],
-    edges: ["2"],
+    edgeIds: ["2"],
   });
   expect(getShortestPath(edges, "C", "B")).toEqual({
     nodes: ["C", "B"],
-    edges: ["3"],
+    edgeIds: ["3"],
   });
   expect(getShortestPath(edges, "C", "C")).toEqual({
     nodes: ["C"],
-    edges: [],
+    edgeIds: [],
   });
   expect(getShortestPath(edges, "C", "D")).toEqual({
     nodes: ["C", "D"],
-    edges: ["4"],
+    edgeIds: ["4"],
   });
   expect(getShortestPath(edges, "C", "E")).toEqual({
     nodes: ["C", "E"],
-    edges: ["5"],
+    edgeIds: ["5"],
   });
   expect(getShortestPath(edges, "C", "F")).toEqual({
     nodes: ["C", "E", "F"],
-    edges: ["5", "8"],
+    edgeIds: ["5", "8"],
   });
   expect(getShortestPath(edges, "D", "A")).toEqual({
     nodes: ["D", "C", "A"],
-    edges: ["4", "2"],
+    edgeIds: ["4", "2"],
   });
   expect(getShortestPath(edges, "D", "B")).toEqual({
     nodes: ["D", "C", "B"],
-    edges: ["4", "3"],
+    edgeIds: ["4", "3"],
   });
   expect(getShortestPath(edges, "D", "C")).toEqual({
     nodes: ["D", "C"],
-    edges: ["4"],
+    edgeIds: ["4"],
   });
   expect(getShortestPath(edges, "D", "D")).toEqual({
     nodes: ["D"],
-    edges: [],
+    edgeIds: [],
   });
   expect(getShortestPath(edges, "D", "E")).toEqual({
     nodes: ["D", "C", "E"],
-    edges: ["4", "5"],
+    edgeIds: ["4", "5"],
   });
   expect(getShortestPath(edges, "D", "F")).toEqual({
     nodes: ["D", "F"],
-    edges: ["7"],
+    edgeIds: ["7"],
   });
   expect(getShortestPath(edges, "E", "A")).toEqual({
     nodes: ["E", "C", "A"],
-    edges: ["5", "2"],
+    edgeIds: ["5", "2"],
   });
   expect(getShortestPath(edges, "E", "B")).toEqual({
     nodes: ["E", "C", "B"],
-    edges: ["5", "3"],
+    edgeIds: ["5", "3"],
   });
   expect(getShortestPath(edges, "E", "C")).toEqual({
     nodes: ["E", "C"],
-    edges: ["5"],
+    edgeIds: ["5"],
   });
   expect(getShortestPath(edges, "E", "D")).toEqual({
     nodes: ["E", "C", "D"],
-    edges: ["5", "4"],
+    edgeIds: ["5", "4"],
   });
   expect(getShortestPath(edges, "E", "E")).toEqual({
     nodes: ["E"],
-    edges: [],
+    edgeIds: [],
   });
   expect(getShortestPath(edges, "E", "F")).toEqual({
     nodes: ["E", "F"],
-    edges: ["8"],
+    edgeIds: ["8"],
   });
   expect(getShortestPath(edges, "F", "A")).toEqual({
     nodes: ["F", "E", "C", "A"],
-    edges: ["8", "5", "2"],
+    edgeIds: ["8", "5", "2"],
   });
   expect(getShortestPath(edges, "F", "B")).toEqual({
     nodes: ["F", "E", "C", "B"],
-    edges: ["8", "5", "3"],
+    edgeIds: ["8", "5", "3"],
   });
   expect(getShortestPath(edges, "F", "C")).toEqual({
     nodes: ["F", "E", "C"],
-    edges: ["8", "5"],
+    edgeIds: ["8", "5"],
   });
   expect(getShortestPath(edges, "F", "D")).toEqual({
     nodes: ["F", "D"],
-    edges: ["7"],
+    edgeIds: ["7"],
   });
   expect(getShortestPath(edges, "F", "E")).toEqual({
     nodes: ["F", "E"],
-    edges: ["8"],
+    edgeIds: ["8"],
   });
   expect(getShortestPath(edges, "F", "F")).toEqual({
     nodes: ["F"],
-    edges: [],
+    edgeIds: [],
   });
 });
 
 it("returns two empty arrays when no path is found", () => {
-  expect(getShortestPath([], "A", "B")).toEqual({ nodes: [], edges: [] });
+  expect(getShortestPath([], "A", "B")).toEqual({ nodes: [], edgeIds: [] });
 });

@@ -12,7 +12,7 @@ export function getShortestPath(edges: Edge[], source: string, target: string) {
   }
 
   if (!unvisitedNodes.has(source) || !unvisitedNodes.has(target)) {
-    return { nodes: [], edges: [] };
+    return { nodes: [], edgeIds: [] };
   }
 
   const distances: Record<string, number> = {};
@@ -58,7 +58,7 @@ export function getShortestPath(edges: Edge[], source: string, target: string) {
   }
 
   if (unvisitedNodes.size === 0) {
-    return { nodes: [], edges: [] };
+    return { nodes: [], edgeIds: [] };
   }
 
   const pathNodes = [target];
@@ -86,5 +86,5 @@ export function getShortestPath(edges: Edge[], source: string, target: string) {
     }
   }
 
-  return { nodes: pathNodes, edges: pathEdgeIds };
+  return { nodes: pathNodes, edgeIds: pathEdgeIds };
 }

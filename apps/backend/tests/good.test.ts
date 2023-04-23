@@ -125,7 +125,7 @@ describe("POST /goods/deliver", () => {
     expect(responseA.body.data).toMatchObject({
       good: { id: "2" },
       nodes: ["B", "A", "C"],
-      edges: ["e1", "e2"],
+      edgeIds: ["e1", "e2"],
     });
 
     const responseB = await request.post("/goods/deliver");
@@ -133,7 +133,7 @@ describe("POST /goods/deliver", () => {
     expect(responseB.body.data).toMatchObject({
       good: { id: "1" },
       nodes: ["A", "C", "D"],
-      edges: ["e2", "e5"],
+      edgeIds: ["e2", "e5"],
     });
 
     const responseC = await request.post("/goods/deliver");
@@ -141,7 +141,7 @@ describe("POST /goods/deliver", () => {
     expect(responseC.body.data).toMatchObject({
       good: { id: "3" },
       nodes: ["B", "A", "C", "D"],
-      edges: ["e1", "e2", "e5"],
+      edgeIds: ["e1", "e2", "e5"],
     });
   });
 

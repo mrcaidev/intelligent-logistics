@@ -20,13 +20,13 @@ export function GoodDeliverer() {
       const {
         good: { id },
         nodes,
-        edges,
-      } = await fetcher<{ good: Good; nodes: string[]; edges: string[] }>(
+        edgeIds,
+      } = await fetcher<{ good: Good; nodes: string[]; edgeIds: string[] }>(
         "/goods/deliver",
         { method: "POST" }
       );
       mutate((goods) => goods?.filter((good) => good.id !== id));
-      setActiveIds([...nodes, ...edges]);
+      setActiveIds([...nodes, ...edgeIds]);
     } catch (error) {
       if (error instanceof Error) {
         toast.error(error.message);
