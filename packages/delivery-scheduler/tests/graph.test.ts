@@ -1,7 +1,7 @@
 import { getShortestPath } from "graph";
 import { expect, it } from "vitest";
 
-it("can find the shortest path in graph #1", () => {
+it("finds the shortest path in graph #1", () => {
   const edges = [
     { id: "1", source: "A", target: "B", cost: 2, graphId: "0" },
     { id: "2", source: "A", target: "C", cost: 1, graphId: "0" },
@@ -75,7 +75,7 @@ it("can find the shortest path in graph #1", () => {
   });
 });
 
-it("can find the shortest path in graph #2", () => {
+it("finds the shortest path in graph #2", () => {
   const edges = [
     { id: "1", source: "A", target: "B", cost: 3, graphId: "0" },
     { id: "2", source: "A", target: "C", cost: 1, graphId: "0" },
@@ -167,7 +167,7 @@ it("can find the shortest path in graph #2", () => {
   });
 });
 
-it("can find the shortest path in graph #3", () => {
+it("finds the shortest path in graph #3", () => {
   const edges = [
     { id: "1", source: "A", target: "B", cost: 4, graphId: "0" },
     { id: "2", source: "A", target: "C", cost: 4, graphId: "0" },
@@ -324,6 +324,6 @@ it("can find the shortest path in graph #3", () => {
   });
 });
 
-it("returns an empty array if no path is found", () => {
+it("returns two empty arrays when no path is found", () => {
   expect(getShortestPath([], "A", "B")).toEqual({ nodes: [], edges: [] });
 });
