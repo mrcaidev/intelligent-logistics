@@ -1,7 +1,4 @@
-import {
-  getGoodWithHighestPriority,
-  getShortestPath,
-} from "delivery-scheduler";
+import { getMostPrior, getShortestPath } from "delivery-scheduler";
 import { edgeRepository } from "edge/repository";
 import { graphRepository } from "graph/repository";
 import { NotFoundError, UnprocessableContentError } from "utils/http-error";
@@ -69,16 +66,16 @@ async function deliver() {
     throw new UnprocessableContentError("没有物品需要运送");
   }
 
-  const good = getGoodWithHighestPriority(goods);
+  const good = getMostPrior(goods);
 
   const edges = await edgeRepository.findByGraphId(good.graphId);
   const path = getShortestPath(edges, good.source, good.target);
 
-  if (path.length === 0) {
+  if (path.nodes.length === 0) {
     throw new UnprocessableContentError("没有合适的路径");
   }
 
   await goodRepository.removeById(good.id);
 
-  return { good, path };
+  return { good, ...path };
 }

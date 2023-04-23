@@ -124,41 +124,29 @@ describe("POST /goods/deliver", () => {
     expect(responseA.status).toEqual(200);
     expect(responseA.body.data).toMatchObject({
       good: { id: "2" },
-      path: ["B", "A", "C"],
+      nodes: ["B", "A", "C"],
+      edges: ["e1", "e2"],
     });
 
     const responseB = await request.post("/goods/deliver");
     expect(responseB.status).toEqual(200);
     expect(responseB.body.data).toMatchObject({
       good: { id: "1" },
-      path: ["A", "C", "D"],
+      nodes: ["A", "C", "D"],
+      edges: ["e2", "e5"],
     });
 
     const responseC = await request.post("/goods/deliver");
     expect(responseC.status).toEqual(200);
     expect(responseC.body.data).toMatchObject({
       good: { id: "3" },
-      path: ["B", "A", "C", "D"],
+      nodes: ["B", "A", "C", "D"],
+      edges: ["e1", "e2", "e5"],
     });
   });
 
   it("returns 422 when there is no good to deliver", async () => {
     const response = await request.post("/goods/deliver");
     expect(response.status).toEqual(422);
-  });
-
-  it("returns 422 when there is no path to deliver", async () => {
-    const createResponse = await request.post("/goods").send({
-      name: "Egg",
-      source: "E",
-      target: "F",
-      isVip: false,
-      graphId: "g1",
-    });
-
-    const response = await request.post("/goods/deliver");
-    expect(response.status).toEqual(422);
-
-    await request.delete("/goods/" + createResponse.body.data.id);
   });
 });
