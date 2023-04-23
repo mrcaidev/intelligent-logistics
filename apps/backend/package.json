@@ -10,11 +10,11 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "database-manager": "workspace:^0.0.0",
-    "delivery-scheduler": "workspace:^0.0.0",
+    "database-manager": "workspace:^",
+    "delivery-scheduler": "workspace:^",
     "express": "^4.18.2",
     "express-rate-limit": "^6.7.0",
-    "sql-parser": "workspace:^0.0.0",
+    "sql-parser": "workspace:^",
     "zod": "^3.21.4"
   },
   "devDependencies": {
