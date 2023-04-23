@@ -61,12 +61,11 @@ async function removeById(id: string) {
 
 async function deliver() {
   const goods = await goodRepository.findAll();
+  const good = getMostPrior(goods);
 
-  if (goods.length === 0) {
+  if (!good) {
     throw new UnprocessableContentError("没有物品需要运送");
   }
-
-  const good = getMostPrior(goods);
 
   const edges = await edgeRepository.findByGraphId(good.graphId);
   const path = getShortestPath(edges, good.source, good.target);

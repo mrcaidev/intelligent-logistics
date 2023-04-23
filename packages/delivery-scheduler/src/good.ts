@@ -1,7 +1,8 @@
 import { Good } from "shared-types";
 
 /**
- * Returns the good with the highest priority.
+ * Returns the good with the highest priority,
+ * or `undefined` if the given array is empty.
  */
 export function getMostPrior(goods: Good[]) {
   let highestPriority = 0;
@@ -15,7 +16,7 @@ export function getMostPrior(goods: Good[]) {
     }
   }
 
-  return result as Good;
+  return result;
 }
 
 /**
