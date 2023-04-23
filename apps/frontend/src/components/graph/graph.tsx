@@ -25,7 +25,7 @@ const theme: Theme = {
 };
 
 export function Graph() {
-  const { edges, nodes } = useGraph();
+  const { edges, nodes, activeIds } = useGraph();
 
   if (!edges.data || edges.isLoading) {
     return (
@@ -47,6 +47,7 @@ export function Graph() {
         source,
         target,
       }))}
+      actives={activeIds}
       draggable
       edgeArrowPosition="none"
       edgeLabelPosition="natural"

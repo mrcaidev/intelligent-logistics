@@ -14,6 +14,8 @@ type State = {
   setGraphId: (id: string) => void;
   edges: SWRResponse<Edge[]>;
   nodes: string[];
+  activeIds: string[];
+  setActiveIds: (ids: string[]) => void;
 };
 
 const GraphContext = createContext<State>({} as State);
@@ -23,6 +25,7 @@ export function GraphProvider({ children }: PropsWithChildren) {
   const [graphId, setGraphId] = useState("");
   const edges = useSwr<Edge[]>(() => "/edges?graphId=" + graphId);
   const nodes = collectNodes(edges.data ?? []);
+  const [activeIds, setActiveIds] = useState<string[]>([]);
 
   useEffect(() => {
     if (graphs && graphs[0]) {
@@ -31,7 +34,16 @@ export function GraphProvider({ children }: PropsWithChildren) {
   }, [graphs]);
 
   return (
-    <GraphContext.Provider value={{ graphId, setGraphId, edges, nodes }}>
+    <GraphContext.Provider
+      value={{
+        graphId,
+        setGraphId,
+        edges,
+        nodes,
+        activeIds,
+        setActiveIds,
+      }}
+    >
       {children}
     </GraphContext.Provider>
   );

@@ -9,7 +9,7 @@ export async function fetcher<T>(url: string | URL, config?: RequestInit) {
   };
 
   if (import.meta.env.DEV) {
-    await new Promise((resolve) => setTimeout(resolve, 5000));
+    await new Promise((resolve) => setTimeout(resolve, 500));
   }
 
   const response = await fetch(input, init);
