@@ -1,15 +1,17 @@
-/**
- * The outline of a table, including its fields and corresponding types.
- */
-export type Schema = { field: string; type: string }[];
+import { Definition } from "ast";
 
 /**
- * A row of data in a table.
+ * Contains the column definitions of a table.
+ */
+export type Schema = Definition[];
+
+/**
+ * Contains the data of a single record.
  */
 export type Row = Record<string, unknown>;
 
 /**
- * A table in a database.
+ * Contains the schema and records of a table.
  */
 export type Table = {
   schema: Schema;
@@ -17,6 +19,6 @@ export type Table = {
 };
 
 /**
- * A database.
+ * Contains multiple tables.
  */
 export type Database = Record<string, Table>;

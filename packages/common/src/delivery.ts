@@ -1,6 +1,6 @@
 /**
- * An undirected graph,
- * representing the logistics map.
+ * An undirected weighed graph,
+ * representing a logistics map.
  */
 export type Graph = {
   id: string;
@@ -16,10 +16,11 @@ export type Edge = {
   source: string;
   target: string;
   cost: number;
+  graphId: string;
 };
 
 /**
- * A good to be delivered.
+ * A good to be delivered in the logistics system.
  */
 export type Good = {
   id: string;
