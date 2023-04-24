@@ -27,10 +27,18 @@ const theme: Theme = {
 export function Graph() {
   const { edges, nodes, activeIds } = useGraph();
 
-  if (edges.isLoading || !edges.data) {
+  if (edges.isLoading) {
     return (
       <div className="grid place-items-center h-full">
         <Loader size={36} className="animate-spin" />
+      </div>
+    );
+  }
+
+  if (!edges.data) {
+    return (
+      <div className="grid place-items-center h-full">
+        <p className="text-gray-600">还没有物流方案……</p>
       </div>
     );
   }
