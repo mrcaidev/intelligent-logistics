@@ -1,6 +1,11 @@
 import "@unocss/reset/tailwind.css";
 import { GoodScheduler } from "components/good-scheduler";
-import { Graph, GraphProvider } from "components/graph";
+import {
+  Graph,
+  GraphCreator,
+  GraphProvider,
+  GraphSelector,
+} from "components/graph";
 import { Sidebar } from "components/sidebar";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -13,6 +18,10 @@ export function App() {
     <SWRConfig value={{ fetcher }}>
       <GraphProvider>
         <main className="relative h-screen sm:pr-90">
+          <div className="flex items-stretch gap-2 fixed left-6 top-6 z-10">
+            <GraphSelector />
+            <GraphCreator />
+          </div>
           <Graph />
         </main>
         <Sidebar>
