@@ -14,6 +14,12 @@ export const goodSchema = z.object({
 
 export type Good = Infer<typeof goodSchema>;
 
+export const findAllRequestSchema = z.object({
+  query: goodSchema.pick({ graphId: true }).partial(),
+});
+
+export type FindAllRequest = Infer<typeof findAllRequestSchema>;
+
 export const createRequestSchema = z.object({
   body: goodSchema.omit({ id: true, createdAt: true }),
 });

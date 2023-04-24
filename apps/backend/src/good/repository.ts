@@ -5,6 +5,7 @@ import { Good } from "./types";
 export const goodRepository = {
   findAll,
   findById,
+  findAllByGraphId,
   create,
   updateById,
   removeById,
@@ -22,12 +23,24 @@ async function findAll() {
 async function findById(id: string) {
   const rows = await query<Good>(
     `
-      SELECT * FROM good
+      SELECT *
+      FROM good
       WHERE id = $1
     `,
     [id]
   );
   return rows[0];
+}
+
+async function findAllByGraphId(graphId: string) {
+  return query<Good>(
+    `
+      SELECT *
+      FROM good
+      WHERE graphId = $1
+    `,
+    [graphId]
+  );
 }
 
 async function create(creator: Omit<Good, "id" | "createdAt">) {

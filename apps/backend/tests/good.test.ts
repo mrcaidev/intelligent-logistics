@@ -20,6 +20,22 @@ describe("GET /goods", () => {
       });
     }
   });
+
+  it("finds all goods with specific graph id", async () => {
+    const response = await request.get("/goods").query({ graphId: "g1" });
+    expect(response.status).toEqual(200);
+    for (const item of response.body.data) {
+      expect(item).toMatchObject({
+        id: expect.any(String),
+        name: expect.any(String),
+        createdAt: expect.any(Number),
+        source: expect.any(String),
+        target: expect.any(String),
+        isVip: expect.any(Boolean),
+        graphId: "g1",
+      });
+    }
+  });
 });
 
 describe("POST /goods", () => {

@@ -3,7 +3,7 @@ import { edgeRepository } from "edge/repository";
 import { graphRepository } from "graph/repository";
 import { NotFoundError, UnprocessableContentError } from "utils/http-error";
 import { goodRepository } from "./repository";
-import { CreateRequest, UpdateByIdRequest } from "./types";
+import { CreateRequest, FindAllRequest, UpdateByIdRequest } from "./types";
 
 export const goodService = {
   findAll,
@@ -13,7 +13,13 @@ export const goodService = {
   deliver,
 };
 
-async function findAll() {
+async function findAll(query: FindAllRequest["query"]) {
+  const { graphId } = query;
+
+  if (graphId) {
+    return goodRepository.findAllByGraphId(graphId);
+  }
+
   return goodRepository.findAll();
 }
 

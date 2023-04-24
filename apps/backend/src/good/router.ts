@@ -3,13 +3,14 @@ import { validate } from "middlewares/validate";
 import { goodController } from "./controller";
 import {
   createRequestSchema,
+  findAllRequestSchema,
   removeByIdRequestSchema,
   updateByIdRequestSchema,
 } from "./types";
 
 export const goodRouter: Router = Router();
 
-goodRouter.get("/", goodController.findAll);
+goodRouter.get("/", validate(findAllRequestSchema), goodController.findAll);
 
 goodRouter.post("/", validate(createRequestSchema), goodController.create);
 

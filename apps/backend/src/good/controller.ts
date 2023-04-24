@@ -10,9 +10,9 @@ export const goodController = {
   deliver,
 };
 
-async function findAll(_: Request, res: Response, next: NextFunction) {
+async function findAll(req: Request, res: Response, next: NextFunction) {
   try {
-    const goods = await goodService.findAll();
+    const goods = await goodService.findAll(req.query);
     return res.status(200).json({ data: goods });
   } catch (error) {
     return next(error);
