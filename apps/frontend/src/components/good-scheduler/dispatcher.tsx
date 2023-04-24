@@ -39,7 +39,7 @@ export function GoodDispatcher() {
     <Button
       icon={Send}
       isLoading={isMutating}
-      disabled={goods?.length === 0}
+      disabled={!goods || goods.length === 0}
       onClick={handleClick}
     >
       发货

@@ -1,4 +1,5 @@
 import { Button } from "components/form";
+import { useTabs } from "components/tabs";
 import { useGoods } from "hooks/use-goods";
 import { Loader } from "react-feather";
 import { GoodCard } from "./card";
@@ -9,6 +10,7 @@ type Props = {
 
 export function GoodList({ openForm }: Props) {
   const { goods, isLoading } = useGoods();
+  const { setTab } = useTabs();
 
   if (isLoading) {
     return (
@@ -18,7 +20,20 @@ export function GoodList({ openForm }: Props) {
     );
   }
 
-  if (!goods || goods.length === 0) {
+  if (!goods) {
+    return (
+      <div className="grow grid place-items-center">
+        <p className="text-gray-600">
+          请先
+          <Button variant="link" onClick={() => setTab("方案")}>
+            选择一张物流图
+          </Button>
+        </p>
+      </div>
+    );
+  }
+
+  if (goods.length === 0) {
     return (
       <div className="grow grid place-items-center">
         <p className="text-gray-600">
