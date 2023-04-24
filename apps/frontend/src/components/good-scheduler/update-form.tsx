@@ -70,7 +70,6 @@ export function UpdateGoodForm({
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      console.log(form);
       await trigger(form);
       await mutate();
       toast.success("成功修改物品：" + form.name);
