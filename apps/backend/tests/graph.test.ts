@@ -79,11 +79,33 @@ describe("DELETE /graphs/:id", () => {
   beforeAll(async () => {
     const response = await request.post("/graphs").send({ name: "g4" });
     graphId = response.body.data.id;
+
+    await request.post("/edges").send({
+      source: "A",
+      target: "B",
+      cost: 1,
+      graphId,
+    });
+    await request.post("/goods").send({
+      name: "test",
+      source: "A",
+      target: "B",
+      isVip: false,
+      graphId,
+    });
   });
 
   it("removes graph", async () => {
     const response = await request.delete("/graphs/" + graphId);
     expect(response.status).toEqual(204);
+  });
+
+  it("removes edges and goods in cascade", async () => {
+    const edgeResponse = await request.get("/edges").query({ graphId });
+    expect(edgeResponse.body.data).toEqual([]);
+
+    const goodResponse = await request.get("/goods").query({ graphId });
+    expect(goodResponse.body.data).toEqual([]);
   });
 
   it("returns 404 when graph does not exist", async () => {

@@ -67,7 +67,11 @@ async function removeById(id: string) {
   await query(
     `
       DELETE FROM graph
-      WHERE id = $1
+      WHERE id = $1;
+      DELETE FROM edge
+      WHERE graphId = $1;
+      DELETE FROM good
+      WHERE graphId = $1;
     `,
     [id]
   );
