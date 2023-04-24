@@ -27,7 +27,7 @@ export function getMostPrior(goods: Good[]) {
  * The priority level is by default
  * the elapsed time since the good's creation,
  * but VIP goods are assumed to be created earlier
- * (without modifying the actual created time),
+ * (without actually mutating the creation time),
  * to make sure that they are delivered first.
  */
 function getPriority(good: Good) {

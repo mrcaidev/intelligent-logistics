@@ -1,90 +1,92 @@
 import { Edge } from "shared-types";
 
 /**
- * Returns the shortest path between two nodes,
+ * Returns a list of IDs of every node or edge
+ * on the shortest path by order,
  * using Dijkstra's algorithm.
+ *
+ * @param edges The edges of a graph.
+ * @param sourceId The ID of the source node.
+ * @param targetId The ID of the target node.
  */
-export function getShortestPath(edges: Edge[], source: string, target: string) {
-  const unvisitedNodes = new Set<string>();
-  for (const { source, target } of edges) {
-    unvisitedNodes.add(source);
-    unvisitedNodes.add(target);
+export function getShortestPath(
+  edges: Edge[],
+  sourceId: string,
+  targetId: string
+) {
+  const unvisitedNodeIds = new Set<string>();
+  for (const { sourceId, targetId } of edges) {
+    unvisitedNodeIds.add(sourceId);
+    unvisitedNodeIds.add(targetId);
   }
 
-  if (!unvisitedNodes.has(source) || !unvisitedNodes.has(target)) {
-    return { nodes: [], edgeIds: [] };
+  if (!unvisitedNodeIds.has(sourceId) || !unvisitedNodeIds.has(targetId)) {
+    return [];
   }
 
   const distances: Record<string, number> = {};
-  for (const node of unvisitedNodes) {
-    distances[node] = Infinity;
+  for (const nodeId of unvisitedNodeIds) {
+    distances[nodeId] = Infinity;
   }
-  distances[source] = 0;
+  distances[sourceId] = 0;
 
-  const previousNodes: Record<string, string> = {};
+  const previousNodeIds: Record<string, string> = {};
 
-  while (unvisitedNodes.size > 0) {
+  while (unvisitedNodeIds.size > 0) {
     let minDistance = Infinity;
-    let nearestNode = "";
-    for (const node of unvisitedNodes) {
-      if (distances[node]! < minDistance) {
-        minDistance = distances[node]!;
-        nearestNode = node;
+    let nearestNodeId = "";
+    for (const nodeId of unvisitedNodeIds) {
+      if (distances[nodeId]! < minDistance) {
+        minDistance = distances[nodeId]!;
+        nearestNodeId = nodeId;
       }
     }
 
-    if (nearestNode === target) {
+    if (nearestNodeId === targetId) {
       break;
     }
 
-    unvisitedNodes.delete(nearestNode);
+    unvisitedNodeIds.delete(nearestNodeId);
 
     const neighbors: [string, number][] = [];
-    for (const { source, target, cost } of edges) {
-      if (source === nearestNode && unvisitedNodes.has(target)) {
-        neighbors.push([target, cost]);
-      } else if (target === nearestNode && unvisitedNodes.has(source)) {
-        neighbors.push([source, cost]);
+    for (const { sourceId, targetId, cost } of edges) {
+      if (sourceId === nearestNodeId && unvisitedNodeIds.has(targetId)) {
+        neighbors.push([targetId, cost]);
+      } else if (targetId === nearestNodeId && unvisitedNodeIds.has(sourceId)) {
+        neighbors.push([sourceId, cost]);
       }
     }
 
-    for (const [neighbor, cost] of neighbors) {
-      const newDistance = distances[nearestNode]! + cost;
-      if (newDistance < distances[neighbor]!) {
-        distances[neighbor] = newDistance;
-        previousNodes[neighbor] = nearestNode;
+    for (const [neighborId, cost] of neighbors) {
+      const newDistance = distances[nearestNodeId]! + cost;
+      if (newDistance < distances[neighborId]!) {
+        distances[neighborId] = newDistance;
+        previousNodeIds[neighborId] = nearestNodeId;
       }
     }
   }
 
-  if (unvisitedNodes.size === 0) {
-    return { nodes: [], edgeIds: [] };
+  if (unvisitedNodeIds.size === 0) {
+    return [];
   }
 
-  const pathNodes = [target];
-  let previousNode = previousNodes[target];
-  while (previousNode) {
-    pathNodes.unshift(previousNode);
-    previousNode = previousNodes[previousNode];
-  }
-
-  const pathEdgeIds: string[] = [];
-  for (const [index, node] of pathNodes.entries()) {
-    if (index === 0) {
-      continue;
-    }
-
-    const previousNode = pathNodes[index - 1];
+  const pathIds = [targetId];
+  let currentNodeId = targetId;
+  let previousNodeId = previousNodeIds[targetId];
+  while (previousNodeId) {
     const edge = edges.find(
-      ({ source, target }) =>
-        (source === node && target === previousNode) ||
-        (source === previousNode && target === node)
+      ({ sourceId, targetId }) =>
+        (sourceId === currentNodeId && targetId === previousNodeId) ||
+        (sourceId === previousNodeId && targetId === currentNodeId)
     );
-
-    if (edge) {
-      pathEdgeIds.push(edge.id);
+    if (!edge) {
+      return [];
     }
+    pathIds.unshift(edge.id);
+    pathIds.unshift(previousNodeId);
+    currentNodeId = previousNodeId;
+    previousNodeId = previousNodeIds[previousNodeId];
   }
 
-  return { nodes: pathNodes, edgeIds: pathEdgeIds };
+  return pathIds;
 }

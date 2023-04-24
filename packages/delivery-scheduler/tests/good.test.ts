@@ -11,17 +11,17 @@ it("sorts goods by creation time by default", () => {
     { name: "Milk", createdAt: now - 1, isVip: false },
   ] as Good[];
 
-  const first = getMostPrior(goods);
-  goods.splice(goods.indexOf(first!), 1);
-  expect(first?.name).toEqual("Beef");
+  const first = getMostPrior(goods)!;
+  goods.splice(goods.indexOf(first), 1);
+  expect(first.name).toEqual("Beef");
 
-  const second = getMostPrior(goods);
-  goods.splice(goods.indexOf(second!), 1);
-  expect(second?.name).toEqual("Pork");
+  const second = getMostPrior(goods)!;
+  goods.splice(goods.indexOf(second), 1);
+  expect(second.name).toEqual("Pork");
 
-  const third = getMostPrior(goods);
-  goods.splice(goods.indexOf(third!), 1);
-  expect(third?.name).toEqual("Milk");
+  const third = getMostPrior(goods)!;
+  goods.splice(goods.indexOf(third), 1);
+  expect(third.name).toEqual("Milk");
 });
 
 it("raises VIP good's priority", () => {
@@ -33,15 +33,15 @@ it("raises VIP good's priority", () => {
     { name: "Milk", createdAt: now - 1, isVip: false },
   ] as Good[];
 
-  const first = getMostPrior(goods);
-  goods.splice(goods.indexOf(first!), 1);
-  expect(first?.name).toEqual("Pork");
+  const first = getMostPrior(goods)!;
+  goods.splice(goods.indexOf(first), 1);
+  expect(first.name).toEqual("Pork");
 
-  const second = getMostPrior(goods);
-  goods.splice(goods.indexOf(second!), 1);
-  expect(second?.name).toEqual("Beef");
+  const second = getMostPrior(goods)!;
+  goods.splice(goods.indexOf(second), 1);
+  expect(second.name).toEqual("Beef");
 
-  const third = getMostPrior(goods);
-  goods.splice(goods.indexOf(third!), 1);
-  expect(third?.name).toEqual("Milk");
+  const third = getMostPrior(goods)!;
+  goods.splice(goods.indexOf(third), 1);
+  expect(third.name).toEqual("Milk");
 });
