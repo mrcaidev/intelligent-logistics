@@ -40,7 +40,7 @@ export function Graph() {
   if (!edges) {
     return (
       <div className="grid place-items-center h-full">
-        <p className="text-gray-600">还没有物流方案……</p>
+        <p className="text-gray-600">请选择一张物流图以开始</p>
       </div>
     );
   }
@@ -48,7 +48,7 @@ export function Graph() {
   if (edges.length === 0) {
     return (
       <div className="grid place-items-center h-full">
-        <p className="text-gray-600">这张图暂时还没有节点……</p>
+        <p className="text-gray-600">这张图暂时还没有节点</p>
       </div>
     );
   }
