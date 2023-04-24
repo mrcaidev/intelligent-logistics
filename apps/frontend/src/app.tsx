@@ -12,7 +12,7 @@ export function App() {
   return (
     <SWRConfig value={{ fetcher }}>
       <GraphProvider>
-        <main className="relative h-screen sm:mr-90">
+        <main className="relative h-screen sm:pr-90">
           <Graph />
         </main>
         <Sidebar>
