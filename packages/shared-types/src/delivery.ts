@@ -8,13 +8,23 @@ export type Graph = {
 };
 
 /**
- * An undirected weighed edge,
- * representing a road between two logistics centers.
+ * A node in the graph,
+ * representing a logistics center.
+ */
+export type Node = {
+  id: string;
+  name: string;
+  graphId: string;
+};
+
+/**
+ * An undirected weighed edge in the graph,
+ * representing a route between two logistics centers.
  */
 export type Edge = {
   id: string;
-  source: string;
-  target: string;
+  sourceId: string;
+  targetId: string;
   cost: number;
   graphId: string;
 };
@@ -26,8 +36,8 @@ export type Good = {
   id: string;
   name: string;
   createdAt: number;
-  source: string;
-  target: string;
+  sourceId: string;
+  targetId: string;
   isVip: boolean;
   graphId: string;
 };
