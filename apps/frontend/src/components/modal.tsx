@@ -1,19 +1,22 @@
-import { PropsWithChildren, useEffect } from "react";
+import { PropsWithChildren, useEffect, useId } from "react";
 import { createPortal } from "react-dom";
 import { X } from "react-feather";
 
 type Props = PropsWithChildren<{
   isOpen: boolean;
   onClose: () => void;
+  title: string;
 }>;
 
-export function Modal({ isOpen, onClose, children }: Props) {
+export function Modal({ isOpen, onClose, title, children }: Props) {
+  const id = useId();
+
   useEffect(() => {
-    function handleEscape(event: KeyboardEvent) {
+    const handleEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         onClose();
       }
-    }
+    };
 
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
@@ -32,16 +35,22 @@ export function Modal({ isOpen, onClose, children }: Props) {
       />
       <div
         role="dialog"
+        aria-labelledby={id}
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-3/5 max-w-3xl px-8 py-6 m-8 rounded-lg bg-gray-200 z-20"
       >
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute right-6 top-6 p-1 rounded hover:bg-gray-300 transition-colors"
-        >
-          <X />
-          <span className="sr-only">关闭模态框</span>
-        </button>
+        <div className="flex justify-between items-center gap-3 pb-5">
+          <h2 id={id} className="font-bold text-2xl">
+            {title}
+          </h2>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1 rounded hover:bg-gray-300 transition-colors"
+          >
+            <X />
+            <span className="sr-only">关闭模态框</span>
+          </button>
+        </div>
         {children}
       </div>
     </>,

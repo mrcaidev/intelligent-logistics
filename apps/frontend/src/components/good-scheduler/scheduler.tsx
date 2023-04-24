@@ -20,7 +20,7 @@ export function GoodScheduler() {
         </Button>
         <GoodDeliverer />
       </div>
-      <Modal isOpen={isFormOpen} onClose={closeForm}>
+      <Modal isOpen={isFormOpen} onClose={closeForm} title="添加物品">
         <CreateGoodForm onClose={closeForm} />
       </Modal>
     </>

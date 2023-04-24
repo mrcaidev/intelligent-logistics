@@ -72,7 +72,6 @@ export function CreateGoodForm({ onClose }: Props) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-100">
-      <p className="pb-2 font-bold text-2xl">添加物品</p>
       <Input
         label="名称"
         name="name"
