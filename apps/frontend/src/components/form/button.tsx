@@ -94,7 +94,7 @@ function getButtonLayout(variant: Variant, size: Size) {
 function getIconSize(size: Size) {
   const sizeMap = {
     normal: 20,
-    small: 16,
+    small: 18,
   };
   return sizeMap[size];
 }

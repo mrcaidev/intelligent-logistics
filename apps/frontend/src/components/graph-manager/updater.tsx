@@ -1,3 +1,4 @@
+import { Button } from "components/form";
 import { Modal } from "components/modal";
 import { useBoolean } from "hooks/use-boolean";
 import { Edit } from "react-feather";
@@ -13,13 +14,15 @@ export function GraphUpdater({ graph }: Props) {
 
   return (
     <>
-      <button
-        type="button"
+      <Button
+        colorScheme="gray"
+        variant="link"
+        size="small"
+        icon={Edit}
         onClick={open}
-        className="p-1 text-gray-600 hover:text-teal-700"
       >
-        <Edit size={18} />
-      </button>
+        <span className="sr-only">修改方案</span>
+      </Button>
       <Modal isOpen={isOpen} onClose={close} title="修改方案">
         <UpdateGraphForm graph={graph} onClose={close} />
       </Modal>

@@ -1,5 +1,6 @@
+import { Button } from "components/form";
 import { useGraphs } from "hooks/use-graphs";
-import { Loader, Trash2 } from "react-feather";
+import { Trash2 } from "react-feather";
 import { toast } from "react-toastify";
 import { Graph } from "shared-types";
 import useSWRMutation from "swr/mutation";
@@ -33,17 +34,15 @@ export function GraphRemover({ graph: { id, name } }: Props) {
   };
 
   return (
-    <button
-      type="button"
-      disabled={isMutating}
+    <Button
+      colorScheme="red"
+      variant="link"
+      size="small"
+      icon={Trash2}
+      isLoading={isMutating}
       onClick={handleClickRemoving}
-      className="p-1 text-gray-600 hover:text-red-700"
     >
-      {isMutating ? (
-        <Loader size={18} className="animate-spin" />
-      ) : (
-        <Trash2 size={18} />
-      )}
-    </button>
+      <span className="sr-only">删除方案</span>
+    </Button>
   );
 }
