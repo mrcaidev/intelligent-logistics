@@ -1,9 +1,10 @@
 import "@unocss/reset/tailwind.css";
 import { GoodScheduler } from "components/good-scheduler";
-import { Graph, GraphProvider } from "components/graph";
+import { Graph } from "components/graph";
 import { GraphManager } from "components/graph-manager";
 import { Sidebar } from "components/sidebar";
 import { TabPanel, Tabs } from "components/tabs";
+import { GlobalStateProvider } from "contexts/global-state";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { SWRConfig } from "swr";
@@ -13,21 +14,21 @@ import "virtual:uno.css";
 export function App() {
   return (
     <SWRConfig value={{ fetcher }}>
-      <GraphProvider>
+      <GlobalStateProvider>
         <main className="relative h-screen">
           <Graph />
         </main>
         <Sidebar>
-          <Tabs names={["物品", "方案"]}>
-            <TabPanel name="物品">
-              <GoodScheduler />
-            </TabPanel>
+          <Tabs names={["方案", "物品"]}>
             <TabPanel name="方案">
               <GraphManager />
             </TabPanel>
+            <TabPanel name="物品">
+              <GoodScheduler />
+            </TabPanel>
           </Tabs>
         </Sidebar>
-      </GraphProvider>
+      </GlobalStateProvider>
       <ToastContainer autoClose={3000} position="top-center" theme="colored" />
     </SWRConfig>
   );

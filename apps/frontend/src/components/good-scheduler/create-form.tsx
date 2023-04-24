@@ -1,5 +1,6 @@
 import { Button, Checkbox, Input, Option, Select } from "components/form";
-import { useGraph } from "components/graph";
+import { useGlobalState } from "contexts/global-state";
+import { useEdges } from "hooks/use-edges";
 import { useGraphs } from "hooks/use-graphs";
 import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
@@ -46,16 +47,17 @@ type Props = {
 };
 
 export function CreateGoodForm({ onClose }: Props) {
+  const { currentGraphId } = useGlobalState();
   const { graphs } = useGraphs();
-  const { nodes, graphId } = useGraph();
+  const { nodes } = useEdges();
 
   const { trigger, isMutating } = useSWRMutation("/goods", createGood);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 
   useEffect(() => {
-    dispatch({ type: "graphId", value: graphId });
-  }, [graphId]);
+    dispatch({ type: "graphId", value: currentGraphId });
+  }, [currentGraphId]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -120,12 +122,11 @@ export function CreateGoodForm({ onClose }: Props) {
         value={form.graphId}
         placeholder="请选择物流方案"
         required
-        disabled={isMutating}
-        onChange={(e) => dispatch({ type: "graphId", value: e.target.value })}
+        disabled
       >
-        {graphs?.map(({ id, name }) => (
-          <Option key={id} value={id}>
-            {name}
+        {graphs?.map((graph) => (
+          <Option key={graph.id} value={graph.id}>
+            {graph.name}
           </Option>
         ))}
       </Select>

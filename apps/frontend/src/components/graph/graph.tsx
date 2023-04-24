@@ -1,6 +1,7 @@
+import { useGlobalState } from "contexts/global-state";
+import { useEdges } from "hooks/use-edges";
 import { Loader } from "react-feather";
 import { GraphCanvas, Theme, lightTheme } from "reagraph";
-import { useGraph } from "./context";
 
 const theme: Theme = {
   ...lightTheme,
@@ -25,9 +26,10 @@ const theme: Theme = {
 };
 
 export function Graph() {
-  const { edges, nodes, activeIds } = useGraph();
+  const { activeIds } = useGlobalState();
+  const { edges, nodes, isLoading } = useEdges();
 
-  if (edges.isLoading) {
+  if (isLoading) {
     return (
       <div className="grid place-items-center h-full">
         <Loader size={36} className="animate-spin" />
@@ -35,7 +37,7 @@ export function Graph() {
     );
   }
 
-  if (!edges.data) {
+  if (!edges) {
     return (
       <div className="grid place-items-center h-full">
         <p className="text-gray-600">还没有物流方案……</p>
@@ -43,7 +45,7 @@ export function Graph() {
     );
   }
 
-  if (edges.data.length === 0) {
+  if (edges.length === 0) {
     return (
       <div className="grid place-items-center h-full">
         <p className="text-gray-600">这张图暂时还没有节点……</p>
@@ -57,7 +59,7 @@ export function Graph() {
         id: label,
         label,
       }))}
-      edges={edges.data.map(({ id, source, target, cost }) => ({
+      edges={edges.map(({ id, source, target, cost }) => ({
         id,
         label: String(cost),
         source,

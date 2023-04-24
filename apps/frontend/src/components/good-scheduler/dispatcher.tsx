@@ -1,5 +1,5 @@
 import { Button } from "components/form";
-import { useGraph } from "components/graph";
+import { useGlobalState } from "contexts/global-state";
 import { useGoods } from "hooks/use-goods";
 import { Send } from "react-feather";
 import { toast } from "react-toastify";
@@ -14,8 +14,8 @@ async function deliver(url: string) {
 }
 
 export function GoodDispatcher() {
+  const { setActiveIds } = useGlobalState();
   const { goods, mutate } = useGoods();
-  const { setActiveIds } = useGraph();
 
   const { trigger, isMutating } = useSWRMutation("/goods/deliver", deliver);
 

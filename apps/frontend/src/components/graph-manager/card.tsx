@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useGraph } from "components/graph/context";
+import { useGlobalState } from "contexts/global-state";
 import { Graph } from "shared-types";
 import { GraphRemover } from "./remover";
 import { GraphUpdater } from "./updater";
@@ -11,16 +11,16 @@ type Props = {
 export function GraphCard({ graph }: Props) {
   const { id, name } = graph;
 
-  const { graphId, setGraphId } = useGraph();
+  const { currentGraphId, setCurrentGraphId } = useGlobalState();
 
   return (
     <div className="relative">
       <button
         type="button"
-        onClick={() => setGraphId(id)}
+        onClick={() => setCurrentGraphId(id)}
         className={clsx(
           "w-full px-4 py-3 rounded text-start text-sm hover:bg-gray-300 transition-colors",
-          graphId === id && "bg-gray-300"
+          currentGraphId === id && "bg-gray-300"
         )}
       >
         {name}
