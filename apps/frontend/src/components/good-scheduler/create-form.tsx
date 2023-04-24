@@ -1,6 +1,7 @@
 import { Button, Checkbox, Input, Option, Select } from "components/form";
 import { useGlobalState } from "contexts/global-state";
 import { useEdges } from "hooks/use-edges";
+import { useGoods } from "hooks/use-goods";
 import { useGraphs } from "hooks/use-graphs";
 import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
@@ -50,6 +51,7 @@ export function CreateGoodForm({ onClose }: Props) {
   const { currentGraphId } = useGlobalState();
   const { graphs } = useGraphs();
   const { nodes } = useEdges();
+  const { mutate } = useGoods();
 
   const { trigger, isMutating } = useSWRMutation("/goods", createGood);
 
@@ -66,6 +68,7 @@ export function CreateGoodForm({ onClose }: Props) {
       if (!good) {
         return;
       }
+      await mutate();
       toast.success("成功添加物品：" + good.name);
     } catch (error) {
       if (error instanceof Error) {
