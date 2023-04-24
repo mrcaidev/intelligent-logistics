@@ -63,7 +63,7 @@ async function create(creator: Omit<Good, "id" | "createdAt">) {
 }
 
 async function updateById(id: string, good: Good) {
-  const { name, source, target, graphId } = good;
+  const { name, source, target, isVip, graphId } = good;
 
   await query(
     `
@@ -71,10 +71,11 @@ async function updateById(id: string, good: Good) {
       SET name = $2,
         source = $3,
         target = $4,
-        graphId = $5
+        isVip = $5,
+        graphId = $6
       WHERE id = $1
     `,
-    [id, name, source, target, graphId]
+    [id, name, source, target, isVip, graphId]
   );
 }
 
