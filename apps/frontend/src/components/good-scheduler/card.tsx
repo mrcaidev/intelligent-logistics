@@ -9,17 +9,16 @@ import {
 } from "react-feather";
 import { Good } from "shared-types";
 
-export function GoodCard({
-  name,
-  createdAt,
-  source,
-  target,
-  isVip,
-  graphId,
-}: Good) {
-  const { data } = useGraphs();
+type Props = {
+  good: Good;
+};
 
-  const graphName = data?.find((graph) => graph.id === graphId)?.name;
+export function GoodCard({
+  good: { name, createdAt, source, target, graphId, isVip },
+}: Props) {
+  const { graphs } = useGraphs();
+
+  const graphName = graphs?.find((graph) => graph.id === graphId)?.name;
 
   return (
     <details className="group rounded border border-gray-300 open:bg-gray-300">

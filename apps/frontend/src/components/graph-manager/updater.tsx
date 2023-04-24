@@ -8,8 +8,7 @@ type Props = {
   graph: Graph;
 };
 
-export function GraphUpdater(props: Props) {
-  const { graph } = props;
+export function GraphUpdater({ graph }: Props) {
   const { value: isOpen, on: open, off: close } = useBoolean();
 
   return (

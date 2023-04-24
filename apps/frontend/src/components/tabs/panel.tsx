@@ -1,12 +1,12 @@
 import { PropsWithChildren } from "react";
-import { useTab } from "./tabs";
+import { useTabs } from "./tabs";
 
 type Props = PropsWithChildren<{
   name: string;
 }>;
 
 export function TabPanel({ name, children }: Props) {
-  const tab = useTab();
+  const { tab } = useTabs();
 
   if (tab !== name) {
     return null;

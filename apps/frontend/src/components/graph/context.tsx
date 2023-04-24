@@ -10,10 +10,10 @@ import { Edge } from "shared-types";
 import useSWR, { SWRResponse } from "swr";
 
 type State = {
-  graphId: string;
-  setGraphId: (id: string) => void;
   edges: SWRResponse<Edge[]>;
   nodes: string[];
+  graphId: string;
+  setGraphId: (id: string) => void;
   activeIds: string[];
   setActiveIds: (ids: string[]) => void;
 };
@@ -21,9 +21,9 @@ type State = {
 const GraphContext = createContext<State>({} as State);
 
 export function GraphProvider({ children }: PropsWithChildren) {
-  const { data: graphs } = useGraphs();
+  const { graphs } = useGraphs();
   const [graphId, setGraphId] = useState("");
-  const edges = useSWR<Edge[]>(() => "/edges?graphId=" + graphId);
+  const edges = useSWR<Edge[]>(graphId ? "/edges?graphId=" + graphId : null);
   const nodes = collectNodes(edges.data ?? []);
   const [activeIds, setActiveIds] = useState<string[]>([]);
 
@@ -36,10 +36,10 @@ export function GraphProvider({ children }: PropsWithChildren) {
   return (
     <GraphContext.Provider
       value={{
-        graphId,
-        setGraphId,
         edges,
         nodes,
+        graphId,
+        setGraphId,
         activeIds,
         setActiveIds,
       }}

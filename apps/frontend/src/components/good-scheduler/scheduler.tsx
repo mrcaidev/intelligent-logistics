@@ -3,7 +3,7 @@ import { Modal } from "components/modal";
 import { useBoolean } from "hooks/use-boolean";
 import { Plus } from "react-feather";
 import { CreateGoodForm } from "./create-form";
-import { GoodDeliverer } from "./deliverer";
+import { GoodDispatcher } from "./dispatcher";
 import { GoodList } from "./list";
 
 export function GoodScheduler() {
@@ -16,7 +16,7 @@ export function GoodScheduler() {
         <Button colorScheme="gray" variant="dim" icon={Plus} onClick={openForm}>
           添加
         </Button>
-        <GoodDeliverer />
+        <GoodDispatcher />
       </div>
       <Modal isOpen={isFormOpen} onClose={closeForm} title="添加物品">
         <CreateGoodForm onClose={closeForm} />

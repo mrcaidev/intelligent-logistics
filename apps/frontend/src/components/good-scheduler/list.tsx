@@ -8,22 +8,22 @@ type Props = {
 };
 
 export function GoodList({ openForm }: Props) {
-  const { data, isLoading } = useGoods();
+  const { goods, isLoading } = useGoods();
 
   if (isLoading) {
     return (
-      <div className="grow flex flex-col justify-center items-center">
+      <div className="grow grid place-items-center">
         <Loader className="animate-spin" />
       </div>
     );
   }
 
-  if (!data || data.length === 0) {
+  if (!goods || goods.length === 0) {
     return (
-      <div className="grow flex flex-col justify-center items-center">
+      <div className="grow grid place-items-center">
         <p className="text-gray-600">
           还没有物品！要
-          <Button colorScheme="teal" variant="link" onClick={openForm}>
+          <Button variant="link" onClick={openForm}>
             添加一个
           </Button>
           吗？
@@ -34,9 +34,9 @@ export function GoodList({ openForm }: Props) {
 
   return (
     <ul className="space-y-2 grow p-4 mx-0.5 overflow-auto scrollbar scrollbar-rounded scrollbar-track-color-transparent scrollbar-thumb-color-gray-400">
-      {data.map((good) => (
+      {goods.map((good) => (
         <li key={good.id}>
-          <GoodCard {...good} />
+          <GoodCard good={good} />
         </li>
       ))}
     </ul>

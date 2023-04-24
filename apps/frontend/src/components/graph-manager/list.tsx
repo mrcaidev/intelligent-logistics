@@ -8,22 +8,22 @@ type Props = {
 };
 
 export function GraphList({ openForm }: Props) {
-  const { data, isLoading } = useGraphs();
+  const { graphs, isLoading } = useGraphs();
 
   if (isLoading) {
     return (
-      <div className="grow flex flex-col justify-center items-center">
+      <div className="grow grid place-items-center">
         <Loader className="animate-spin" />
       </div>
     );
   }
 
-  if (!data || data.length === 0) {
+  if (!graphs || graphs.length === 0) {
     return (
-      <div className="grow flex flex-col justify-center items-center">
+      <div className="grow grid place-items-center">
         <p className="text-gray-600">
           还没有方案！要
-          <Button colorScheme="teal" variant="link" onClick={openForm}>
+          <Button variant="link" onClick={openForm}>
             添加一个
           </Button>
           吗？
@@ -34,9 +34,9 @@ export function GraphList({ openForm }: Props) {
 
   return (
     <ul className="space-y-1 grow p-4 mx-0.5 overflow-auto scrollbar scrollbar-rounded scrollbar-track-color-transparent scrollbar-thumb-color-gray-400">
-      {data.map((graph) => (
+      {graphs.map((graph) => (
         <li key={graph.id}>
-          <GraphCard {...graph} />
+          <GraphCard graph={graph} />
         </li>
       ))}
     </ul>

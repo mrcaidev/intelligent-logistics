@@ -13,8 +13,8 @@ async function deliver(url: string) {
   });
 }
 
-export function GoodDeliverer() {
-  const { data: goods, mutate } = useGoods();
+export function GoodDispatcher() {
+  const { goods, mutate } = useGoods();
   const { setActiveIds } = useGraph();
 
   const { trigger, isMutating } = useSWRMutation("/goods/deliver", deliver);
@@ -25,7 +25,7 @@ export function GoodDeliverer() {
       if (!data) {
         return;
       }
-      mutate();
+      await mutate();
       setActiveIds([...data.nodes, ...data.edgeIds]);
       toast.success("成功发送物品：" + data.good.name);
     } catch (error) {

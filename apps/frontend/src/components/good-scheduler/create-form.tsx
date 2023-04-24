@@ -1,7 +1,7 @@
 import { Button, Checkbox, Input, Option, Select } from "components/form";
 import { useGraph } from "components/graph";
 import { useGraphs } from "hooks/use-graphs";
-import { FormEventHandler, useEffect, useReducer } from "react";
+import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { toast } from "react-toastify";
 import { Good } from "shared-types";
@@ -46,7 +46,7 @@ type Props = {
 };
 
 export function CreateGoodForm({ onClose }: Props) {
-  const { data: graphs } = useGraphs();
+  const { graphs } = useGraphs();
   const { nodes, graphId } = useGraph();
 
   const { trigger, isMutating } = useSWRMutation("/goods", createGood);
@@ -57,7 +57,7 @@ export function CreateGoodForm({ onClose }: Props) {
     dispatch({ type: "graphId", value: graphId });
   }, [graphId]);
 
-  const handleSubmit: FormEventHandler = async (e) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
       const good = await trigger(form);
@@ -123,9 +123,9 @@ export function CreateGoodForm({ onClose }: Props) {
         disabled={isMutating}
         onChange={(e) => dispatch({ type: "graphId", value: e.target.value })}
       >
-        {graphs?.map((graph) => (
-          <Option key={graph.id} value={graph.id}>
-            {graph.name}
+        {graphs?.map(({ id, name }) => (
+          <Option key={id} value={id}>
+            {name}
           </Option>
         ))}
       </Select>

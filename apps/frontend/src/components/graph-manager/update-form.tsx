@@ -26,7 +26,7 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
 }
 
 async function updateGraph(url: string, { arg }: { arg: State }) {
-  return fetcher<Graph>(url, {
+  return fetcher<never>(url, {
     method: "PATCH",
     body: JSON.stringify(arg),
   });
@@ -37,18 +37,16 @@ type Props = {
   onClose: () => void;
 };
 
-export function UpdateGraphForm({ graph, onClose }: Props) {
-  const { trigger, isMutating } = useSWRMutation(
-    "/graphs/" + graph.id,
-    updateGraph
-  );
+export function UpdateGraphForm({ graph: { id, name }, onClose }: Props) {
   const { mutate } = useGraphs();
+
+  const { trigger, isMutating } = useSWRMutation("/graphs/" + id, updateGraph);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 
   useEffect(() => {
-    dispatch({ type: "name", value: graph.name });
-  }, [graph.name]);
+    dispatch({ type: "name", value: name });
+  }, [name]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
