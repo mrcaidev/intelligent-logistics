@@ -27,7 +27,7 @@ export function GraphCard({ graph }: Props) {
       </button>
       <div className="hidden group-hover:flex items-center gap-2 absolute right-3 top-0 bottom-0">
         <GraphUpdater graph={graph} />
-        <GraphRemover graph={graph} />
+        <GraphRemover id={id} />
       </div>
     </div>
   );
