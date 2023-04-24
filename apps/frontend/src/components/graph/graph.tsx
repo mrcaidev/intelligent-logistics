@@ -2,6 +2,7 @@ import { useGlobalState } from "contexts/global-state";
 import { useEdges } from "hooks/use-edges";
 import { Loader } from "react-feather";
 import { GraphCanvas, Theme, lightTheme } from "reagraph";
+import { Button } from "../form";
 
 const theme: Theme = {
   ...lightTheme,
@@ -26,7 +27,7 @@ const theme: Theme = {
 };
 
 export function Graph() {
-  const { activeIds } = useGlobalState();
+  const { activeIds, setIsSidebarOpen } = useGlobalState();
   const { edges, nodes, isLoading } = useEdges();
 
   if (isLoading) {
@@ -40,7 +41,13 @@ export function Graph() {
   if (!edges) {
     return (
       <div className="grid place-items-center h-full">
-        <p className="text-gray-600">请选择一张物流图以开始</p>
+        <p className="text-gray-600">
+          请
+          <Button variant="link" onClick={() => setIsSidebarOpen(true)}>
+            选择一张物流图
+          </Button>
+          以开始
+        </p>
       </div>
     );
   }

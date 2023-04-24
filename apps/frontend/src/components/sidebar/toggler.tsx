@@ -1,18 +1,16 @@
 import clsx from "clsx";
+import { useGlobalState } from "contexts/global-state";
 
-type Props = {
-  isOpen: boolean;
-  toggle: () => void;
-};
+export function SidebarToggler() {
+  const { isSidebarOpen, setIsSidebarOpen } = useGlobalState();
 
-export function SidebarToggler({ isOpen, toggle }: Props) {
   return (
     <button
       type="button"
-      onClick={toggle}
+      onClick={() => setIsSidebarOpen((isOpen) => !isOpen)}
       className={clsx(
         "fixed right-4 top-3 p-2 rounded transition-colors z-10",
-        isOpen ? "hover:bg-gray-300" : "hover:bg-gray-200"
+        isSidebarOpen ? "hover:bg-gray-300" : "hover:bg-gray-200"
       )}
     >
       <svg
@@ -26,7 +24,7 @@ export function SidebarToggler({ isOpen, toggle }: Props) {
         strokeLinecap="round"
         strokeLinejoin="round"
         aria-hidden="true"
-        className={clsx(isOpen && "open")}
+        className={clsx(isSidebarOpen && "open")}
       >
         <g className="[.open_&]:rotate-45 [.open_&]:delay-150 origin-center transition-transform">
           <line
@@ -54,7 +52,7 @@ export function SidebarToggler({ isOpen, toggle }: Props) {
           ></line>
         </g>
       </svg>
-      <span className="sr-only">{isOpen ? "关闭" : "打开"}侧边栏</span>
+      <span className="sr-only">{isSidebarOpen ? "关闭" : "打开"}侧边栏</span>
     </button>
   );
 }

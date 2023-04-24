@@ -1,6 +1,6 @@
 import "@unocss/reset/tailwind.css";
 import { GoodScheduler } from "components/good-scheduler";
-import { Graph } from "components/graph";
+import { Graph, GraphContainer } from "components/graph";
 import { GraphManager } from "components/graph-manager";
 import { Sidebar } from "components/sidebar";
 import { TabPanel, Tabs } from "components/tabs";
@@ -15,9 +15,9 @@ export function App() {
   return (
     <SWRConfig value={{ fetcher }}>
       <GlobalStateProvider>
-        <main className="relative h-screen">
+        <GraphContainer>
           <Graph />
-        </main>
+        </GraphContainer>
         <Sidebar>
           <Tabs names={["方案", "物品"]}>
             <TabPanel name="方案">
