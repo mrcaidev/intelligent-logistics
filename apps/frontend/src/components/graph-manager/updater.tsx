@@ -1,5 +1,5 @@
 import { Modal } from "components/modal";
-import { useState } from "react";
+import { useBoolean } from "hooks/use-boolean";
 import { Edit } from "react-feather";
 import { Graph } from "shared-types";
 import { UpdateGraphForm } from "./update-form";
@@ -10,9 +10,7 @@ type Props = {
 
 export function GraphUpdater(props: Props) {
   const { graph } = props;
-  const [isOpen, setIsOpen] = useState(false);
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
+  const { value: isOpen, on: open, off: close } = useBoolean();
 
   return (
     <>

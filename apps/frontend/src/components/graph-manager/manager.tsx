@@ -1,14 +1,12 @@
 import { Button } from "components/form";
 import { Modal } from "components/modal";
-import { useState } from "react";
+import { useBoolean } from "hooks/use-boolean";
 import { Plus } from "react-feather";
 import { CreateGraphForm } from "./create-form";
 import { GraphList } from "./list";
 
 export function GraphManager() {
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const openForm = () => setIsFormOpen(true);
-  const closeForm = () => setIsFormOpen(false);
+  const { value: isFormOpen, on: openForm, off: closeForm } = useBoolean();
 
   return (
     <>

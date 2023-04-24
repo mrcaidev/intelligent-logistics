@@ -1,17 +1,15 @@
 import clsx from "clsx";
-import { PropsWithChildren, useState } from "react";
+import { useBoolean } from "hooks/use-boolean";
+import { PropsWithChildren } from "react";
 import { createPortal } from "react-dom";
 import { SidebarToggler } from "./toggler";
 
 export function Sidebar({ children }: PropsWithChildren) {
-  const [isOpen, setIsOpen] = useState(false);
+  const { value: isOpen, toggle } = useBoolean();
 
   return (
     <>
-      <SidebarToggler
-        isOpen={isOpen}
-        toggle={() => setIsOpen((isOpen) => !isOpen)}
-      />
+      <SidebarToggler isOpen={isOpen} toggle={toggle} />
       {createPortal(
         <aside
           className={clsx(
