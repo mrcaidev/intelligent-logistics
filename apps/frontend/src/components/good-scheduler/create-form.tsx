@@ -133,7 +133,7 @@ export function CreateGoodForm({ onClose }: Props) {
         onChange={(e) => dispatch({ type: "isVip", value: e.target.checked })}
       />
       <div className="flex justify-end items-center gap-3">
-        <Button variant="ghost" icon={X} onClick={onClose}>
+        <Button colorScheme="gray" variant="dim" icon={X} onClick={onClose}>
           取消
         </Button>
         <Button type="submit" icon={Check} isLoading={isMutating}>

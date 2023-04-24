@@ -1,3 +1,4 @@
+import { Button } from "components/form";
 import { useGoods } from "hooks/use-goods";
 import { Loader } from "react-feather";
 import { GoodCard } from "./card";
@@ -22,9 +23,9 @@ export function GoodList({ openForm }: Props) {
       <div className="grow flex flex-col justify-center items-center">
         <p className="text-gray-600">
           还没有物品！要
-          <button type="button" onClick={openForm} className="text-teal-600">
+          <Button colorScheme="teal" variant="link" onClick={openForm}>
             添加一个
-          </button>
+          </Button>
           吗？
         </p>
       </div>

@@ -2,18 +2,21 @@ import clsx from "clsx";
 import { ComponentProps } from "react";
 import { Icon, Loader } from "react-feather";
 
-type ButtonVariant = "primary" | "danger" | "ghost";
-type ButtonSize = "normal" | "small";
+type ColorScheme = "teal" | "red" | "gray";
+type Variant = "solid" | "dim" | "ghost" | "link";
+type Size = "normal" | "small";
 
 type Props = ComponentProps<"button"> & {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
+  colorScheme?: ColorScheme;
+  variant?: Variant;
+  size?: Size;
   icon?: Icon;
   isLoading?: boolean;
 };
 
 export function Button({
-  variant = "primary",
+  colorScheme = "teal",
+  variant = "solid",
   size = "normal",
   icon: Icon,
   isLoading = false,
@@ -23,8 +26,8 @@ export function Button({
   children,
   ...rest
 }: Props) {
-  const buttonColor = getButtonColor(variant);
-  const buttonSize = getButtonSize(size);
+  const color = getButtonColor(variant, colorScheme);
+  const layout = getButtonLayout(variant, size);
   const iconSize = getIconSize(size);
 
   return (
@@ -33,9 +36,9 @@ export function Button({
       type={type}
       disabled={isLoading || disabled}
       className={clsx(
-        "flex justify-center items-center disabled:bg-gray-600 disabled:hover:bg-gray-600 transition-colors",
-        buttonColor,
-        buttonSize,
+        "inline-flex justify-center items-center gap-2 transition disabled:opacity-40 disabled:pointer-events-none",
+        color,
+        layout,
         className
       )}
     >
@@ -46,31 +49,52 @@ export function Button({
   );
 }
 
-function getButtonColor(variant: ButtonVariant) {
-  switch (variant) {
-    case "primary":
-      return "bg-teal-600 hover:bg-teal-700 text-gray-100";
-    case "danger":
-      return "bg-red-600 hover:bg-red-700 text-gray-100";
-    case "ghost":
-      return "bg-gray-300 hover:bg-gray-400";
-  }
+function getButtonColor(variant: Variant, colorScheme: ColorScheme) {
+  const colorMap = {
+    solid: {
+      teal: "bg-teal-600 hover:bg-teal-700 text-gray-100",
+      red: "bg-red-600 hover:bg-red-700 text-gray-100",
+      gray: "bg-gray-600 hover:bg-gray-700 text-gray-100",
+    },
+    dim: {
+      teal: "bg-teal-600/15 hover:bg-teal-600/30",
+      red: "bg-red-600/15 hover:bg-red-600/30",
+      gray: "bg-gray-600/15 hover:bg-gray-600/30",
+    },
+    ghost: {
+      teal: "hover:bg-teal-600/15",
+      red: "hover:bg-red-600/15",
+      gray: "hover:bg-gray-600/15",
+    },
+    link: {
+      teal: "text-teal-600 hover:text-teal-900",
+      red: "text-red-600 hover:text-red-900",
+      gray: "text-gray-600 hover:text-gray-900",
+    },
+  };
+  return colorMap[variant][colorScheme];
 }
 
-function getButtonSize(size: ButtonSize) {
-  switch (size) {
-    case "normal":
-      return "gap-2 px-4 py-3 rounded-md font-bold";
-    case "small":
-      return "gap-1 px-2 py-1 rounded text-sm";
+function getButtonLayout(variant: Variant, size: Size) {
+  if (variant === "link") {
+    const sizeMap = {
+      normal: "",
+      small: "text-sm",
+    };
+    return sizeMap[size];
   }
+
+  const sizeMap = {
+    normal: "px-4 py-3 rounded-md font-bold",
+    small: "px-2 py-1 rounded text-sm",
+  };
+  return sizeMap[size];
 }
 
-function getIconSize(size: ButtonSize) {
-  switch (size) {
-    case "normal":
-      return 20;
-    case "small":
-      return 14;
-  }
+function getIconSize(size: Size) {
+  const sizeMap = {
+    normal: 20,
+    small: 16,
+  };
+  return sizeMap[size];
 }

@@ -15,7 +15,7 @@ export function GoodScheduler() {
     <>
       <GoodList openForm={openForm} />
       <div className="grid grid-cols-2 gap-3 px-4">
-        <Button variant="ghost" icon={Plus} onClick={openForm}>
+        <Button colorScheme="gray" variant="dim" icon={Plus} onClick={openForm}>
           添加物品
         </Button>
         <GoodDeliverer />
