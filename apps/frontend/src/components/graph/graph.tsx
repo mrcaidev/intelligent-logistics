@@ -35,6 +35,14 @@ export function Graph() {
     );
   }
 
+  if (edges.data.length === 0) {
+    return (
+      <div className="grid place-items-center h-full">
+        <p className="text-gray-600">这张图暂时还没有节点……</p>
+      </div>
+    );
+  }
+
   return (
     <GraphCanvas
       nodes={nodes.map((label) => ({
