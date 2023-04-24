@@ -1,6 +1,7 @@
 import "@unocss/reset/tailwind.css";
 import { GoodScheduler } from "components/good-scheduler";
 import { Graph, GraphProvider } from "components/graph";
+import { GraphManager } from "components/graph-manager";
 import { Sidebar } from "components/sidebar";
 import { TabPanel, Tabs } from "components/tabs";
 import { ToastContainer } from "react-toastify";
@@ -21,7 +22,9 @@ export function App() {
             <TabPanel name="物品">
               <GoodScheduler />
             </TabPanel>
-            <TabPanel name="方案">Graphs</TabPanel>
+            <TabPanel name="方案">
+              <GraphManager />
+            </TabPanel>
           </Tabs>
         </Sidebar>
       </GraphProvider>

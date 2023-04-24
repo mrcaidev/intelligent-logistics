@@ -9,6 +9,11 @@ export async function fetcher<T>(url: string | URL, config?: RequestInit) {
   };
 
   const response = await fetch(input, init);
+
+  if (response.status === 204) {
+    return undefined as T;
+  }
+
   const json = await response.json();
 
   if (!response.ok) {
