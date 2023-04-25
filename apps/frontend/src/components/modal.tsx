@@ -9,7 +9,7 @@ type Props = PropsWithChildren<{
 }>;
 
 export function Modal({ isOpen, onClose, title, children }: Props) {
-  const id = useId();
+  const titleId = useId();
 
   useEffect(() => {
     const handleEscape = (event: KeyboardEvent) => {
@@ -20,7 +20,7 @@ export function Modal({ isOpen, onClose, title, children }: Props) {
 
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
-  });
+  }, [onClose]);
 
   if (!isOpen) {
     return null;
@@ -29,17 +29,17 @@ export function Modal({ isOpen, onClose, title, children }: Props) {
   return createPortal(
     <>
       <div
-        role="presentation"
         onClick={onClose}
+        role="presentation"
         className="fixed left-0 right-0 top-0 bottom-0 bg-gray-900/75 z-20"
       />
       <div
         role="dialog"
-        aria-labelledby={id}
+        aria-labelledby={titleId}
         className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-3/5 max-w-3xl px-8 py-6 m-8 rounded-lg bg-gray-200 z-20"
       >
         <div className="flex justify-between items-center gap-3 pb-5">
-          <h2 id={id} className="font-bold text-2xl">
+          <h2 id={titleId} className="font-bold text-2xl">
             {title}
           </h2>
           <button
