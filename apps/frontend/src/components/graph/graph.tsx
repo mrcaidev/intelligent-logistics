@@ -1,6 +1,7 @@
 import { useGlobalState } from "contexts/global-state";
 import { useEdges } from "hooks/use-edges";
 import { useNodes } from "hooks/use-nodes";
+import { useEffect, useRef, useState } from "react";
 import { Loader } from "react-feather";
 import { GraphCanvas, Theme, lightTheme } from "reagraph";
 import { Button } from "../form";
@@ -31,6 +32,24 @@ export function Graph() {
   const { activeIds, setIsSidebarOpen } = useGlobalState();
   const { nodes, isLoading: isNodesLoading } = useNodes();
   const { edges, isLoading: isEdgesLoading } = useEdges();
+
+  const progressRef = useRef(0);
+  const [actives, setActives] = useState<string[]>([]);
+
+  useEffect(() => {
+    progressRef.current = 0;
+
+    const fn = () => {
+      if (progressRef.current >= activeIds.length) {
+        return;
+      }
+      progressRef.current++;
+      setActives(activeIds.slice(0, progressRef.current));
+      setTimeout(fn, 500);
+    };
+
+    fn();
+  }, [activeIds]);
 
   if (isNodesLoading || isEdgesLoading) {
     return (
@@ -74,7 +93,7 @@ export function Graph() {
         source: sourceId,
         target: targetId,
       }))}
-      actives={activeIds}
+      actives={actives}
       edgeArrowPosition="none"
       edgeLabelPosition="natural"
       labelType="all"
