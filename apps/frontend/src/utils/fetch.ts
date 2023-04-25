@@ -1,4 +1,4 @@
-export async function fetcher<T>(url: string | URL, config?: RequestInit) {
+export async function fetcher<T>(url: string, config?: RequestInit) {
   const input = new URL(url, import.meta.env.VITE_API_BASE_URL);
   const init = {
     ...config,
@@ -11,14 +11,14 @@ export async function fetcher<T>(url: string | URL, config?: RequestInit) {
   const response = await fetch(input, init);
 
   if (response.status === 204) {
-    return undefined as T;
+    return undefined as never;
   }
 
-  const json = await response.json();
+  const { data, error } = await response.json();
 
   if (!response.ok) {
-    throw new Error(json.error);
+    throw new Error(error);
   }
 
-  return json.data as T;
+  return data as T;
 }
