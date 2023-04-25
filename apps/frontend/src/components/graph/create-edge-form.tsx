@@ -5,8 +5,7 @@ import { useGraphs } from "hooks/use-graphs";
 import { useNodes } from "hooks/use-nodes";
 import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
-import { toast } from "react-toastify";
-import { Graph } from "shared-types";
+import { Edge } from "shared-types";
 import useSWRMutation from "swr/mutation";
 import { fetcher } from "utils/fetch";
 
@@ -35,7 +34,7 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
 }
 
 async function createEdge(url: string, { arg }: { arg: State }) {
-  return fetcher<Graph>(url, {
+  return fetcher<Edge>(url, {
     method: "POST",
     body: JSON.stringify(arg),
   });
@@ -66,7 +65,6 @@ export function CreateEdgeForm({ onClose }: Props) {
       return;
     }
     await mutate();
-    toast.success("成功添加道路：" + edge.name);
     onClose();
   };
 
