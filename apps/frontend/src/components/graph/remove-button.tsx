@@ -1,4 +1,5 @@
 import { Button } from "components/form";
+import { useGlobalState } from "contexts/global-state";
 import { useGraphs } from "hooks/use-graphs";
 import { useDelete } from "hooks/use-mutation";
 import { Trash2 } from "react-feather";
@@ -9,13 +10,18 @@ type Props = {
 };
 
 export function RemoveGraphButton({ id }: Props) {
-  const { mutate } = useGraphs();
+  const { dispatch } = useGlobalState();
+  const { graphs, mutate } = useGraphs();
 
   const { trigger, isMutating } = useDelete("/graphs/" + id);
 
   const handleClick = async () => {
     await trigger();
     await mutate();
+    dispatch({
+      type: "SET_CURRENT_GRAPH_ID",
+      payload: graphs?.at(0)?.id ?? "",
+    });
     toast.success("删除方案成功");
   };
 
