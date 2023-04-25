@@ -21,15 +21,9 @@ export function GoodRemover({ id }: Props) {
   const { trigger, isMutating } = useSWRMutation("/goods/" + id, removeGood);
 
   const handleClickRemoving = async () => {
-    try {
-      await trigger();
-      await mutate();
-      toast.success("删除物品成功");
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      }
-    }
+    await trigger();
+    await mutate();
+    toast.success("删除物品成功");
   };
 
   return (

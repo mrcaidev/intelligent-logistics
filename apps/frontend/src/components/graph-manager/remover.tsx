@@ -21,15 +21,9 @@ export function GraphRemover({ id }: Props) {
   const { trigger, isMutating } = useSWRMutation("/graphs/" + id, removeGraph);
 
   const handleClickRemoving = async () => {
-    try {
-      await trigger();
-      await mutate();
-      toast.success("删除方案成功");
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      }
-    }
+    await trigger();
+    await mutate();
+    toast.success("删除方案成功");
   };
 
   return (

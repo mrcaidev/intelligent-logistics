@@ -1,5 +1,6 @@
 import { useGlobalState } from "contexts/global-state";
 import { useEdges } from "hooks/use-edges";
+import { useNodes } from "hooks/use-nodes";
 import { Loader } from "react-feather";
 import { GraphCanvas, Theme, lightTheme } from "reagraph";
 import { Button } from "../form";
@@ -28,9 +29,10 @@ const theme: Theme = {
 
 export function Graph() {
   const { activeIds, setIsSidebarOpen } = useGlobalState();
-  const { edges, nodes, isLoading } = useEdges();
+  const { nodes, isLoading: isNodesLoading } = useNodes();
+  const { edges, isLoading: isEdgesLoading } = useEdges();
 
-  if (isLoading) {
+  if (isNodesLoading || isEdgesLoading) {
     return (
       <div className="grid place-items-center h-full">
         <Loader size={36} className="animate-spin" />
@@ -38,7 +40,7 @@ export function Graph() {
     );
   }
 
-  if (!edges) {
+  if (!nodes || !edges) {
     return (
       <div className="grid place-items-center h-full">
         <p className="text-gray-600">
@@ -52,7 +54,7 @@ export function Graph() {
     );
   }
 
-  if (edges.length === 0) {
+  if (nodes.length === 0) {
     return (
       <div className="grid place-items-center h-full">
         <p className="text-gray-600">这张图暂时还没有节点</p>
@@ -62,15 +64,15 @@ export function Graph() {
 
   return (
     <GraphCanvas
-      nodes={nodes.map((label) => ({
-        id: label,
-        label,
+      nodes={nodes.map(({ id, name }) => ({
+        id,
+        label: name,
       }))}
-      edges={edges.map(({ id, source, target, cost }) => ({
+      edges={edges.map(({ id, sourceId, targetId, cost }) => ({
         id,
         label: String(cost),
-        source,
-        target,
+        source: sourceId,
+        target: targetId,
       }))}
       actives={activeIds}
       edgeArrowPosition="none"

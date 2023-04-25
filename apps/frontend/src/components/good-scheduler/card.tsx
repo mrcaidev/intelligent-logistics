@@ -1,4 +1,5 @@
 import { useGraphs } from "hooks/use-graphs";
+import { useNodes } from "hooks/use-nodes";
 import {
   Calendar,
   ChevronRight,
@@ -16,11 +17,17 @@ type Props = {
 };
 
 export function GoodCard({ good }: Props) {
-  const { id, name, createdAt, source, target, graphId, isVip } = good;
+  const { id, name, createdAt, sourceId, targetId, graphId, isVip } = good;
 
   const { graphs } = useGraphs();
+  const { nodes } = useNodes();
 
-  const graphName = graphs?.find((graph) => graph.id === graphId)?.name;
+  const graphName =
+    graphs?.find((graph) => graph.id === graphId)?.name ?? "未知";
+  const sourceName =
+    nodes?.find((node) => node.id === sourceId)?.name ?? "未知";
+  const targetName =
+    nodes?.find((node) => node.id === targetId)?.name ?? "未知";
 
   return (
     <details className="group rounded border border-gray-300 open:bg-gray-300">
@@ -43,11 +50,11 @@ export function GoodCard({ good }: Props) {
         </li>
         <li className="flex items-center gap-3 p-2">
           <MapPin size={16} />
-          {source} - {target}
+          {sourceName} - {targetName}
         </li>
         <li className="flex items-center gap-3 p-2">
           <Map size={16} />
-          {graphName || "未知方案"}
+          {graphName}
         </li>
         {isVip && (
           <li className="flex items-center gap-3 p-2">

@@ -50,17 +50,10 @@ export function UpdateGraphForm({ graph: { id, name }, onClose }: Props) {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    try {
-      await trigger(form);
-      await mutate();
-      toast.success("成功修改方案：" + form.name);
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      }
-    } finally {
-      onClose();
-    }
+    await trigger(form);
+    await mutate();
+    toast.success("成功修改方案：" + form.name);
+    onClose();
   };
 
   return (

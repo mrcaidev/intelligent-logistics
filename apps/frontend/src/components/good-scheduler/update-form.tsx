@@ -1,7 +1,7 @@
 import { Button, Checkbox, Input, Option, Select } from "components/form";
-import { useEdges } from "hooks/use-edges";
 import { useGoods } from "hooks/use-goods";
 import { useGraphs } from "hooks/use-graphs";
+import { useNodes } from "hooks/use-nodes";
 import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { toast } from "react-toastify";
@@ -11,16 +11,16 @@ import { fetcher } from "utils/fetch";
 
 type State = {
   name: string;
-  source: string;
-  target: string;
+  sourceId: string;
+  targetId: string;
   isVip: boolean;
   graphId: string;
 };
 
 const defaultState = {
   name: "",
-  source: "",
-  target: "",
+  sourceId: "",
+  targetId: "",
   isVip: false,
   graphId: "",
 };
@@ -48,11 +48,11 @@ type Props = {
 };
 
 export function UpdateGoodForm({
-  good: { id, name, source, target, isVip, graphId },
+  good: { id, name, sourceId, targetId, isVip, graphId },
   onClose,
 }: Props) {
   const { graphs } = useGraphs();
-  const { nodes } = useEdges();
+  const { nodes } = useNodes();
   const { mutate } = useGoods();
 
   const { trigger, isMutating } = useSWRMutation("/goods/" + id, updateGood);
@@ -61,25 +61,18 @@ export function UpdateGoodForm({
 
   useEffect(() => {
     dispatch({ type: "name", value: name });
-    dispatch({ type: "source", value: source });
-    dispatch({ type: "target", value: target });
+    dispatch({ type: "sourceId", value: sourceId });
+    dispatch({ type: "targetId", value: targetId });
     dispatch({ type: "isVip", value: isVip });
     dispatch({ type: "graphId", value: graphId });
-  }, [name, source, target, isVip, graphId]);
+  }, [name, sourceId, targetId, isVip, graphId]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    try {
-      await trigger(form);
-      await mutate();
-      toast.success("成功修改物品：" + form.name);
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      }
-    } finally {
-      onClose();
-    }
+    await trigger(form);
+    await mutate();
+    toast.success("成功修改物品：" + form.name);
+    onClose();
   };
 
   return (
@@ -93,32 +86,32 @@ export function UpdateGoodForm({
         onChange={(e) => dispatch({ type: "name", value: e.target.value })}
       />
       <Select
-        label="出发地"
+        label="起点"
         name="source"
-        value={form.source}
-        placeholder="请选择出发地"
+        value={form.sourceId}
+        placeholder="请选择起点"
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "source", value: e.target.value })}
+        onChange={(e) => dispatch({ type: "sourceId", value: e.target.value })}
       >
-        {nodes.map((node) => (
-          <Option key={node} value={node}>
-            {node}
+        {nodes?.map(({ id, name }) => (
+          <Option key={id} value={id}>
+            {name}
           </Option>
         ))}
       </Select>
       <Select
-        label="目的地"
+        label="终点"
         name="target"
-        value={form.target}
-        placeholder="请选择目的地"
+        value={form.targetId}
+        placeholder="请选择终点"
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "target", value: e.target.value })}
+        onChange={(e) => dispatch({ type: "targetId", value: e.target.value })}
       >
-        {nodes.map((node) => (
-          <Option key={node} value={node}>
-            {node}
+        {nodes?.map(({ id, name }) => (
+          <Option key={id} value={id}>
+            {name}
           </Option>
         ))}
       </Select>

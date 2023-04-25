@@ -5,7 +5,7 @@ import { GraphManager } from "components/graph-manager";
 import { Sidebar } from "components/sidebar";
 import { TabPanel, Tabs } from "components/tabs";
 import { GlobalStateProvider } from "contexts/global-state";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { SWRConfig } from "swr";
 import { fetcher } from "utils/fetch";
@@ -13,7 +13,12 @@ import "virtual:uno.css";
 
 export function App() {
   return (
-    <SWRConfig value={{ fetcher }}>
+    <SWRConfig
+      value={{
+        fetcher,
+        onError: (error) => toast.error(error.message),
+      }}
+    >
       <GlobalStateProvider>
         <GraphContainer>
           <Graph />

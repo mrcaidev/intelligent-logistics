@@ -42,19 +42,12 @@ export function CreateGraphForm({ onClose }: Props) {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    try {
-      const graph = await trigger(form);
-      if (!graph) {
-        return;
-      }
-      toast.success("成功添加方案：" + graph.name);
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      }
-    } finally {
-      onClose();
+    const graph = await trigger(form);
+    if (!graph) {
+      return;
     }
+    toast.success("成功添加方案：" + graph.name);
+    onClose();
   };
 
   return (

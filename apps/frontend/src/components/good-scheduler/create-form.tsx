@@ -1,8 +1,8 @@
 import { Button, Checkbox, Input, Option, Select } from "components/form";
 import { useGlobalState } from "contexts/global-state";
-import { useEdges } from "hooks/use-edges";
 import { useGoods } from "hooks/use-goods";
 import { useGraphs } from "hooks/use-graphs";
+import { useNodes } from "hooks/use-nodes";
 import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { toast } from "react-toastify";
@@ -12,18 +12,18 @@ import { fetcher } from "utils/fetch";
 
 type State = {
   name: string;
-  source: string;
-  target: string;
-  graphId: string;
+  sourceId: string;
+  targetId: string;
   isVip: boolean;
+  graphId: string;
 };
 
 const defaultState = {
   name: "",
-  source: "",
-  target: "",
-  graphId: "",
+  sourceId: "",
+  targetId: "",
   isVip: false,
+  graphId: "",
 };
 
 type Action<T extends keyof State> = {
@@ -50,7 +50,7 @@ type Props = {
 export function CreateGoodForm({ onClose }: Props) {
   const { currentGraphId } = useGlobalState();
   const { graphs } = useGraphs();
-  const { nodes } = useEdges();
+  const { nodes } = useNodes();
   const { mutate } = useGoods();
 
   const { trigger, isMutating } = useSWRMutation("/goods", createGood);
@@ -63,20 +63,13 @@ export function CreateGoodForm({ onClose }: Props) {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    try {
-      const good = await trigger(form);
-      if (!good) {
-        return;
-      }
-      await mutate();
-      toast.success("成功添加物品：" + good.name);
-    } catch (error) {
-      if (error instanceof Error) {
-        toast.error(error.message);
-      }
-    } finally {
-      onClose();
+    const good = await trigger(form);
+    if (!good) {
+      return;
     }
+    await mutate();
+    toast.success("成功添加物品：" + good.name);
+    onClose();
   };
 
   return (
@@ -90,32 +83,32 @@ export function CreateGoodForm({ onClose }: Props) {
         onChange={(e) => dispatch({ type: "name", value: e.target.value })}
       />
       <Select
-        label="出发地"
+        label="起点"
         name="source"
-        value={form.source}
-        placeholder="请选择出发地"
+        value={form.sourceId}
+        placeholder="请选择起点"
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "source", value: e.target.value })}
+        onChange={(e) => dispatch({ type: "sourceId", value: e.target.value })}
       >
-        {nodes.map((node) => (
-          <Option key={node} value={node}>
-            {node}
+        {nodes?.map(({ id, name }) => (
+          <Option key={id} value={id}>
+            {name}
           </Option>
         ))}
       </Select>
       <Select
-        label="目的地"
+        label="终点"
         name="target"
-        value={form.target}
-        placeholder="请选择目的地"
+        value={form.targetId}
+        placeholder="请选择终点"
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "target", value: e.target.value })}
+        onChange={(e) => dispatch({ type: "targetId", value: e.target.value })}
       >
-        {nodes.map((node) => (
-          <Option key={node} value={node}>
-            {node}
+        {nodes?.map(({ id, name }) => (
+          <Option key={id} value={id}>
+            {name}
           </Option>
         ))}
       </Select>
@@ -127,9 +120,9 @@ export function CreateGoodForm({ onClose }: Props) {
         required
         disabled
       >
-        {graphs?.map((graph) => (
-          <Option key={graph.id} value={graph.id}>
-            {graph.name}
+        {graphs?.map(({ id, name }) => (
+          <Option key={id} value={id}>
+            {name}
           </Option>
         ))}
       </Select>
