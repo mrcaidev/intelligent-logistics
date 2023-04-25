@@ -1,6 +1,6 @@
 import "@unocss/reset/tailwind.css";
 import { GoodScheduler } from "components/good-scheduler";
-import { Graph, GraphContainer } from "components/graph";
+import { Graph, GraphContainer, GraphController } from "components/graph";
 import { GraphManager } from "components/graph-manager";
 import { Sidebar } from "components/sidebar";
 import { TabPanel, Tabs } from "components/tabs";
@@ -21,6 +21,7 @@ export function App() {
     >
       <GlobalStateProvider>
         <GraphContainer>
+          <GraphController />
           <Graph />
         </GraphContainer>
         <Sidebar>
