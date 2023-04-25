@@ -47,7 +47,7 @@ type Props = {
   onClose: () => void;
 };
 
-export function CreateGoodForm({ onClose }: Props) {
+export function GoodCreatorForm({ onClose }: Props) {
   const { currentGraphId } = useGlobalState();
   const { graphs } = useGraphs();
   const { nodes } = useNodes();

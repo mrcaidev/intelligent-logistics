@@ -2,7 +2,7 @@ import { Button } from "components/form";
 import { Modal } from "components/modal";
 import { useBoolean } from "hooks/use-boolean";
 import { Plus } from "react-feather";
-import { CreateGraphForm } from "./create-form";
+import { GraphCreatorForm } from "./creator-form";
 import { GraphList } from "./list";
 
 export function GraphManager() {
@@ -17,7 +17,7 @@ export function GraphManager() {
         </Button>
       </div>
       <Modal isOpen={isFormOpen} onClose={closeForm} title="添加方案">
-        <CreateGraphForm onClose={closeForm} />
+        <GraphCreatorForm onClose={closeForm} />
       </Modal>
     </>
   );

@@ -3,7 +3,7 @@ import { Modal } from "components/modal";
 import { useBoolean } from "hooks/use-boolean";
 import { Edit } from "react-feather";
 import { Good } from "shared-types";
-import { UpdateGoodForm } from "./update-form";
+import { GoodUpdaterForm } from "./updater-form";
 
 type Props = {
   good: Good;
@@ -24,7 +24,7 @@ export function GoodUpdater({ good }: Props) {
         <span className="sr-only">修改物品</span>
       </Button>
       <Modal isOpen={isOpen} onClose={close} title="修改物品">
-        <UpdateGoodForm good={good} onClose={close} />
+        <GoodUpdaterForm good={good} onClose={close} />
       </Modal>
     </>
   );

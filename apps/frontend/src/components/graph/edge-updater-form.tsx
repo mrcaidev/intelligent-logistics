@@ -36,7 +36,7 @@ type Props = {
   onClose: () => void;
 };
 
-export function UpdateEdgeForm({ id, onClose }: Props) {
+export function EdgeUpdaterForm({ id, onClose }: Props) {
   const { edges, mutate } = useEdges();
   const edge = edges?.find((edge) => edge.id === id) as Edge;
 

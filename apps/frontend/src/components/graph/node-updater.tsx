@@ -2,7 +2,7 @@ import { Button } from "components/form";
 import { Modal } from "components/modal";
 import { useBoolean } from "hooks/use-boolean";
 import { Edit } from "react-feather";
-import { UpdateNodeForm } from "./update-node-form";
+import { NodeUpdaterForm } from "./node-updater-form";
 
 type Props = {
   id: string;
@@ -17,7 +17,7 @@ export function NodeUpdater({ id }: Props) {
         修改节点
       </Button>
       <Modal isOpen={isOpen} onClose={close} title="修改节点">
-        <UpdateNodeForm id={id} onClose={close} />
+        <NodeUpdaterForm id={id} onClose={close} />
       </Modal>
     </>
   );

@@ -2,7 +2,7 @@ import { Button } from "components/form";
 import { Modal } from "components/modal";
 import { useBoolean } from "hooks/use-boolean";
 import { Plus } from "react-feather";
-import { CreateEdgeForm } from "./create-edge-form";
+import { EdgeCreatorForm } from "./edge-creator-form";
 
 export function EdgeCreator() {
   const { value: isOpen, on: open, off: close } = useBoolean();
@@ -13,7 +13,7 @@ export function EdgeCreator() {
         添加道路
       </Button>
       <Modal isOpen={isOpen} onClose={close} title="添加道路">
-        <CreateEdgeForm onClose={close} />
+        <EdgeCreatorForm onClose={close} />
       </Modal>
     </>
   );

@@ -36,7 +36,7 @@ type Props = {
   onClose: () => void;
 };
 
-export function UpdateNodeForm({ id, onClose }: Props) {
+export function NodeUpdaterForm({ id, onClose }: Props) {
   const { nodes, mutate } = useNodes();
   const node = nodes?.find((node) => node.id === id) as Node;
 

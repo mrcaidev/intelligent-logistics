@@ -1,27 +1,25 @@
-import { Button, Checkbox, Input, Option, Select } from "components/form";
-import { useGoods } from "hooks/use-goods";
+import { Button, Input, Option, Select } from "components/form";
+import { useGlobalState } from "contexts/global-state";
+import { useEdges } from "hooks/use-edges";
 import { useGraphs } from "hooks/use-graphs";
 import { useNodes } from "hooks/use-nodes";
 import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
-import { toast } from "react-toastify";
-import { Good } from "shared-types";
+import { Edge } from "shared-types";
 import useSWRMutation from "swr/mutation";
 import { fetcher } from "utils/fetch";
 
 type State = {
-  name: string;
   sourceId: string;
   targetId: string;
-  isVip: boolean;
+  cost: number;
   graphId: string;
 };
 
 const defaultState = {
-  name: "",
   sourceId: "",
   targetId: "",
-  isVip: false,
+  cost: 0,
   graphId: "",
 };
 
@@ -35,56 +33,43 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
   return { ...state, [type]: value };
 }
 
-async function updateGood(url: string, { arg }: { arg: State }) {
-  return fetcher<never>(url, {
-    method: "PATCH",
+async function createEdge(url: string, { arg }: { arg: State }) {
+  return fetcher<Edge>(url, {
+    method: "POST",
     body: JSON.stringify(arg),
   });
 }
 
 type Props = {
-  good: Good;
   onClose: () => void;
 };
 
-export function UpdateGoodForm({
-  good: { id, name, sourceId, targetId, isVip, graphId },
-  onClose,
-}: Props) {
+export function EdgeCreatorForm({ onClose }: Props) {
+  const { currentGraphId } = useGlobalState();
   const { graphs } = useGraphs();
   const { nodes } = useNodes();
-  const { mutate } = useGoods();
+  const { mutate } = useEdges();
 
-  const { trigger, isMutating } = useSWRMutation("/goods/" + id, updateGood);
+  const { trigger, isMutating } = useSWRMutation("/edges", createEdge);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 
   useEffect(() => {
-    dispatch({ type: "name", value: name });
-    dispatch({ type: "sourceId", value: sourceId });
-    dispatch({ type: "targetId", value: targetId });
-    dispatch({ type: "isVip", value: isVip });
-    dispatch({ type: "graphId", value: graphId });
-  }, [name, sourceId, targetId, isVip, graphId]);
+    dispatch({ type: "graphId", value: currentGraphId });
+  }, [currentGraphId]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    await trigger(form);
+    const edge = await trigger(form);
+    if (!edge) {
+      return;
+    }
     await mutate();
-    toast.success("成功修改物品：" + form.name);
     onClose();
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 w-100">
-      <Input
-        label="名称"
-        name="name"
-        value={form.name}
-        required
-        disabled={isMutating}
-        onChange={(e) => dispatch({ type: "name", value: e.target.value })}
-      />
       <Select
         label="起点"
         name="source"
@@ -115,28 +100,29 @@ export function UpdateGoodForm({
           </Option>
         ))}
       </Select>
+      <Input
+        label="费用"
+        type="number"
+        name="cost"
+        value={form.cost}
+        required
+        disabled={isMutating}
+        onChange={(e) => dispatch({ type: "cost", value: +e.target.value })}
+      />
       <Select
         label="物流方案"
         name="graphId"
         value={form.graphId}
         placeholder="请选择物流方案"
         required
-        disabled={isMutating}
-        onChange={(e) => dispatch({ type: "graphId", value: e.target.value })}
+        disabled
       >
-        {graphs?.map((graph) => (
-          <Option key={graph.id} value={graph.id}>
-            {graph.name}
+        {graphs?.map(({ id, name }) => (
+          <Option key={id} value={id}>
+            {name}
           </Option>
         ))}
       </Select>
-      <Checkbox
-        label="是否是 VIP 用户"
-        name="isVip"
-        checked={form.isVip}
-        disabled={isMutating}
-        onChange={(e) => dispatch({ type: "isVip", value: e.target.checked })}
-      />
       <div className="flex justify-end items-center gap-3">
         <Button colorScheme="gray" variant="dim" icon={X} onClick={onClose}>
           取消

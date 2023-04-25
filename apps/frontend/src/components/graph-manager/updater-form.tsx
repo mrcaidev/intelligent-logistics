@@ -1,7 +1,9 @@
 import { Button, Input } from "components/form";
-import { FormEvent, useReducer } from "react";
+import { useGraphs } from "hooks/use-graphs";
+import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
-import { Node } from "shared-types";
+import { toast } from "react-toastify";
+import { Graph } from "shared-types";
 import useSWRMutation from "swr/mutation";
 import { fetcher } from "utils/fetch";
 
@@ -23,28 +25,34 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
   return { ...state, [type]: value };
 }
 
-async function createNode(url: string, { arg }: { arg: State }) {
-  return fetcher<Node>(url, {
-    method: "POST",
+async function updateGraph(url: string, { arg }: { arg: State }) {
+  return fetcher<never>(url, {
+    method: "PATCH",
     body: JSON.stringify(arg),
   });
 }
 
 type Props = {
+  graph: Graph;
   onClose: () => void;
 };
 
-export function CreateNodeForm({ onClose }: Props) {
-  const { trigger, isMutating } = useSWRMutation("/nodes", createNode);
+export function GraphUpdaterForm({ graph: { id, name }, onClose }: Props) {
+  const { mutate } = useGraphs();
+
+  const { trigger, isMutating } = useSWRMutation("/graphs/" + id, updateGraph);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 
+  useEffect(() => {
+    dispatch({ type: "name", value: name });
+  }, [name]);
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const node = await trigger(form);
-    if (!node) {
-      return;
-    }
+    await trigger(form);
+    await mutate();
+    toast.success("成功修改方案：" + form.name);
     onClose();
   };
 

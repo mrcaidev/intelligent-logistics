@@ -1,8 +1,7 @@
 import { Button, Input } from "components/form";
 import { FormEvent, useReducer } from "react";
 import { Check, X } from "react-feather";
-import { toast } from "react-toastify";
-import { Graph } from "shared-types";
+import { Node } from "shared-types";
 import useSWRMutation from "swr/mutation";
 import { fetcher } from "utils/fetch";
 
@@ -24,8 +23,8 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
   return { ...state, [type]: value };
 }
 
-async function createGraph(url: string, { arg }: { arg: State }) {
-  return fetcher<Graph>(url, {
+async function createNode(url: string, { arg }: { arg: State }) {
+  return fetcher<Node>(url, {
     method: "POST",
     body: JSON.stringify(arg),
   });
@@ -35,18 +34,17 @@ type Props = {
   onClose: () => void;
 };
 
-export function CreateGraphForm({ onClose }: Props) {
-  const { trigger, isMutating } = useSWRMutation("/graphs", createGraph);
+export function NodeCreatorForm({ onClose }: Props) {
+  const { trigger, isMutating } = useSWRMutation("/nodes", createNode);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const graph = await trigger(form);
-    if (!graph) {
+    const node = await trigger(form);
+    if (!node) {
       return;
     }
-    toast.success("成功添加方案：" + graph.name);
     onClose();
   };
 

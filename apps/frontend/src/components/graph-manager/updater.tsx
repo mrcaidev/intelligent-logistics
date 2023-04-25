@@ -3,7 +3,7 @@ import { Modal } from "components/modal";
 import { useBoolean } from "hooks/use-boolean";
 import { Edit } from "react-feather";
 import { Graph } from "shared-types";
-import { UpdateGraphForm } from "./update-form";
+import { GraphUpdaterForm } from "./updater-form";
 
 type Props = {
   graph: Graph;
@@ -24,7 +24,7 @@ export function GraphUpdater({ graph }: Props) {
         <span className="sr-only">修改方案</span>
       </Button>
       <Modal isOpen={isOpen} onClose={close} title="修改方案">
-        <UpdateGraphForm graph={graph} onClose={close} />
+        <GraphUpdaterForm graph={graph} onClose={close} />
       </Modal>
     </>
   );

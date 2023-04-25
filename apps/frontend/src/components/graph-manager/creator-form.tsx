@@ -1,6 +1,5 @@
 import { Button, Input } from "components/form";
-import { useGraphs } from "hooks/use-graphs";
-import { FormEvent, useEffect, useReducer } from "react";
+import { FormEvent, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { toast } from "react-toastify";
 import { Graph } from "shared-types";
@@ -25,34 +24,29 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
   return { ...state, [type]: value };
 }
 
-async function updateGraph(url: string, { arg }: { arg: State }) {
-  return fetcher<never>(url, {
-    method: "PATCH",
+async function createGraph(url: string, { arg }: { arg: State }) {
+  return fetcher<Graph>(url, {
+    method: "POST",
     body: JSON.stringify(arg),
   });
 }
 
 type Props = {
-  graph: Graph;
   onClose: () => void;
 };
 
-export function UpdateGraphForm({ graph: { id, name }, onClose }: Props) {
-  const { mutate } = useGraphs();
-
-  const { trigger, isMutating } = useSWRMutation("/graphs/" + id, updateGraph);
+export function GraphCreatorForm({ onClose }: Props) {
+  const { trigger, isMutating } = useSWRMutation("/graphs", createGraph);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 
-  useEffect(() => {
-    dispatch({ type: "name", value: name });
-  }, [name]);
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    await trigger(form);
-    await mutate();
-    toast.success("成功修改方案：" + form.name);
+    const graph = await trigger(form);
+    if (!graph) {
+      return;
+    }
+    toast.success("成功添加方案：" + graph.name);
     onClose();
   };
 
