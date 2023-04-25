@@ -1,16 +1,10 @@
 import clsx from "clsx";
 import { useGlobalState } from "contexts/global-state";
 import { Graph } from "shared-types";
-import { GraphRemover } from "./remover";
-import { GraphUpdater } from "./updater";
+import { RemoveGraphButton } from "./remove-button";
+import { UpdateGraphButton } from "./update-button";
 
-type Props = {
-  graph: Graph;
-};
-
-export function GraphCard({ graph }: Props) {
-  const { id, name } = graph;
-
+export function GraphCard({ id, name }: Graph) {
   const { currentGraphId, dispatch } = useGlobalState();
 
   return (
@@ -26,8 +20,8 @@ export function GraphCard({ graph }: Props) {
         {name}
       </button>
       <div className="hidden group-hover:flex items-center gap-2 absolute right-3 top-0 bottom-0">
-        <GraphUpdater graph={graph} />
-        <GraphRemover id={id} />
+        <UpdateGraphButton id={id} />
+        <RemoveGraphButton id={id} />
       </div>
     </div>
   );

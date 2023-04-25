@@ -36,7 +36,7 @@ export function GraphList({ openForm }: Props) {
     <ul className="space-y-1 grow p-4 mx-0.5 overflow-auto scrollbar scrollbar-rounded scrollbar-track-color-transparent scrollbar-thumb-color-gray-400">
       {graphs.map((graph) => (
         <li key={graph.id}>
-          <GraphCard graph={graph} />
+          <GraphCard {...graph} />
         </li>
       ))}
     </ul>

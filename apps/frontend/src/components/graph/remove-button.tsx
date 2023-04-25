@@ -8,12 +8,12 @@ type Props = {
   id: string;
 };
 
-export function GraphRemover({ id }: Props) {
+export function RemoveGraphButton({ id }: Props) {
   const { mutate } = useGraphs();
 
   const { trigger, isMutating } = useDelete("/graphs/" + id);
 
-  const handleClickRemoving = async () => {
+  const handleClick = async () => {
     await trigger();
     await mutate();
     toast.success("删除方案成功");
@@ -26,7 +26,7 @@ export function GraphRemover({ id }: Props) {
       size="small"
       icon={Trash2}
       isLoading={isMutating}
-      onClick={handleClickRemoving}
+      onClick={handleClick}
     >
       <span className="sr-only">删除方案</span>
     </Button>

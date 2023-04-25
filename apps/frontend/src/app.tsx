@@ -1,7 +1,7 @@
 import "@unocss/reset/tailwind.css";
 import { Canvas, CanvasContainer } from "components/canvas";
 import { GoodManager } from "components/good";
-import { GraphManager } from "components/graph-manager";
+import { GraphManager } from "components/graph";
 import { Sidebar } from "components/sidebar";
 import { TabPanel, Tabs } from "components/tabs";
 import { GlobalStateProvider } from "contexts/global-state";

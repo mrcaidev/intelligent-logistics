@@ -16,28 +16,29 @@ const defaultState = {
 
 type Action<T extends keyof State> = {
   type: T;
-  value: State[T];
+  payload: State[T];
 };
 
 function reducer<T extends keyof State>(state: State, action: Action<T>) {
-  const { type, value } = action;
-  return { ...state, [type]: value };
+  const { type, payload } = action;
+  return { ...state, [type]: payload };
 }
 
 type Props = {
-  graph: Graph;
+  id: string;
   onClose: () => void;
 };
 
-export function GraphUpdaterForm({ graph: { id, name }, onClose }: Props) {
-  const { mutate } = useGraphs();
+export function UpdateGraphForm({ id, onClose }: Props) {
+  const { graphs, mutate } = useGraphs();
+  const { name } = graphs?.find((graph) => graph.id === id) as Graph;
 
   const { trigger, isMutating } = usePatch<State>("/graphs/" + id);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 
   useEffect(() => {
-    dispatch({ type: "name", value: name });
+    dispatch({ type: "name", payload: name });
   }, [name]);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -56,7 +57,7 @@ export function GraphUpdaterForm({ graph: { id, name }, onClose }: Props) {
         value={form.name}
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "name", value: e.target.value })}
+        onChange={(e) => dispatch({ type: "name", payload: e.target.value })}
       />
       <div className="flex justify-end items-center gap-3">
         <Button colorScheme="gray" variant="dim" icon={X} onClick={onClose}>

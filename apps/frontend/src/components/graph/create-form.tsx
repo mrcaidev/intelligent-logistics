@@ -15,30 +15,27 @@ const defaultState = {
 
 type Action<T extends keyof State> = {
   type: T;
-  value: State[T];
+  payload: State[T];
 };
 
 function reducer<T extends keyof State>(state: State, action: Action<T>) {
-  const { type, value } = action;
-  return { ...state, [type]: value };
+  const { type, payload } = action;
+  return { ...state, [type]: payload };
 }
 
 type Props = {
   onClose: () => void;
 };
 
-export function GraphCreatorForm({ onClose }: Props) {
+export function CreateGraphForm({ onClose }: Props) {
   const { trigger, isMutating } = usePost<State, Graph>("/graphs");
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const graph = await trigger(form);
-    if (!graph) {
-      return;
-    }
-    toast.success("成功添加方案：" + graph.name);
+    await trigger(form);
+    toast.success("成功添加方案：" + form.name);
     onClose();
   };
 
@@ -50,7 +47,7 @@ export function GraphCreatorForm({ onClose }: Props) {
         value={form.name}
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "name", value: e.target.value })}
+        onChange={(e) => dispatch({ type: "name", payload: e.target.value })}
       />
       <div className="flex justify-end items-center gap-3">
         <Button colorScheme="gray" variant="dim" icon={X} onClick={onClose}>

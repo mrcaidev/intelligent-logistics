@@ -2,14 +2,13 @@ import { Button } from "components/form";
 import { Modal } from "components/modal";
 import { useBoolean } from "hooks/use-boolean";
 import { Edit } from "react-feather";
-import { Graph } from "shared-types";
-import { GraphUpdaterForm } from "./updater-form";
+import { UpdateGraphForm } from "./update-form";
 
 type Props = {
-  graph: Graph;
+  id: string;
 };
 
-export function GraphUpdater({ graph }: Props) {
+export function UpdateGraphButton({ id }: Props) {
   const { value: isOpen, on: open, off: close } = useBoolean();
 
   return (
@@ -24,7 +23,7 @@ export function GraphUpdater({ graph }: Props) {
         <span className="sr-only">修改方案</span>
       </Button>
       <Modal isOpen={isOpen} onClose={close} title="修改方案">
-        <GraphUpdaterForm graph={graph} onClose={close} />
+        <UpdateGraphForm id={id} onClose={close} />
       </Modal>
     </>
   );
