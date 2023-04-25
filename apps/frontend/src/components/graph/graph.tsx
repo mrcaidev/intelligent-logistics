@@ -57,7 +57,7 @@ export function Graph() {
   if (nodes.length === 0) {
     return (
       <div className="grid place-items-center h-full">
-        <p className="text-gray-600">这张图暂时还没有节点</p>
+        <p className="text-gray-600">暂时没有节点</p>
       </div>
     );
   }
