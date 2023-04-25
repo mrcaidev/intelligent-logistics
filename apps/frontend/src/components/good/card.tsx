@@ -33,7 +33,7 @@ export function GoodCard({
 
   return (
     <details className="group rounded border border-gray-300 open:bg-gray-300">
-      <summary className="flex items-center gap-3 relative px-4 py-3 rounded font-bold text-sm hover:bg-gray-300 transition-colors cursor-pointer">
+      <summary className="flex items-center gap-3 relative px-4 py-3 rounded hover:bg-gray-300 font-bold text-sm transition-colors cursor-pointer">
         <Package size={16} />
         {name}
         <ChevronRight
