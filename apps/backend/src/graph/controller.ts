@@ -11,8 +11,8 @@ export const graphController = {
 
 async function findAll(_: Request, res: Response, next: NextFunction) {
   try {
-    const graphs = await graphService.findAll();
-    return res.status(200).json({ data: graphs });
+    const data = await graphService.findAll();
+    return res.status(200).json({ data });
   } catch (error) {
     return next(error);
   }
@@ -20,8 +20,8 @@ async function findAll(_: Request, res: Response, next: NextFunction) {
 
 async function create(req: CreateRequest, res: Response, next: NextFunction) {
   try {
-    const graph = await graphService.create(req.body);
-    return res.status(201).json({ data: graph });
+    const data = await graphService.create(req.body);
+    return res.status(201).json({ data });
   } catch (error) {
     return next(error);
   }

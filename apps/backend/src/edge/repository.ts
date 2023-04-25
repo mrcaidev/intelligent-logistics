@@ -1,11 +1,11 @@
+import { Edge } from "shared-types";
 import { query } from "utils/database";
 import { ServiceUnavailableError } from "utils/http-error";
-import { Edge } from "./types";
 
 export const edgeRepository = {
   findAll,
   findById,
-  findByGraphId,
+  findAllByGraphId,
   create,
   updateById,
   removeById,
@@ -32,7 +32,7 @@ async function findById(id: string) {
   return rows[0];
 }
 
-async function findByGraphId(graphId: string) {
+async function findAllByGraphId(graphId: string) {
   return query<Edge>(
     `
       SELECT *
@@ -44,15 +44,15 @@ async function findByGraphId(graphId: string) {
 }
 
 async function create(creator: Omit<Edge, "id">) {
-  const { source, target, cost, graphId } = creator;
+  const { sourceId, targetId, cost, graphId } = creator;
 
   const rows = await query<Edge>(
     `
-      INSERT INTO edge (id, source, target, cost, graphId)
+      INSERT INTO edge (id, sourceId, targetId, cost, graphId)
       VALUES (RANDOM_ID, $1, $2, $3, $4)
       RETURNING *
     `,
-    [source, target, cost, graphId]
+    [sourceId, targetId, cost, graphId]
   );
 
   if (!rows[0]) {
@@ -63,18 +63,18 @@ async function create(creator: Omit<Edge, "id">) {
 }
 
 async function updateById(id: string, graph: Edge) {
-  const { source, target, cost, graphId } = graph;
+  const { sourceId, targetId, cost, graphId } = graph;
 
   await query(
     `
       UPDATE edge
-      SET source = $2,
-        target = $3,
+      SET sourceId = $2,
+        targetId = $3,
         cost = $4,
         graphId = $5
       WHERE id = $1
     `,
-    [id, source, target, cost, graphId]
+    [id, sourceId, targetId, cost, graphId]
   );
 }
 

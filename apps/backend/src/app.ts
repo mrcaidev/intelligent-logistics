@@ -4,9 +4,10 @@ import express, { Express } from "express";
 import { rateLimit } from "express-rate-limit";
 import { goodRouter } from "good/router";
 import { graphRouter } from "graph/router";
+import { handleError } from "middlewares/handle-error";
+import { nodeRouter } from "node/router";
 import { rootRouter } from "root/router";
 import { bootstrap } from "./bootstrap";
-import { handleError } from "./middlewares/handle-error";
 
 await bootstrap();
 
@@ -26,6 +27,7 @@ app.use(express.json());
 
 app.use("/", rootRouter);
 app.use("/graphs", graphRouter);
+app.use("/nodes", nodeRouter);
 app.use("/edges", edgeRouter);
 app.use("/goods", goodRouter);
 

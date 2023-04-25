@@ -1,8 +1,8 @@
-import { Graph } from "shared-types";
+import { Node } from "shared-types";
 import { query } from "utils/database";
 import { ServiceUnavailableError } from "utils/http-error";
 
-export const graphRepository = {
+export const nodeRepository = {
   findAll,
   findById,
   create,
@@ -11,19 +11,19 @@ export const graphRepository = {
 };
 
 async function findAll() {
-  return query<Graph>(
+  return query<Node>(
     `
       SELECT *
-      FROM graph
+      FROM node
     `
   );
 }
 
 async function findById(id: string) {
-  const rows = await query<Graph>(
+  const rows = await query<Node>(
     `
       SELECT *
-      FROM graph
+      FROM node
       WHERE id = $1
     `,
     [id]
@@ -31,12 +31,12 @@ async function findById(id: string) {
   return rows[0];
 }
 
-async function create(creator: Omit<Graph, "id">) {
+async function create(creator: Omit<Node, "id">) {
   const { name } = creator;
 
-  const rows = await query<Graph>(
+  const rows = await query<Node>(
     `
-      INSERT INTO graph (id, name)
+      INSERT INTO node (id, name)
       VALUES (RANDOM_ID, $1)
       RETURNING *
     `,
@@ -50,12 +50,12 @@ async function create(creator: Omit<Graph, "id">) {
   return rows[0];
 }
 
-async function updateById(id: string, graph: Graph) {
-  const { name } = graph;
+async function updateById(id: string, node: Node) {
+  const { name } = node;
 
   await query(
     `
-      UPDATE graph
+      UPDATE node
       SET name = $2
       WHERE id = $1
     `,
@@ -66,12 +66,12 @@ async function updateById(id: string, graph: Graph) {
 async function removeById(id: string) {
   await query(
     `
-      DELETE FROM graph
+      DELETE FROM node
       WHERE id = $1;
       DELETE FROM edge
-      WHERE graphId = $1;
+      WHERE sourceId = $1 OR targetId = $1;
       DELETE FROM good
-      WHERE graphId = $1;
+      WHERE sourceId = $1 OR targetId = $1;
     `,
     [id]
   );

@@ -18,20 +18,20 @@ async function create(body: CreateRequest["body"]) {
 }
 
 async function updateById(id: string, body: UpdateByIdRequest["body"]) {
-  const oldExam = await graphRepository.findById(id);
+  const oldGraph = await graphRepository.findById(id);
 
-  if (!oldExam) {
-    throw new NotFoundError("物流图不存在");
+  if (!oldGraph) {
+    throw new NotFoundError("物流方案不存在");
   }
 
-  await graphRepository.updateById(id, { ...oldExam, ...body });
+  await graphRepository.updateById(id, { ...oldGraph, ...body });
 }
 
 async function removeById(id: string) {
-  const oldExam = await graphRepository.findById(id);
+  const oldGraph = await graphRepository.findById(id);
 
-  if (!oldExam) {
-    throw new NotFoundError("物流图不存在");
+  if (!oldGraph) {
+    throw new NotFoundError("物流方案不存在");
   }
 
   await graphRepository.removeById(id);

@@ -1,4 +1,5 @@
 import { graphSchema } from "graph/types";
+import { nodeSchema } from "node/types";
 import { Infer } from "utils/types";
 import { z } from "zod";
 
@@ -6,13 +7,11 @@ export const goodSchema = z.object({
   id: z.string().nonempty(),
   name: z.string().nonempty(),
   createdAt: z.number().positive().int(),
-  source: z.string().nonempty(),
-  target: z.string().nonempty(),
+  sourceId: nodeSchema.shape.id,
+  targetId: nodeSchema.shape.id,
   isVip: z.boolean(),
   graphId: graphSchema.shape.id,
 });
-
-export type Good = Infer<typeof goodSchema>;
 
 export const findAllRequestSchema = z.object({
   query: goodSchema.pick({ graphId: true }).partial(),

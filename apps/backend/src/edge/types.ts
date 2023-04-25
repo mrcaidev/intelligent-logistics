@@ -1,16 +1,15 @@
 import { graphSchema } from "graph/types";
+import { nodeSchema } from "node/types";
 import { Infer } from "utils/types";
 import { z } from "zod";
 
 export const edgeSchema = z.object({
   id: z.string().nonempty(),
-  source: z.string().nonempty(),
-  target: z.string().nonempty(),
+  sourceId: nodeSchema.shape.id,
+  targetId: nodeSchema.shape.id,
   cost: z.number().nonnegative(),
   graphId: graphSchema.shape.id,
 });
-
-export type Edge = Infer<typeof edgeSchema>;
 
 export const findAllRequestSchema = z.object({
   query: edgeSchema.pick({ graphId: true }).partial(),

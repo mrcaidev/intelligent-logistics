@@ -5,9 +5,9 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const request = supertest(app);
 
-describe("GET /graphs", () => {
-  it("finds all graphs", async () => {
-    const response = await request.get("/graphs");
+describe("GET /nodes", () => {
+  it("finds all nodes", async () => {
+    const response = await request.get("/nodes");
     expect(response.status).toEqual(200);
     for (const item of response.body.data) {
       expect(item).toMatchObject({
@@ -18,52 +18,52 @@ describe("GET /graphs", () => {
   });
 });
 
-describe("POST /graphs", () => {
-  let graphId: string;
+describe("POST /nodes", () => {
+  let nodeId: string;
 
   afterAll(async () => {
     await query(
       `
-        DELETE FROM graph
+        DELETE FROM node
         WHERE id = $1
       `,
-      [graphId]
+      [nodeId]
     );
   });
 
-  it("creates graph", async () => {
-    const response = await request.post("/graphs").send({ name: "test" });
+  it("creates node", async () => {
+    const response = await request.post("/nodes").send({ name: "test" });
     expect(response.status).toEqual(201);
     expect(response.body.data).toEqual({
       id: expect.any(String),
       name: "test",
     });
 
-    graphId = response.body.data.id;
+    nodeId = response.body.data.id;
 
-    const graphs = await query(
+    const nodes = await query(
       `
         SELECT *
-        FROM graph
+        FROM node
         WHERE id = $1
       `,
-      [graphId]
+      [nodeId]
     );
-    expect(graphs).toHaveLength(1);
+    expect(nodes).toHaveLength(1);
   });
 
   it("returns 400 when data format is invalid", async () => {
-    const response = await request.post("/graphs").send({ name: 0 });
+    const response = await request.post("/nodes").send({ name: 0 });
     expect(response.status).toEqual(400);
   });
 });
 
-describe("PATCH /graphs/:id", () => {
+describe("PATCH /nodes/:id", () => {
   beforeAll(async () => {
     await query(
       `
-        INSERT INTO graph VALUES
-        ('g2', 'test')
+        INSERT INTO node VALUES
+        ('n5', 'test')
       `
     );
   });
@@ -71,63 +71,65 @@ describe("PATCH /graphs/:id", () => {
   afterAll(async () => {
     await query(
       `
-        DELETE FROM graph
-        WHERE id = 'g2'
+        DELETE FROM node
+        WHERE id = 'n5'
       `
     );
   });
 
-  it("updates graph", async () => {
-    const response = await request.patch("/graphs/g2").send({ name: "test_" });
+  it("updates node", async () => {
+    const response = await request.patch("/nodes/n5").send({ name: "test_" });
     expect(response.status).toEqual(204);
 
-    const graphs = await query(
+    const nodes = await query(
       `
         SELECT *
-        FROM graph
-        WHERE id = 'g2' AND name = 'test_'
+        FROM node
+        WHERE id = 'n5' AND name = 'test_'
       `
     );
-    expect(graphs).toHaveLength(1);
+    expect(nodes).toHaveLength(1);
   });
 
   it("returns 400 when data format is invalid", async () => {
-    const response = await request.patch("/graphs/g2").send({ name: 0 });
+    const response = await request.patch("/nodes/n5").send({ name: 0 });
     expect(response.status).toEqual(400);
   });
 
-  it("returns 404 when graph does not exist", async () => {
-    const response = await request.patch("/graphs/g0").send({ name: "test_" });
+  it("returns 404 when node does not exist", async () => {
+    const response = await request.patch("/nodes/n0").send({ name: "test_" });
     expect(response.status).toEqual(404);
   });
 });
 
-describe("DELETE /graphs/:id", () => {
+describe("DELETE /nodes/:id", () => {
   beforeAll(async () => {
     await query(
       `
-        INSERT INTO graph VALUES
-        ('g3', 'test');
+        INSERT INTO node VALUES
+        ('n6', 'test');
         INSERT INTO edge VALUES
-        ('e100', 'n1', 'n2', 1, 'g3');
+        ('e101', 'n1', 'n6', 1, 'g1'),
+        ('e102', 'n6', 'n1', 1, 'g1');
         INSERT INTO good VALUES
-        ('100', 'test', 1682153000100, 'n1', 'n2', FALSE, 'g3');
+        ('101', 'test', 1682153000101, 'n1', 'n6', FALSE, 'g1'),
+        ('102', 'test', 1682153000102, 'n6', 'n1', FALSE, 'g1');
       `
     );
   });
 
-  it("removes graph", async () => {
-    const response = await request.delete("/graphs/g3");
+  it("removes node", async () => {
+    const response = await request.delete("/nodes/n6");
     expect(response.status).toEqual(204);
 
-    const graphs = await query(
+    const nodes = await query(
       `
         SELECT *
-        FROM graph
-        WHERE id = 'g3'
+        FROM node
+        WHERE id = 'n6'
       `
     );
-    expect(graphs).toHaveLength(0);
+    expect(nodes).toHaveLength(0);
   });
 
   it("removes edges and goods in cascade", async () => {
@@ -135,7 +137,7 @@ describe("DELETE /graphs/:id", () => {
       `
         SELECT *
         FROM edge
-        WHERE graphId = 'g3'
+        WHERE sourceId = 'n6' OR targetId = 'n6'
       `
     );
     expect(edges).toHaveLength(0);
@@ -144,14 +146,14 @@ describe("DELETE /graphs/:id", () => {
       `
         SELECT *
         FROM good
-        WHERE graphId = 'g3'
+        WHERE sourceId = 'n6' OR targetId = 'n6'
       `
     );
     expect(goods).toHaveLength(0);
   });
 
-  it("returns 404 when graph does not exist", async () => {
-    const response = await request.delete("/graphs/g0");
+  it("returns 404 when node does not exist", async () => {
+    const response = await request.delete("/nodes/n0");
     expect(response.status).toEqual(404);
   });
 });

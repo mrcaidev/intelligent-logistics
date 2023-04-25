@@ -1,6 +1,7 @@
 import { getMostPrior, getShortestPath } from "delivery-scheduler";
 import { edgeRepository } from "edge/repository";
 import { graphRepository } from "graph/repository";
+import { nodeRepository } from "node/repository";
 import { NotFoundError, UnprocessableContentError } from "utils/http-error";
 import { goodRepository } from "./repository";
 import { CreateRequest, FindAllRequest, UpdateByIdRequest } from "./types";
@@ -24,19 +25,31 @@ async function findAll(query: FindAllRequest["query"]) {
 }
 
 async function create(body: CreateRequest["body"]) {
-  const { graphId } = body;
+  const { sourceId, targetId, graphId } = body;
+
+  const source = await nodeRepository.findById(sourceId);
+
+  if (!source) {
+    throw new NotFoundError("起点不存在");
+  }
+
+  const target = await nodeRepository.findById(targetId);
+
+  if (!target) {
+    throw new NotFoundError("终点不存在");
+  }
 
   const graph = await graphRepository.findById(graphId);
 
   if (!graph) {
-    throw new NotFoundError("物流图不存在");
+    throw new NotFoundError("物流方案不存在");
   }
 
   return goodRepository.create(body);
 }
 
 async function updateById(id: string, body: UpdateByIdRequest["body"]) {
-  const { graphId } = body;
+  const { sourceId, targetId, graphId } = body;
 
   const oldGood = await goodRepository.findById(id);
 
@@ -44,11 +57,24 @@ async function updateById(id: string, body: UpdateByIdRequest["body"]) {
     throw new NotFoundError("物品不存在");
   }
 
+  if (sourceId) {
+    const source = await nodeRepository.findById(sourceId);
+    if (!source) {
+      throw new NotFoundError("起点不存在");
+    }
+  }
+
+  if (targetId) {
+    const target = await nodeRepository.findById(targetId);
+    if (!target) {
+      throw new NotFoundError("终点不存在");
+    }
+  }
+
   if (graphId) {
     const graph = await graphRepository.findById(graphId);
-
     if (!graph) {
-      throw new NotFoundError("物流图不存在");
+      throw new NotFoundError("物流方案不存在");
     }
   }
 
@@ -73,14 +99,16 @@ async function deliver() {
     throw new UnprocessableContentError("没有物品需要运送");
   }
 
-  const edges = await edgeRepository.findByGraphId(good.graphId);
-  const path = getShortestPath(edges, good.source, good.target);
+  const { id, sourceId, targetId, graphId } = good;
 
-  if (path.nodes.length === 0) {
+  const edges = await edgeRepository.findAllByGraphId(graphId);
+  const path = getShortestPath(edges, sourceId, targetId);
+
+  if (path.length === 0) {
     throw new UnprocessableContentError("没有合适的路径");
   }
 
-  await goodRepository.removeById(good.id);
+  await goodRepository.removeById(id);
 
-  return { good, ...path };
+  return { good, path };
 }

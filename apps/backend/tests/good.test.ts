@@ -1,5 +1,6 @@
 import { app } from "app";
 import supertest from "supertest";
+import { query } from "utils/database";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 const request = supertest(app);
@@ -13,8 +14,8 @@ describe("GET /goods", () => {
         id: expect.any(String),
         name: expect.any(String),
         createdAt: expect.any(Number),
-        source: expect.any(String),
-        target: expect.any(String),
+        sourceId: expect.any(String),
+        targetId: expect.any(String),
         isVip: expect.any(Boolean),
         graphId: expect.any(String),
       });
@@ -29,8 +30,8 @@ describe("GET /goods", () => {
         id: expect.any(String),
         name: expect.any(String),
         createdAt: expect.any(Number),
-        source: expect.any(String),
-        target: expect.any(String),
+        sourceId: expect.any(String),
+        targetId: expect.any(String),
         isVip: expect.any(Boolean),
         graphId: "g1",
       });
@@ -42,93 +43,176 @@ describe("POST /goods", () => {
   let goodId: string;
 
   afterAll(async () => {
-    await request.delete("/goods/" + goodId);
+    await query(
+      `
+        DELETE FROM good
+        WHERE id = $1
+      `,
+      [goodId]
+    );
   });
 
   it("creates good", async () => {
     const response = await request.post("/goods").send({
-      name: "Egg",
-      source: "C",
-      target: "D",
+      name: "test",
+      sourceId: "n1",
+      targetId: "n2",
       isVip: false,
       graphId: "g1",
     });
     expect(response.status).toEqual(201);
     expect(response.body.data).toEqual({
       id: expect.any(String),
-      name: "Egg",
+      name: "test",
       createdAt: expect.any(Number),
-      source: "C",
-      target: "D",
+      sourceId: "n1",
+      targetId: "n2",
       isVip: false,
       graphId: "g1",
     });
 
     goodId = response.body.data.id;
+
+    const goods = await query(
+      `
+        SELECT *
+        FROM good
+        WHERE id = $1
+      `,
+      [goodId]
+    );
+    expect(goods).toHaveLength(1);
   });
 
   it("returns 400 when data format is invalid", async () => {
-    const response = await request.post("/goods").send({ name: 1 });
+    const response = await request.post("/goods").send({
+      name: 0,
+      sourceId: 0,
+      targetId: 0,
+      isVip: 0,
+      graphId: 0,
+    });
     expect(response.status).toEqual(400);
+  });
+
+  it("returns 404 when source node does not exist", async () => {
+    const response = await request.post("/goods").send({
+      name: "test",
+      sourceId: "n0",
+      targetId: "n2",
+      isVip: false,
+      graphId: "g1",
+    });
+    expect(response.status).toEqual(404);
+  });
+
+  it("returns 404 when target node does not exist", async () => {
+    const response = await request.post("/goods").send({
+      name: "test",
+      sourceId: "n1",
+      targetId: "n0",
+      isVip: false,
+      graphId: "g1",
+    });
+    expect(response.status).toEqual(404);
+  });
+
+  it("returns 404 when graph does not exist", async () => {
+    const response = await request.post("/goods").send({
+      name: "test",
+      sourceId: "n1",
+      targetId: "n2",
+      isVip: false,
+      graphId: "g0",
+    });
+    expect(response.status).toEqual(404);
   });
 });
 
 describe("PATCH /goods/:id", () => {
-  let goodId: string;
-
   beforeAll(async () => {
-    const response = await request.post("/goods").send({
-      name: "Egg",
-      source: "C",
-      target: "D",
-      isVip: false,
-      graphId: "g1",
-    });
-    goodId = response.body.data.id;
+    await query(
+      `
+        INSERT INTO good VALUES
+        ('4', 'test', 1682153000004, 'n1', 'n2', FALSE, 'g1')
+      `
+    );
   });
 
   afterAll(async () => {
-    await request.delete("/goods/" + goodId);
+    await query(
+      `
+        DELETE FROM good
+        WHERE id = '4'
+      `
+    );
   });
 
   it("updates good", async () => {
-    const response = await request
-      .patch("/goods/" + goodId)
-      .send({ name: "Beef" });
+    const response = await request.patch("/goods/4").send({ name: "test_" });
     expect(response.status).toEqual(204);
+
+    const goods = await query(
+      `
+        SELECT *
+        FROM good
+        WHERE id = '4' AND name = 'test_'
+      `
+    );
+    expect(goods).toHaveLength(1);
   });
 
-  it("returns 400 when the data format is invalid", async () => {
-    const response = await request.patch("/goods/" + goodId).send({ name: 1 });
+  it("returns 400 when data format is invalid", async () => {
+    const response = await request.patch("/goods/4").send({ name: 0 });
     expect(response.status).toEqual(400);
   });
 
-  it("returns 404 when the good does not exist", async () => {
-    const response = await request.patch("/goods/0").send({ name: "Beef" });
+  it("returns 404 when good does not exist", async () => {
+    const response = await request.patch("/goods/0").send({ name: "test_" });
+    expect(response.status).toEqual(404);
+  });
+
+  it("returns 404 when source node does not exist", async () => {
+    const response = await request.patch("/goods/4").send({ sourceId: "n0" });
+    expect(response.status).toEqual(404);
+  });
+
+  it("returns 404 when target node does not exist", async () => {
+    const response = await request.patch("/goods/4").send({ targetId: "n0" });
+    expect(response.status).toEqual(404);
+  });
+
+  it("returns 404 when graph does not exist", async () => {
+    const response = await request.patch("/goods/4").send({ graphId: "g0" });
     expect(response.status).toEqual(404);
   });
 });
 
 describe("DELETE /goods/:id", () => {
-  let goodId: string;
-
   beforeAll(async () => {
-    const response = await request.post("/goods").send({
-      name: "Egg",
-      source: "C",
-      target: "D",
-      isVip: false,
-      graphId: "g1",
-    });
-    goodId = response.body.data.id;
+    await query(
+      `
+        INSERT INTO good VALUES
+        ('5', 'test', 1682153000005, 'n1', 'n2', FALSE, 'g1')
+      `
+    );
   });
 
   it("removes good", async () => {
-    const response = await request.delete("/goods/" + goodId);
+    const response = await request.delete("/goods/5");
     expect(response.status).toEqual(204);
+
+    const goods = await query(
+      `
+        SELECT *
+        FROM good
+        WHERE id = '5'
+      `
+    );
+    expect(goods).toHaveLength(0);
   });
 
-  it("returns 404 when the good does not exist", async () => {
+  it("returns 404 when good does not exist", async () => {
     const response = await request.delete("/goods/0");
     expect(response.status).toEqual(404);
   });
@@ -136,48 +220,70 @@ describe("DELETE /goods/:id", () => {
 
 describe("POST /goods/deliver", () => {
   it("delivers goods by priority", async () => {
-    const responseA = await request.post("/goods/deliver");
-    expect(responseA.status).toEqual(200);
-    expect(responseA.body.data).toMatchObject({
+    const firstResponse = await request.post("/goods/deliver");
+    expect(firstResponse.status).toEqual(200);
+    expect(firstResponse.body.data).toMatchObject({
       good: { id: "2" },
-      nodes: ["B", "A", "C"],
-      edgeIds: ["e1", "e2"],
+      path: ["n2", "e1", "n1", "e2", "n3"],
     });
 
-    const responseB = await request.post("/goods/deliver");
-    expect(responseB.status).toEqual(200);
-    expect(responseB.body.data).toMatchObject({
+    const secondResponse = await request.post("/goods/deliver");
+    expect(secondResponse.status).toEqual(200);
+    expect(secondResponse.body.data).toMatchObject({
       good: { id: "1" },
-      nodes: ["A", "C", "D"],
-      edgeIds: ["e2", "e5"],
+      path: ["n1", "e2", "n3", "e5", "n4"],
     });
 
-    const responseC = await request.post("/goods/deliver");
-    expect(responseC.status).toEqual(200);
-    expect(responseC.body.data).toMatchObject({
+    const thirdResponse = await request.post("/goods/deliver");
+    expect(thirdResponse.status).toEqual(200);
+    expect(thirdResponse.body.data).toMatchObject({
       good: { id: "3" },
-      nodes: ["B", "A", "C", "D"],
-      edgeIds: ["e1", "e2", "e5"],
+      path: ["n2", "e1", "n1", "e2", "n3", "e5", "n4"],
     });
+
+    const emptyResponse = await request.post("/goods/deliver");
+    expect(emptyResponse.status).toEqual(422);
   });
 
-  it("returns 422 when there is no good to deliver", async () => {
-    const response = await request.post("/goods/deliver");
-    expect(response.status).toEqual(422);
-  });
-
-  it("returns 422 when there is no path to deliver", async () => {
-    const createResponse = await request.post("/goods").send({
-      name: "Egg",
-      source: "E",
-      target: "F",
-      isVip: false,
-      graphId: "g1",
-    });
+  it("returns 422 when nodes do not exist", async () => {
+    await query(
+      `
+        INSERT INTO good VALUES
+        ('6', 'test', 1682153000006, 'n100', 'n101', FALSE, 'g1')
+      `
+    );
 
     const response = await request.post("/goods/deliver");
     expect(response.status).toEqual(422);
 
-    await request.delete("/goods/" + createResponse.body.data.id);
+    await query(
+      `
+        DELETE FROM good
+        WHERE id = '6'
+      `
+    );
+  });
+
+  it("returns 422 when path cannot be found", async () => {
+    await query(
+      `
+        INSERT INTO node VALUES
+        ('n102', 'test');
+        INSERT INTO good VALUES
+        ('7', 'test', 1682153000007, 'n1', 'n102', FALSE, 'g1');
+      `
+    );
+
+    const response = await request.post("/goods/deliver");
+    expect(response.status).toEqual(422);
+
+    await query(
+      `
+        DELETE FROM node
+        WHERE id = 'n102';
+        DELETE FROM good
+        WHERE id = '7';
+      `
+    );
   });
 });

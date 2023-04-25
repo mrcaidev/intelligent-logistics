@@ -10,7 +10,7 @@ const fileName = import.meta.env.TEST
   ? "database.dev.json"
   : "database.json";
 
-class NodeManager extends Manager {
+class FsManager extends Manager {
   constructor() {
     super(fileName);
   }
@@ -29,15 +29,16 @@ class NodeManager extends Manager {
   }
 }
 
-const manager = new NodeManager();
+const manager = new FsManager();
 
 /**
- * Queries database with SQL statements, and returns the retrieved rows.
+ * Queries database with parameterized SQL statements,
+ * and returns the retrieved rows.
  *
  * @param sql The SQL string to execute.
  * It can contain multiple statements.
  * Use `$1`, `$2`, ... to pass parameters.
- * @param parameters The parameters to pass to the SQL statement,
+ * @param parameters The parameters passed to the SQL statement,
  * replacing `$1`, `$2`, ... in the SQL string one by one.
  */
 export async function query<T extends Row>(
@@ -45,10 +46,10 @@ export async function query<T extends Row>(
   parameters: unknown[] = []
 ) {
   const parameterizedSql = sql.replaceAll(/\$(\d+)/g, (raw, index) => {
-    if (parameters.length >= +index) {
-      return JSON.stringify(parameters[+index - 1]);
+    if (+index > parameters.length) {
+      return raw;
     }
-    return raw;
+    return JSON.stringify(parameters[+index - 1]);
   });
 
   const asts = parse(parameterizedSql);

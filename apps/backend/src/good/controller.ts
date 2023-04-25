@@ -1,6 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 import { goodService } from "./service";
-import { CreateRequest, RemoveByIdRequest, UpdateByIdRequest } from "./types";
+import {
+  CreateRequest,
+  FindAllRequest,
+  RemoveByIdRequest,
+  UpdateByIdRequest,
+} from "./types";
 
 export const goodController = {
   findAll,
@@ -10,10 +15,10 @@ export const goodController = {
   deliver,
 };
 
-async function findAll(req: Request, res: Response, next: NextFunction) {
+async function findAll(req: FindAllRequest, res: Response, next: NextFunction) {
   try {
-    const goods = await goodService.findAll(req.query);
-    return res.status(200).json({ data: goods });
+    const data = await goodService.findAll(req.query);
+    return res.status(200).json({ data });
   } catch (error) {
     return next(error);
   }
@@ -21,8 +26,8 @@ async function findAll(req: Request, res: Response, next: NextFunction) {
 
 async function create(req: CreateRequest, res: Response, next: NextFunction) {
   try {
-    const good = await goodService.create(req.body);
-    return res.status(201).json({ data: good });
+    const data = await goodService.create(req.body);
+    return res.status(201).json({ data });
   } catch (error) {
     return next(error);
   }

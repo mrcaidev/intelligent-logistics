@@ -1,22 +1,17 @@
-import { NextFunction, Response } from "express";
-import { edgeService } from "./service";
-import {
-  CreateRequest,
-  FindAllRequest,
-  RemoveByIdRequest,
-  UpdateByIdRequest,
-} from "./types";
+import { NextFunction, Request, Response } from "express";
+import { nodeService } from "./service";
+import { CreateRequest, RemoveByIdRequest, UpdateByIdRequest } from "./types";
 
-export const edgeController = {
+export const nodeController = {
   findAll,
   create,
   updateById,
   removeById,
 };
 
-async function findAll(req: FindAllRequest, res: Response, next: NextFunction) {
+async function findAll(_: Request, res: Response, next: NextFunction) {
   try {
-    const data = await edgeService.findAll(req.query);
+    const data = await nodeService.findAll();
     return res.status(200).json({ data });
   } catch (error) {
     return next(error);
@@ -25,7 +20,7 @@ async function findAll(req: FindAllRequest, res: Response, next: NextFunction) {
 
 async function create(req: CreateRequest, res: Response, next: NextFunction) {
   try {
-    const data = await edgeService.create(req.body);
+    const data = await nodeService.create(req.body);
     return res.status(201).json({ data });
   } catch (error) {
     return next(error);
@@ -38,7 +33,7 @@ async function updateById(
   next: NextFunction
 ) {
   try {
-    await edgeService.updateById(req.params.id, req.body);
+    await nodeService.updateById(req.params.id, req.body);
     return res.status(204).end();
   } catch (error) {
     return next(error);
@@ -51,7 +46,7 @@ async function removeById(
   next: NextFunction
 ) {
   try {
-    await edgeService.removeById(req.params.id);
+    await nodeService.removeById(req.params.id);
     return res.status(204).end();
   } catch (error) {
     return next(error);

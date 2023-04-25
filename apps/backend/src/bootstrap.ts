@@ -6,10 +6,14 @@ export async function bootstrap() {
       id TEXT,
       name TEXT
     );
+    CREATE TABLE IF NOT EXISTS node (
+      id TEXT,
+      name TEXT
+    );
     CREATE TABLE IF NOT EXISTS edge (
       id TEXT,
-      source TEXT,
-      target TEXT,
+      sourceId TEXT,
+      targetId TEXT,
       cost NUMERIC,
       graphId TEXT
     );
@@ -17,8 +21,8 @@ export async function bootstrap() {
       id TEXT,
       name TEXT,
       createdAt NUMERIC,
-      source TEXT,
-      target TEXT,
+      sourceId TEXT,
+      targetId TEXT,
       isVip BOOLEAN,
       graphId TEXT
     );
