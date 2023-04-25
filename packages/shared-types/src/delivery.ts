@@ -14,7 +14,6 @@ export type Graph = {
 export type Node = {
   id: string;
   name: string;
-  graphId: string;
 };
 
 /**
