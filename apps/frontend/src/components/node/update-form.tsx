@@ -30,15 +30,15 @@ type Props = {
 
 export function UpdateNodeForm({ id, onClose }: Props) {
   const { nodes, mutate } = useNodes();
-  const node = nodes?.find((node) => node.id === id) as Node;
+  const { name } = nodes?.find((node) => node.id === id) as Node;
 
   const { trigger, isMutating } = usePatch<State>("/nodes/" + id);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 
   useEffect(() => {
-    dispatch({ type: "name", payload: node.name });
-  }, [node.name]);
+    dispatch({ type: "name", payload: name });
+  }, [name]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

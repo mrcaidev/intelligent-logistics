@@ -30,15 +30,15 @@ type Props = {
 
 export function UpdateEdgeForm({ id, onClose }: Props) {
   const { edges, mutate } = useEdges();
-  const edge = edges?.find((edge) => edge.id === id) as Edge;
+  const { cost } = edges?.find((edge) => edge.id === id) as Edge;
 
   const { trigger, isMutating } = usePatch<State>("/edges/" + id);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 
   useEffect(() => {
-    dispatch({ type: "cost", payload: edge.cost });
-  }, [edge.cost]);
+    dispatch({ type: "cost", payload: cost });
+  }, [cost]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
