@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useGlobalState } from "contexts/global-state";
 import { PropsWithChildren } from "react";
 
-export function GraphContainer({ children }: PropsWithChildren) {
+export function CanvasContainer({ children }: PropsWithChildren) {
   const { isSidebarOpen } = useGlobalState();
 
   return (

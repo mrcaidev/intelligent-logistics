@@ -1,73 +1,33 @@
-import { RemoveEdgeButton, UpdateEdgeButton } from "components/edge";
-import { RemoveNodeButton, UpdateNodeButton } from "components/node";
+import {
+  CreateEdgeButton,
+  RemoveEdgeButton,
+  UpdateEdgeButton,
+} from "components/edge";
+import {
+  CreateNodeButton,
+  RemoveNodeButton,
+  UpdateNodeButton,
+} from "components/node";
 import { useGlobalState } from "contexts/global-state";
-import { useBoolean } from "hooks/use-boolean";
 import { useEdges } from "hooks/use-edges";
 import { useNodes } from "hooks/use-nodes";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Loader } from "react-feather";
-import { GraphCanvas, Theme, lightTheme } from "reagraph";
+import { GraphCanvas } from "reagraph";
 import { Button } from "../form";
+import { theme } from "./theme";
+import { useActives } from "./use-actives";
 
-const theme: Theme = {
-  ...lightTheme,
-  canvas: {
-    background: "#f3f4f6",
-    fog: "#f3f4f6",
-  },
-  node: {
-    ...lightTheme.node,
-    label: {
-      ...lightTheme.node.label,
-      stroke: "#f3f4f6",
-    },
-  },
-  edge: {
-    ...lightTheme.edge,
-    label: {
-      ...lightTheme.edge.label,
-      stroke: "#f3f4f6",
-    },
-  },
-};
-
-export function Graph() {
-  const { activeIds, dispatch } = useGlobalState();
+export function Canvas() {
+  const { dispatch } = useGlobalState();
   const { nodes, isLoading: isNodesLoading } = useNodes();
   const { edges, isLoading: isEdgesLoading } = useEdges();
 
+  const actives = useActives();
+
+  const [menuStatus, setMenuStatus] = useState(0);
   const clickedNodeIdRef = useRef("");
   const clickedEdgeIdRef = useRef("");
-
-  const {
-    value: isNodeMenuOpen,
-    on: openNodeMenu,
-    off: closeNodeMenu,
-  } = useBoolean();
-  const {
-    value: isEdgeMenuOpen,
-    on: openEdgeMenu,
-    off: closeEdgeMenu,
-  } = useBoolean();
-
-  const progressRef = useRef(0);
-  const [actives, setActives] = useState<string[]>([]);
-
-  useEffect(() => {
-    progressRef.current = 0;
-
-    const fn = () => {
-      if (progressRef.current >= activeIds.length) {
-        setTimeout(() => setActives([]), 1500);
-        return;
-      }
-      progressRef.current++;
-      setActives(activeIds.slice(0, progressRef.current));
-      setTimeout(fn, 500);
-    };
-
-    fn();
-  }, [activeIds]);
 
   if (isNodesLoading || isEdgesLoading) {
     return (
@@ -115,19 +75,14 @@ export function Graph() {
           source: sourceId,
           target: targetId,
         }))}
-        onCanvasClick={() => {
-          closeNodeMenu();
-          closeEdgeMenu();
+        onCanvasClick={() => setMenuStatus(0)}
+        onNodeClick={({ id }) => {
+          clickedNodeIdRef.current = id;
+          setMenuStatus(1);
         }}
-        onNodeClick={(node) => {
-          clickedNodeIdRef.current = node.id;
-          closeEdgeMenu();
-          openNodeMenu();
-        }}
-        onEdgeClick={(edge) => {
-          clickedEdgeIdRef.current = edge.id;
-          closeNodeMenu();
-          openEdgeMenu();
+        onEdgeClick={({ id }) => {
+          clickedEdgeIdRef.current = id;
+          setMenuStatus(2);
         }}
         actives={actives}
         edgeArrowPosition="none"
@@ -136,13 +91,17 @@ export function Graph() {
         layoutType="treeTd2d"
         theme={theme}
       />
-      {isNodeMenuOpen && (
+      <div className="space-x-4 fixed top-6 left-6 z-10">
+        <CreateNodeButton />
+        <CreateEdgeButton />
+      </div>
+      {menuStatus === 1 && (
         <div className="space-x-4 absolute right-6 top-6 z-10">
           <UpdateNodeButton id={clickedNodeIdRef.current} />
           <RemoveNodeButton id={clickedNodeIdRef.current} />
         </div>
       )}
-      {isEdgeMenuOpen && (
+      {menuStatus === 2 && (
         <div className="space-x-4 absolute right-6 top-6 z-10">
           <UpdateEdgeButton id={clickedEdgeIdRef.current} />
           <RemoveEdgeButton id={clickedEdgeIdRef.current} />

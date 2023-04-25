@@ -1,6 +1,6 @@
 import "@unocss/reset/tailwind.css";
+import { Canvas, CanvasContainer } from "components/canvas";
 import { GoodScheduler } from "components/good-scheduler";
-import { Graph, GraphContainer, GraphController } from "components/graph";
 import { GraphManager } from "components/graph-manager";
 import { Sidebar } from "components/sidebar";
 import { TabPanel, Tabs } from "components/tabs";
@@ -20,10 +20,9 @@ export function App() {
       }}
     >
       <GlobalStateProvider>
-        <GraphContainer>
-          <GraphController />
-          <Graph />
-        </GraphContainer>
+        <CanvasContainer>
+          <Canvas />
+        </CanvasContainer>
         <Sidebar>
           <Tabs names={["方案", "物品"]}>
             <TabPanel name="方案">
