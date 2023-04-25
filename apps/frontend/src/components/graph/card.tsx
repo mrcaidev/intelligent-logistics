@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useGlobalState } from "contexts/global-state";
+import { Map } from "react-feather";
 import { Graph } from "shared-types";
 import { RemoveGraphButton } from "./remove-button";
 import { UpdateGraphButton } from "./update-button";
@@ -13,10 +14,11 @@ export function GraphCard({ id, name }: Graph) {
         type="button"
         onClick={() => dispatch({ type: "SET_CURRENT_GRAPH_ID", payload: id })}
         className={clsx(
-          "w-full px-4 py-3 rounded hover:bg-gray-300 text-start text-sm transition-colors",
+          "flex items-center gap-3 w-full px-4 py-3 rounded border border-gray-300 hover:bg-gray-300 text-sm transition-colors",
           currentGraphId === id && "bg-gray-300"
         )}
       >
+        <Map size={16} />
         {name}
       </button>
       <div className="hidden group-hover:flex items-center gap-2 absolute right-3 top-0 bottom-0">
