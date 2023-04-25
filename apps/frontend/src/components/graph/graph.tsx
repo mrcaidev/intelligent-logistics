@@ -41,6 +41,7 @@ export function Graph() {
 
     const fn = () => {
       if (progressRef.current >= activeIds.length) {
+        setTimeout(() => setActives([]), 1500);
         return;
       }
       progressRef.current++;
