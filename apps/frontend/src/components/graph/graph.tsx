@@ -1,10 +1,15 @@
 import { useGlobalState } from "contexts/global-state";
+import { useBoolean } from "hooks/use-boolean";
 import { useEdges } from "hooks/use-edges";
 import { useNodes } from "hooks/use-nodes";
 import { useEffect, useRef, useState } from "react";
 import { Loader } from "react-feather";
 import { GraphCanvas, Theme, lightTheme } from "reagraph";
 import { Button } from "../form";
+import { EdgeRemover } from "./edge-remover";
+import { EdgeUpdater } from "./edge-updater";
+import { NodeRemover } from "./node-remover";
+import { NodeUpdater } from "./node-updater";
 
 const theme: Theme = {
   ...lightTheme,
@@ -32,6 +37,20 @@ export function Graph() {
   const { activeIds, setIsSidebarOpen } = useGlobalState();
   const { nodes, isLoading: isNodesLoading } = useNodes();
   const { edges, isLoading: isEdgesLoading } = useEdges();
+
+  const clickedNodeIdRef = useRef("");
+  const clickedEdgeIdRef = useRef("");
+
+  const {
+    value: isNodeMenuOpen,
+    on: openNodeMenu,
+    off: closeNodeMenu,
+  } = useBoolean();
+  const {
+    value: isEdgeMenuOpen,
+    on: openEdgeMenu,
+    off: closeEdgeMenu,
+  } = useBoolean();
 
   const progressRef = useRef(0);
   const [actives, setActives] = useState<string[]>([]);
@@ -83,23 +102,51 @@ export function Graph() {
   }
 
   return (
-    <GraphCanvas
-      nodes={nodes.map(({ id, name }) => ({
-        id,
-        label: name,
-      }))}
-      edges={edges.map(({ id, sourceId, targetId, cost }) => ({
-        id,
-        label: String(cost),
-        source: sourceId,
-        target: targetId,
-      }))}
-      actives={actives}
-      edgeArrowPosition="none"
-      edgeLabelPosition="natural"
-      labelType="all"
-      layoutType="treeTd2d"
-      theme={theme}
-    />
+    <>
+      <GraphCanvas
+        nodes={nodes.map(({ id, name }) => ({
+          id,
+          label: name,
+        }))}
+        edges={edges.map(({ id, sourceId, targetId, cost }) => ({
+          id,
+          label: String(cost),
+          source: sourceId,
+          target: targetId,
+        }))}
+        onCanvasClick={() => {
+          closeNodeMenu();
+          closeEdgeMenu();
+        }}
+        onNodeClick={(node) => {
+          clickedNodeIdRef.current = node.id;
+          closeEdgeMenu();
+          openNodeMenu();
+        }}
+        onEdgeClick={(edge) => {
+          clickedEdgeIdRef.current = edge.id;
+          closeNodeMenu();
+          openEdgeMenu();
+        }}
+        actives={actives}
+        edgeArrowPosition="none"
+        edgeLabelPosition="natural"
+        labelType="all"
+        layoutType="treeTd2d"
+        theme={theme}
+      />
+      {isNodeMenuOpen && (
+        <div className="space-x-4 absolute right-6 top-6 z-10">
+          <NodeUpdater id={clickedNodeIdRef.current} />
+          <NodeRemover id={clickedNodeIdRef.current} />
+        </div>
+      )}
+      {isEdgeMenuOpen && (
+        <div className="space-x-4 absolute right-6 top-6 z-10">
+          <EdgeUpdater id={clickedEdgeIdRef.current} />
+          <EdgeRemover id={clickedEdgeIdRef.current} />
+        </div>
+      )}
+    </>
   );
 }
