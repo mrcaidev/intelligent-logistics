@@ -1,15 +1,8 @@
 import { Button } from "components/form";
 import { useGoods } from "hooks/use-goods";
+import { useDelete } from "hooks/use-mutation";
 import { Trash2 } from "react-feather";
 import { toast } from "react-toastify";
-import useSWRMutation from "swr/mutation";
-import { fetcher } from "utils/fetch";
-
-async function removeGood(url: string) {
-  return fetcher<never>(url, {
-    method: "DELETE",
-  });
-}
 
 type Props = {
   id: string;
@@ -18,7 +11,7 @@ type Props = {
 export function GoodRemover({ id }: Props) {
   const { mutate } = useGoods();
 
-  const { trigger, isMutating } = useSWRMutation("/goods/" + id, removeGood);
+  const { trigger, isMutating } = useDelete("/goods/" + id);
 
   const handleClickRemoving = async () => {
     await trigger();

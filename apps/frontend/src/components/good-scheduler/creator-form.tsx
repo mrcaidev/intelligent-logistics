@@ -2,13 +2,12 @@ import { Button, Checkbox, Input, Option, Select } from "components/form";
 import { useGlobalState } from "contexts/global-state";
 import { useGoods } from "hooks/use-goods";
 import { useGraphs } from "hooks/use-graphs";
+import { usePost } from "hooks/use-mutation";
 import { useNodes } from "hooks/use-nodes";
 import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { toast } from "react-toastify";
 import { Good } from "shared-types";
-import useSWRMutation from "swr/mutation";
-import { fetcher } from "utils/fetch";
 
 type State = {
   name: string;
@@ -36,13 +35,6 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
   return { ...state, [type]: value };
 }
 
-async function createGood(url: string, { arg }: { arg: State }) {
-  return fetcher<Good>(url, {
-    method: "POST",
-    body: JSON.stringify(arg),
-  });
-}
-
 type Props = {
   onClose: () => void;
 };
@@ -53,7 +45,7 @@ export function GoodCreatorForm({ onClose }: Props) {
   const { nodes } = useNodes();
   const { mutate } = useGoods();
 
-  const { trigger, isMutating } = useSWRMutation("/goods", createGood);
+  const { trigger, isMutating } = usePost<State, Good>("/goods");
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 

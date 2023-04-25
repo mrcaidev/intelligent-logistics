@@ -1,10 +1,9 @@
 import { Button, Input } from "components/form";
+import { usePatch } from "hooks/use-mutation";
 import { useNodes } from "hooks/use-nodes";
 import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { Node } from "shared-types";
-import useSWRMutation from "swr/mutation";
-import { fetcher } from "utils/fetch";
 
 type State = {
   name: string;
@@ -24,13 +23,6 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
   return { ...state, [type]: value };
 }
 
-async function createNode(url: string, { arg }: { arg: State }) {
-  return fetcher<never>(url, {
-    method: "PATCH",
-    body: JSON.stringify(arg),
-  });
-}
-
 type Props = {
   id: string;
   onClose: () => void;
@@ -40,7 +32,7 @@ export function NodeUpdaterForm({ id, onClose }: Props) {
   const { nodes, mutate } = useNodes();
   const node = nodes?.find((node) => node.id === id) as Node;
 
-  const { trigger, isMutating } = useSWRMutation("/nodes/" + id, createNode);
+  const { trigger, isMutating } = usePatch<State>("/nodes/" + id);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 

@@ -2,12 +2,11 @@ import { Button, Input, Option, Select } from "components/form";
 import { useGlobalState } from "contexts/global-state";
 import { useEdges } from "hooks/use-edges";
 import { useGraphs } from "hooks/use-graphs";
+import { usePost } from "hooks/use-mutation";
 import { useNodes } from "hooks/use-nodes";
 import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { Edge } from "shared-types";
-import useSWRMutation from "swr/mutation";
-import { fetcher } from "utils/fetch";
 
 type State = {
   sourceId: string;
@@ -33,13 +32,6 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
   return { ...state, [type]: value };
 }
 
-async function createEdge(url: string, { arg }: { arg: State }) {
-  return fetcher<Edge>(url, {
-    method: "POST",
-    body: JSON.stringify(arg),
-  });
-}
-
 type Props = {
   onClose: () => void;
 };
@@ -50,7 +42,7 @@ export function EdgeCreatorForm({ onClose }: Props) {
   const { nodes } = useNodes();
   const { mutate } = useEdges();
 
-  const { trigger, isMutating } = useSWRMutation("/edges", createEdge);
+  const { trigger, isMutating } = usePost<State, Edge>("/edges");
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 

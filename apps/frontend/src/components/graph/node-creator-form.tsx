@@ -1,9 +1,8 @@
 import { Button, Input } from "components/form";
+import { usePost } from "hooks/use-mutation";
 import { FormEvent, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { Node } from "shared-types";
-import useSWRMutation from "swr/mutation";
-import { fetcher } from "utils/fetch";
 
 type State = {
   name: string;
@@ -23,19 +22,12 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
   return { ...state, [type]: value };
 }
 
-async function createNode(url: string, { arg }: { arg: State }) {
-  return fetcher<Node>(url, {
-    method: "POST",
-    body: JSON.stringify(arg),
-  });
-}
-
 type Props = {
   onClose: () => void;
 };
 
 export function NodeCreatorForm({ onClose }: Props) {
-  const { trigger, isMutating } = useSWRMutation("/nodes", createNode);
+  const { trigger, isMutating } = usePost<State, Node>("/nodes");
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 

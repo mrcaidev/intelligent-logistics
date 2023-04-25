@@ -1,13 +1,12 @@
 import { Button, Checkbox, Input, Option, Select } from "components/form";
 import { useGoods } from "hooks/use-goods";
 import { useGraphs } from "hooks/use-graphs";
+import { usePatch } from "hooks/use-mutation";
 import { useNodes } from "hooks/use-nodes";
 import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { toast } from "react-toastify";
 import { Good } from "shared-types";
-import useSWRMutation from "swr/mutation";
-import { fetcher } from "utils/fetch";
 
 type State = {
   name: string;
@@ -35,13 +34,6 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
   return { ...state, [type]: value };
 }
 
-async function updateGood(url: string, { arg }: { arg: State }) {
-  return fetcher<never>(url, {
-    method: "PATCH",
-    body: JSON.stringify(arg),
-  });
-}
-
 type Props = {
   good: Good;
   onClose: () => void;
@@ -55,7 +47,7 @@ export function GoodUpdaterForm({
   const { nodes } = useNodes();
   const { mutate } = useGoods();
 
-  const { trigger, isMutating } = useSWRMutation("/goods/" + id, updateGood);
+  const { trigger, isMutating } = usePatch<State>("/goods/" + id);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 

@@ -1,14 +1,7 @@
 import { Button } from "components/form";
+import { useDelete } from "hooks/use-mutation";
 import { useNodes } from "hooks/use-nodes";
 import { Trash2 } from "react-feather";
-import useSWRMutation from "swr/mutation";
-import { fetcher } from "utils/fetch";
-
-async function removeNode(url: string) {
-  return fetcher<never>(url, {
-    method: "DELETE",
-  });
-}
 
 type Props = {
   id: string;
@@ -17,7 +10,7 @@ type Props = {
 export function NodeRemover({ id }: Props) {
   const { mutate } = useNodes();
 
-  const { trigger, isMutating } = useSWRMutation("/nodes/" + id, removeNode);
+  const { trigger, isMutating } = useDelete("/nodes/" + id);
 
   const handleClick = async () => {
     await trigger();

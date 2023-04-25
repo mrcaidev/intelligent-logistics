@@ -1,15 +1,8 @@
 import { Button } from "components/form";
 import { useGraphs } from "hooks/use-graphs";
+import { useDelete } from "hooks/use-mutation";
 import { Trash2 } from "react-feather";
 import { toast } from "react-toastify";
-import useSWRMutation from "swr/mutation";
-import { fetcher } from "utils/fetch";
-
-async function removeGraph(url: string) {
-  return fetcher<never>(url, {
-    method: "DELETE",
-  });
-}
 
 type Props = {
   id: string;
@@ -18,7 +11,7 @@ type Props = {
 export function GraphRemover({ id }: Props) {
   const { mutate } = useGraphs();
 
-  const { trigger, isMutating } = useSWRMutation("/graphs/" + id, removeGraph);
+  const { trigger, isMutating } = useDelete("/graphs/" + id);
 
   const handleClickRemoving = async () => {
     await trigger();

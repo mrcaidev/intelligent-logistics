@@ -22,3 +22,13 @@ export async function fetcher<T>(url: string | URL, config?: RequestInit) {
 
   return json.data as T;
 }
+
+export function mutator<Arg = never, Result = never>(
+  method: "POST" | "PATCH" | "DELETE"
+) {
+  return (url: string, { arg }: { arg: Arg }) =>
+    fetcher<Result>(url, {
+      method,
+      body: JSON.stringify(arg),
+    });
+}

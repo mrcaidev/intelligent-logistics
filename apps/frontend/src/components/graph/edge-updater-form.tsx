@@ -1,10 +1,9 @@
 import { Button, Input } from "components/form";
 import { useEdges } from "hooks/use-edges";
+import { usePatch } from "hooks/use-mutation";
 import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { Edge } from "shared-types";
-import useSWRMutation from "swr/mutation";
-import { fetcher } from "utils/fetch";
 
 type State = {
   cost: number;
@@ -24,13 +23,6 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
   return { ...state, [type]: value };
 }
 
-async function updateEdge(url: string, { arg }: { arg: State }) {
-  return fetcher<never>(url, {
-    method: "PATCH",
-    body: JSON.stringify(arg),
-  });
-}
-
 type Props = {
   id: string;
   onClose: () => void;
@@ -40,7 +32,7 @@ export function EdgeUpdaterForm({ id, onClose }: Props) {
   const { edges, mutate } = useEdges();
   const edge = edges?.find((edge) => edge.id === id) as Edge;
 
-  const { trigger, isMutating } = useSWRMutation("/edges/" + id, updateEdge);
+  const { trigger, isMutating } = usePatch<State>("/edges/" + id);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 

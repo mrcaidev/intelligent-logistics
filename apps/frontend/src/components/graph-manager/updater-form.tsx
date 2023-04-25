@@ -1,11 +1,10 @@
 import { Button, Input } from "components/form";
 import { useGraphs } from "hooks/use-graphs";
+import { usePatch } from "hooks/use-mutation";
 import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { toast } from "react-toastify";
 import { Graph } from "shared-types";
-import useSWRMutation from "swr/mutation";
-import { fetcher } from "utils/fetch";
 
 type State = {
   name: string;
@@ -25,13 +24,6 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
   return { ...state, [type]: value };
 }
 
-async function updateGraph(url: string, { arg }: { arg: State }) {
-  return fetcher<never>(url, {
-    method: "PATCH",
-    body: JSON.stringify(arg),
-  });
-}
-
 type Props = {
   graph: Graph;
   onClose: () => void;
@@ -40,7 +32,7 @@ type Props = {
 export function GraphUpdaterForm({ graph: { id, name }, onClose }: Props) {
   const { mutate } = useGraphs();
 
-  const { trigger, isMutating } = useSWRMutation("/graphs/" + id, updateGraph);
+  const { trigger, isMutating } = usePatch<State>("/graphs/" + id);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 

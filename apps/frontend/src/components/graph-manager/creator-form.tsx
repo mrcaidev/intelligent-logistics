@@ -1,10 +1,9 @@
 import { Button, Input } from "components/form";
+import { usePost } from "hooks/use-mutation";
 import { FormEvent, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { toast } from "react-toastify";
 import { Graph } from "shared-types";
-import useSWRMutation from "swr/mutation";
-import { fetcher } from "utils/fetch";
 
 type State = {
   name: string;
@@ -24,19 +23,12 @@ function reducer<T extends keyof State>(state: State, action: Action<T>) {
   return { ...state, [type]: value };
 }
 
-async function createGraph(url: string, { arg }: { arg: State }) {
-  return fetcher<Graph>(url, {
-    method: "POST",
-    body: JSON.stringify(arg),
-  });
-}
-
 type Props = {
   onClose: () => void;
 };
 
 export function GraphCreatorForm({ onClose }: Props) {
-  const { trigger, isMutating } = useSWRMutation("/graphs", createGraph);
+  const { trigger, isMutating } = usePost<State, Graph>("/graphs");
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 

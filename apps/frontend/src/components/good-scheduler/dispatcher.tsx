@@ -1,23 +1,18 @@
 import { Button } from "components/form";
 import { useGlobalState } from "contexts/global-state";
 import { useGoods } from "hooks/use-goods";
+import { usePost } from "hooks/use-mutation";
 import { Send } from "react-feather";
 import { toast } from "react-toastify";
 import { Good } from "shared-types";
-import useSWRMutation from "swr/mutation";
-import { fetcher } from "utils/fetch";
 
-async function deliver(url: string) {
-  return fetcher<{ good: Good; path: string[] }>(url, {
-    method: "POST",
-  });
-}
+type Result = { good: Good; path: string[] };
 
 export function GoodDispatcher() {
   const { setActiveIds } = useGlobalState();
   const { goods, mutate } = useGoods();
 
-  const { trigger, isMutating } = useSWRMutation("/goods/deliver", deliver);
+  const { trigger, isMutating } = usePost<never, Result>("/goods/deliver");
 
   const handleClick = async () => {
     const data = await trigger();
