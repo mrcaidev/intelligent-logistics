@@ -3,6 +3,7 @@ import {
   RemoveEdgeButton,
   UpdateEdgeButton,
 } from "components/edge";
+import { Button } from "components/form";
 import {
   CreateNodeButton,
   RemoveNodeButton,
@@ -14,7 +15,6 @@ import { useNodes } from "hooks/use-nodes";
 import { useRef, useState } from "react";
 import { Loader } from "react-feather";
 import { GraphCanvas } from "reagraph";
-import { Button } from "../form";
 import { theme } from "./theme";
 import { useActives } from "./use-actives";
 
