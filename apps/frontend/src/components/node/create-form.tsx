@@ -1,7 +1,6 @@
 import { Button, Input } from "components/form";
-import { usePatch } from "hooks/use-mutation";
-import { useNodes } from "hooks/use-nodes";
-import { FormEvent, useEffect, useReducer } from "react";
+import { usePost } from "hooks/use-mutation";
+import { FormEvent, useReducer } from "react";
 import { Check, X } from "react-feather";
 import { Node } from "shared-types";
 
@@ -15,35 +14,26 @@ const defaultState = {
 
 type Action<T extends keyof State> = {
   type: T;
-  value: State[T];
+  payload: State[T];
 };
 
 function reducer<T extends keyof State>(state: State, action: Action<T>) {
-  const { type, value } = action;
-  return { ...state, [type]: value };
+  const { type, payload } = action;
+  return { ...state, [type]: payload };
 }
 
 type Props = {
-  id: string;
   onClose: () => void;
 };
 
-export function NodeUpdaterForm({ id, onClose }: Props) {
-  const { nodes, mutate } = useNodes();
-  const node = nodes?.find((node) => node.id === id) as Node;
-
-  const { trigger, isMutating } = usePatch<State>("/nodes/" + id);
+export function CreateNodeForm({ onClose }: Props) {
+  const { trigger, isMutating } = usePost<State, Node>("/nodes");
 
   const [form, dispatch] = useReducer(reducer, defaultState);
-
-  useEffect(() => {
-    dispatch({ type: "name", value: node.name });
-  }, [node.name]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     await trigger(form);
-    await mutate();
     onClose();
   };
 
@@ -55,7 +45,7 @@ export function NodeUpdaterForm({ id, onClose }: Props) {
         value={form.name}
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "name", value: e.target.value })}
+        onChange={(e) => dispatch({ type: "name", payload: e.target.value })}
       />
       <div className="flex justify-end items-center gap-3">
         <Button colorScheme="gray" variant="dim" icon={X} onClick={onClose}>

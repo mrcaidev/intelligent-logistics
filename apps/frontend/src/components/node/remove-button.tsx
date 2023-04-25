@@ -7,7 +7,7 @@ type Props = {
   id: string;
 };
 
-export function NodeRemover({ id }: Props) {
+export function RemoveNodeButton({ id }: Props) {
   const { mutate } = useNodes();
 
   const { trigger, isMutating } = useDelete("/nodes/" + id);

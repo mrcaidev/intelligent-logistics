@@ -2,9 +2,9 @@ import { Button } from "components/form";
 import { Modal } from "components/modal";
 import { useBoolean } from "hooks/use-boolean";
 import { Plus } from "react-feather";
-import { NodeCreatorForm } from "./node-creator-form";
+import { CreateNodeForm } from "./create-form";
 
-export function NodeCreator() {
+export function CreateNodeButton() {
   const { value: isOpen, on: open, off: close } = useBoolean();
 
   return (
@@ -13,7 +13,7 @@ export function NodeCreator() {
         添加节点
       </Button>
       <Modal isOpen={isOpen} onClose={close} title="添加节点">
-        <NodeCreatorForm onClose={close} />
+        <CreateNodeForm onClose={close} />
       </Modal>
     </>
   );
