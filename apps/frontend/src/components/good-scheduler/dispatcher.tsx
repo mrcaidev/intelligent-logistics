@@ -9,7 +9,7 @@ import { Good } from "shared-types";
 type Result = { good: Good; path: string[] };
 
 export function GoodDispatcher() {
-  const { setActiveIds } = useGlobalState();
+  const { dispatch } = useGlobalState();
   const { goods, mutate } = useGoods();
 
   const { trigger, isMutating } = usePost<never, Result>("/goods/deliver");
@@ -20,7 +20,7 @@ export function GoodDispatcher() {
       return;
     }
     await mutate();
-    setActiveIds(data.path);
+    dispatch({ type: "SET_ACTIVE_IDS", payload: data.path });
     toast.success("成功发送物品：" + data.good.name);
   };
 

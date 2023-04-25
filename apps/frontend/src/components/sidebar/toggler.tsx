@@ -2,12 +2,12 @@ import clsx from "clsx";
 import { useGlobalState } from "contexts/global-state";
 
 export function SidebarToggler() {
-  const { isSidebarOpen, setIsSidebarOpen } = useGlobalState();
+  const { isSidebarOpen, dispatch } = useGlobalState();
 
   return (
     <button
       type="button"
-      onClick={() => setIsSidebarOpen((isOpen) => !isOpen)}
+      onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
       className={clsx(
         "fixed right-4 top-3 p-2 rounded transition-colors z-10",
         isSidebarOpen ? "hover:bg-gray-300" : "hover:bg-gray-200"

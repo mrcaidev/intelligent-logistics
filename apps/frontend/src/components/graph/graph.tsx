@@ -34,7 +34,7 @@ const theme: Theme = {
 };
 
 export function Graph() {
-  const { activeIds, setIsSidebarOpen } = useGlobalState();
+  const { activeIds, dispatch } = useGlobalState();
   const { nodes, isLoading: isNodesLoading } = useNodes();
   const { edges, isLoading: isEdgesLoading } = useEdges();
 
@@ -84,7 +84,10 @@ export function Graph() {
       <div className="grid place-items-center h-full">
         <p className="text-gray-600">
           请
-          <Button variant="link" onClick={() => setIsSidebarOpen(true)}>
+          <Button
+            variant="link"
+            onClick={() => dispatch({ type: "OPEN_SIDEBAR" })}
+          >
             选择一张物流图
           </Button>
           以开始

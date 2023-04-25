@@ -11,13 +11,13 @@ type Props = {
 export function GraphCard({ graph }: Props) {
   const { id, name } = graph;
 
-  const { currentGraphId, setCurrentGraphId } = useGlobalState();
+  const { currentGraphId, dispatch } = useGlobalState();
 
   return (
     <div className="group relative">
       <button
         type="button"
-        onClick={() => setCurrentGraphId(id)}
+        onClick={() => dispatch({ type: "SET_CURRENT_GRAPH_ID", payload: id })}
         className={clsx(
           "w-full px-4 py-3 rounded hover:bg-gray-300 text-start text-sm transition-colors",
           currentGraphId === id && "bg-gray-300"
