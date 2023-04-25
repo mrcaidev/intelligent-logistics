@@ -9,16 +9,18 @@ import {
   User,
 } from "react-feather";
 import { Good } from "shared-types";
-import { GoodRemover } from "./remover";
-import { GoodUpdater } from "./updater";
+import { RemoveGoodButton } from "./remove-button";
+import { UpdateGoodButton } from "./update-button";
 
-type Props = {
-  good: Good;
-};
-
-export function GoodCard({ good }: Props) {
-  const { id, name, createdAt, sourceId, targetId, graphId, isVip } = good;
-
+export function GoodCard({
+  id,
+  name,
+  createdAt,
+  sourceId,
+  targetId,
+  graphId,
+  isVip,
+}: Good) {
   const { graphs } = useGraphs();
   const { nodes } = useNodes();
 
@@ -39,8 +41,8 @@ export function GoodCard({ good }: Props) {
           className="ml-auto group-open:rotate-90 transition-transform"
         />
         <div className="hidden group-hover:flex items-center gap-2 absolute right-10 top-0 bottom-0">
-          <GoodUpdater good={good} />
-          <GoodRemover id={id} />
+          <UpdateGoodButton id={id} />
+          <RemoveGoodButton id={id} />
         </div>
       </summary>
       <ul className="mx-2 py-1 border-t border-gray-400/40 text-xs">

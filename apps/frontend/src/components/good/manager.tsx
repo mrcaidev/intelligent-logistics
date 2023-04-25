@@ -3,31 +3,31 @@ import { Modal } from "components/modal";
 import { useBoolean } from "hooks/use-boolean";
 import { useGoods } from "hooks/use-goods";
 import { Plus } from "react-feather";
-import { GoodCreatorForm } from "./creator-form";
-import { GoodDispatcher } from "./dispatcher";
+import { CreateGoodForm } from "./create-form";
+import { DeliverGoodButton } from "./deliver-button";
 import { GoodList } from "./list";
 
-export function GoodScheduler() {
+export function GoodManager() {
   const { goods } = useGoods();
-  const { value: isFormOpen, on: openForm, off: closeForm } = useBoolean();
+  const { value: isOpen, on: open, off: close } = useBoolean();
 
   return (
     <>
-      <GoodList openForm={openForm} />
+      <GoodList openForm={open} />
       <div className="grid grid-cols-2 gap-3 px-4">
         <Button
           colorScheme="gray"
           variant="dim"
           icon={Plus}
           disabled={!goods}
-          onClick={openForm}
+          onClick={open}
         >
           添加
         </Button>
-        <GoodDispatcher />
+        <DeliverGoodButton />
       </div>
-      <Modal isOpen={isFormOpen} onClose={closeForm} title="添加物品">
-        <GoodCreatorForm onClose={closeForm} />
+      <Modal isOpen={isOpen} onClose={close} title="添加物品">
+        <CreateGoodForm onClose={close} />
       </Modal>
     </>
   );

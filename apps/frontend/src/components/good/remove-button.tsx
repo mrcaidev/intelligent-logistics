@@ -8,12 +8,12 @@ type Props = {
   id: string;
 };
 
-export function GoodRemover({ id }: Props) {
+export function RemoveGoodButton({ id }: Props) {
   const { mutate } = useGoods();
 
   const { trigger, isMutating } = useDelete("/goods/" + id);
 
-  const handleClickRemoving = async () => {
+  const handleClick = async () => {
     await trigger();
     await mutate();
     toast.success("删除物品成功");
@@ -26,7 +26,7 @@ export function GoodRemover({ id }: Props) {
       size="small"
       icon={Trash2}
       isLoading={isMutating}
-      onClick={handleClickRemoving}
+      onClick={handleClick}
     >
       <span className="sr-only">删除物品</span>
     </Button>

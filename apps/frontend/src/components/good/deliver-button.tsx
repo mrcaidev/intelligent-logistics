@@ -8,7 +8,7 @@ import { Good } from "shared-types";
 
 type Result = { good: Good; path: string[] };
 
-export function GoodDispatcher() {
+export function DeliverGoodButton() {
   const { dispatch } = useGlobalState();
   const { goods, mutate } = useGoods();
 

@@ -1,8 +1,7 @@
 import { Button, Checkbox, Input, Option, Select } from "components/form";
-import { useGlobalState } from "contexts/global-state";
 import { useGoods } from "hooks/use-goods";
 import { useGraphs } from "hooks/use-graphs";
-import { usePost } from "hooks/use-mutation";
+import { usePatch } from "hooks/use-mutation";
 import { useNodes } from "hooks/use-nodes";
 import { FormEvent, useEffect, useReducer } from "react";
 import { Check, X } from "react-feather";
@@ -27,40 +26,44 @@ const defaultState = {
 
 type Action<T extends keyof State> = {
   type: T;
-  value: State[T];
+  payload: State[T];
 };
 
 function reducer<T extends keyof State>(state: State, action: Action<T>) {
-  const { type, value } = action;
-  return { ...state, [type]: value };
+  const { type, payload } = action;
+  return { ...state, [type]: payload };
 }
 
 type Props = {
+  id: string;
   onClose: () => void;
 };
 
-export function GoodCreatorForm({ onClose }: Props) {
-  const { currentGraphId } = useGlobalState();
+export function UpdateGoodForm({ id, onClose }: Props) {
   const { graphs } = useGraphs();
   const { nodes } = useNodes();
-  const { mutate } = useGoods();
+  const { goods, mutate } = useGoods();
+  const { name, sourceId, targetId, isVip, graphId } = goods?.find(
+    (good) => good.id === id
+  ) as Good;
 
-  const { trigger, isMutating } = usePost<State, Good>("/goods");
+  const { trigger, isMutating } = usePatch<State>("/goods/" + id);
 
   const [form, dispatch] = useReducer(reducer, defaultState);
 
   useEffect(() => {
-    dispatch({ type: "graphId", value: currentGraphId });
-  }, [currentGraphId]);
+    dispatch({ type: "name", payload: name });
+    dispatch({ type: "sourceId", payload: sourceId });
+    dispatch({ type: "targetId", payload: targetId });
+    dispatch({ type: "isVip", payload: isVip });
+    dispatch({ type: "graphId", payload: graphId });
+  }, [name, sourceId, targetId, isVip, graphId]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const good = await trigger(form);
-    if (!good) {
-      return;
-    }
+    await trigger(form);
     await mutate();
-    toast.success("成功添加物品：" + good.name);
+    toast.success("成功修改物品：" + form.name);
     onClose();
   };
 
@@ -72,7 +75,7 @@ export function GoodCreatorForm({ onClose }: Props) {
         value={form.name}
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "name", value: e.target.value })}
+        onChange={(e) => dispatch({ type: "name", payload: e.target.value })}
       />
       <Select
         label="起点"
@@ -81,7 +84,9 @@ export function GoodCreatorForm({ onClose }: Props) {
         placeholder="请选择起点"
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "sourceId", value: e.target.value })}
+        onChange={(e) =>
+          dispatch({ type: "sourceId", payload: e.target.value })
+        }
       >
         {nodes?.map(({ id, name }) => (
           <Option key={id} value={id}>
@@ -96,7 +101,9 @@ export function GoodCreatorForm({ onClose }: Props) {
         placeholder="请选择终点"
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "targetId", value: e.target.value })}
+        onChange={(e) =>
+          dispatch({ type: "targetId", payload: e.target.value })
+        }
       >
         {nodes?.map(({ id, name }) => (
           <Option key={id} value={id}>
@@ -110,11 +117,12 @@ export function GoodCreatorForm({ onClose }: Props) {
         value={form.graphId}
         placeholder="请选择物流方案"
         required
-        disabled
+        disabled={isMutating}
+        onChange={(e) => dispatch({ type: "graphId", payload: e.target.value })}
       >
-        {graphs?.map(({ id, name }) => (
-          <Option key={id} value={id}>
-            {name}
+        {graphs?.map((graph) => (
+          <Option key={graph.id} value={graph.id}>
+            {graph.name}
           </Option>
         ))}
       </Select>
@@ -123,7 +131,7 @@ export function GoodCreatorForm({ onClose }: Props) {
         name="isVip"
         checked={form.isVip}
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "isVip", value: e.target.checked })}
+        onChange={(e) => dispatch({ type: "isVip", payload: e.target.checked })}
       />
       <div className="flex justify-end items-center gap-3">
         <Button colorScheme="gray" variant="dim" icon={X} onClick={onClose}>

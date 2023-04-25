@@ -51,7 +51,7 @@ export function GoodList({ openForm }: Props) {
     <ul className="space-y-2 grow p-4 mx-0.5 overflow-auto scrollbar scrollbar-rounded scrollbar-track-color-transparent scrollbar-thumb-color-gray-400">
       {goods.map((good) => (
         <li key={good.id}>
-          <GoodCard good={good} />
+          <GoodCard {...good} />
         </li>
       ))}
     </ul>
