@@ -1,3 +1,4 @@
+import { RemoveEdgeButton, UpdateEdgeButton } from "components/edge";
 import { useGlobalState } from "contexts/global-state";
 import { useBoolean } from "hooks/use-boolean";
 import { useEdges } from "hooks/use-edges";
@@ -6,8 +7,6 @@ import { useEffect, useRef, useState } from "react";
 import { Loader } from "react-feather";
 import { GraphCanvas, Theme, lightTheme } from "reagraph";
 import { Button } from "../form";
-import { EdgeRemover } from "./edge-remover";
-import { EdgeUpdater } from "./edge-updater";
 import { NodeRemover } from "./node-remover";
 import { NodeUpdater } from "./node-updater";
 
@@ -146,8 +145,8 @@ export function Graph() {
       )}
       {isEdgeMenuOpen && (
         <div className="space-x-4 absolute right-6 top-6 z-10">
-          <EdgeUpdater id={clickedEdgeIdRef.current} />
-          <EdgeRemover id={clickedEdgeIdRef.current} />
+          <UpdateEdgeButton id={clickedEdgeIdRef.current} />
+          <RemoveEdgeButton id={clickedEdgeIdRef.current} />
         </div>
       )}
     </>

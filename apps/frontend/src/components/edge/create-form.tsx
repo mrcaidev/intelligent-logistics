@@ -24,19 +24,19 @@ const defaultState = {
 
 type Action<T extends keyof State> = {
   type: T;
-  value: State[T];
+  payload: State[T];
 };
 
 function reducer<T extends keyof State>(state: State, action: Action<T>) {
-  const { type, value } = action;
-  return { ...state, [type]: value };
+  const { type, payload } = action;
+  return { ...state, [type]: payload };
 }
 
 type Props = {
   onClose: () => void;
 };
 
-export function EdgeCreatorForm({ onClose }: Props) {
+export function CreateEdgeForm({ onClose }: Props) {
   const { currentGraphId } = useGlobalState();
   const { graphs } = useGraphs();
   const { nodes } = useNodes();
@@ -47,15 +47,12 @@ export function EdgeCreatorForm({ onClose }: Props) {
   const [form, dispatch] = useReducer(reducer, defaultState);
 
   useEffect(() => {
-    dispatch({ type: "graphId", value: currentGraphId });
+    dispatch({ type: "graphId", payload: currentGraphId });
   }, [currentGraphId]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    const edge = await trigger(form);
-    if (!edge) {
-      return;
-    }
+    await trigger(form);
     await mutate();
     onClose();
   };
@@ -69,7 +66,9 @@ export function EdgeCreatorForm({ onClose }: Props) {
         placeholder="请选择起点"
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "sourceId", value: e.target.value })}
+        onChange={(e) =>
+          dispatch({ type: "sourceId", payload: e.target.value })
+        }
       >
         {nodes?.map(({ id, name }) => (
           <Option key={id} value={id}>
@@ -84,7 +83,9 @@ export function EdgeCreatorForm({ onClose }: Props) {
         placeholder="请选择终点"
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "targetId", value: e.target.value })}
+        onChange={(e) =>
+          dispatch({ type: "targetId", payload: e.target.value })
+        }
       >
         {nodes?.map(({ id, name }) => (
           <Option key={id} value={id}>
@@ -99,7 +100,7 @@ export function EdgeCreatorForm({ onClose }: Props) {
         value={form.cost}
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "cost", value: +e.target.value })}
+        onChange={(e) => dispatch({ type: "cost", payload: +e.target.value })}
       />
       <Select
         label="物流方案"

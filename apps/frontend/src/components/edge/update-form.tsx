@@ -15,12 +15,12 @@ const defaultState = {
 
 type Action<T extends keyof State> = {
   type: T;
-  value: State[T];
+  payload: State[T];
 };
 
 function reducer<T extends keyof State>(state: State, action: Action<T>) {
-  const { type, value } = action;
-  return { ...state, [type]: value };
+  const { type, payload } = action;
+  return { ...state, [type]: payload };
 }
 
 type Props = {
@@ -28,7 +28,7 @@ type Props = {
   onClose: () => void;
 };
 
-export function EdgeUpdaterForm({ id, onClose }: Props) {
+export function UpdateEdgeForm({ id, onClose }: Props) {
   const { edges, mutate } = useEdges();
   const edge = edges?.find((edge) => edge.id === id) as Edge;
 
@@ -37,7 +37,7 @@ export function EdgeUpdaterForm({ id, onClose }: Props) {
   const [form, dispatch] = useReducer(reducer, defaultState);
 
   useEffect(() => {
-    dispatch({ type: "cost", value: edge.cost });
+    dispatch({ type: "cost", payload: edge.cost });
   }, [edge.cost]);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -56,7 +56,7 @@ export function EdgeUpdaterForm({ id, onClose }: Props) {
         value={form.cost}
         required
         disabled={isMutating}
-        onChange={(e) => dispatch({ type: "cost", value: +e.target.value })}
+        onChange={(e) => dispatch({ type: "cost", payload: +e.target.value })}
       />
       <div className="flex justify-end items-center gap-3">
         <Button colorScheme="gray" variant="dim" icon={X} onClick={onClose}>

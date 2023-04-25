@@ -7,7 +7,7 @@ type Props = {
   id: string;
 };
 
-export function EdgeRemover({ id }: Props) {
+export function RemoveEdgeButton({ id }: Props) {
   const { mutate } = useEdges();
 
   const { trigger, isMutating } = useDelete("/edges/" + id);
