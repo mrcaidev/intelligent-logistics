@@ -3,23 +3,20 @@ import {
   RemoveEdgeButton,
   UpdateEdgeButton,
 } from "components/edge";
-import { Button } from "components/form";
 import {
   CreateNodeButton,
   RemoveNodeButton,
   UpdateNodeButton,
 } from "components/node";
-import { useGlobalState } from "contexts/global-state";
 import { useEdges } from "hooks/use-edges";
 import { useNodes } from "hooks/use-nodes";
 import { Loader } from "react-feather";
 import { GraphCanvas } from "reagraph";
+import { Ready } from "./ready";
 import { theme } from "./theme";
 import { useCanvas } from "./use-canvas";
 
 export function Canvas() {
-  const { dispatch } = useGlobalState();
-
   const { nodes, isLoading: isNodesLoading } = useNodes();
   const { edges, isLoading: isEdgesLoading } = useEdges();
 
@@ -42,20 +39,7 @@ export function Canvas() {
   }
 
   if (!nodes || !edges) {
-    return (
-      <div className="grid place-items-center h-full">
-        <p className="text-gray-600">
-          请
-          <Button
-            variant="link"
-            onClick={() => dispatch({ type: "OPEN_SIDEBAR" })}
-          >
-            选择一张物流图
-          </Button>
-          以开始
-        </p>
-      </div>
-    );
+    return <Ready />;
   }
 
   if (nodes.length === 0) {
