@@ -12,22 +12,26 @@ import {
 import { useGlobalState } from "contexts/global-state";
 import { useEdges } from "hooks/use-edges";
 import { useNodes } from "hooks/use-nodes";
-import { useRef, useState } from "react";
 import { Loader } from "react-feather";
 import { GraphCanvas } from "reagraph";
 import { theme } from "./theme";
-import { useActives } from "./use-actives";
+import { useCanvas } from "./use-canvas";
 
 export function Canvas() {
   const { dispatch } = useGlobalState();
+
   const { nodes, isLoading: isNodesLoading } = useNodes();
   const { edges, isLoading: isEdgesLoading } = useEdges();
 
-  const actives = useActives();
-
-  const [menuStatus, setMenuStatus] = useState(0);
-  const clickedNodeIdRef = useRef("");
-  const clickedEdgeIdRef = useRef("");
+  const {
+    clickedEdgeId,
+    clickedNodeId,
+    actives,
+    menuStatus,
+    onCanvasClick,
+    onNodeClick,
+    onEdgeClick,
+  } = useCanvas();
 
   if (isNodesLoading || isEdgesLoading) {
     return (
@@ -75,15 +79,9 @@ export function Canvas() {
           source: sourceId,
           target: targetId,
         }))}
-        onCanvasClick={() => setMenuStatus(0)}
-        onNodeClick={({ id }) => {
-          clickedNodeIdRef.current = id;
-          setMenuStatus(1);
-        }}
-        onEdgeClick={({ id }) => {
-          clickedEdgeIdRef.current = id;
-          setMenuStatus(2);
-        }}
+        onCanvasClick={onCanvasClick}
+        onNodeClick={onNodeClick}
+        onEdgeClick={onEdgeClick}
         actives={actives}
         edgeArrowPosition="none"
         edgeLabelPosition="natural"
@@ -97,14 +95,14 @@ export function Canvas() {
       </div>
       {menuStatus === 1 && (
         <div className="space-x-4 absolute right-6 top-6 z-10">
-          <UpdateNodeButton id={clickedNodeIdRef.current} />
-          <RemoveNodeButton id={clickedNodeIdRef.current} />
+          <UpdateNodeButton id={clickedNodeId} />
+          <RemoveNodeButton id={clickedNodeId} />
         </div>
       )}
       {menuStatus === 2 && (
         <div className="space-x-4 absolute right-6 top-6 z-10">
-          <UpdateEdgeButton id={clickedEdgeIdRef.current} />
-          <RemoveEdgeButton id={clickedEdgeIdRef.current} />
+          <UpdateEdgeButton id={clickedEdgeId} />
+          <RemoveEdgeButton id={clickedEdgeId} />
         </div>
       )}
     </>
