@@ -54,6 +54,7 @@ export function UpdateEdgeForm({ id, onClose }: Props) {
         type="number"
         name="cost"
         value={form.cost}
+        min={0}
         required
         disabled={isMutating}
         onChange={(e) => dispatch({ type: "cost", payload: +e.target.value })}
