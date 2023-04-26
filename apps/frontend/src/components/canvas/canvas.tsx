@@ -9,18 +9,15 @@ import {
   UpdateNodeButton,
 } from "components/node";
 import { useEdges } from "hooks/use-edges";
-import { useGraphs } from "hooks/use-graphs";
 import { useNodes } from "hooks/use-nodes";
 import { Loader } from "react-feather";
 import { GraphCanvas } from "reagraph";
-import { Ready } from "./ready";
 import { theme } from "./theme";
 import { useCanvas } from "./use-canvas";
 
 export function Canvas() {
-  const { graphs, isLoading: isGraphsLoading } = useGraphs();
-  const { nodes, isLoading: isNodesLoading } = useNodes();
-  const { edges, isLoading: isEdgesLoading } = useEdges();
+  const { nodes, isLoading } = useNodes();
+  const { edges } = useEdges();
 
   const {
     clickedEdgeId,
@@ -32,7 +29,7 @@ export function Canvas() {
     onEdgeClick,
   } = useCanvas();
 
-  if (isGraphsLoading || !graphs || isNodesLoading || isEdgesLoading) {
+  if (isLoading) {
     return (
       <div className="grid place-items-center h-full">
         <Loader size={36} className="animate-spin" />
@@ -40,11 +37,7 @@ export function Canvas() {
     );
   }
 
-  if (graphs.length === 0 || !nodes || !edges) {
-    return <Ready />;
-  }
-
-  if (nodes.length === 0) {
+  if (!nodes || nodes.length === 0) {
     return (
       <>
         <div className="space-x-4 fixed top-6 left-6 z-10">
@@ -65,12 +58,14 @@ export function Canvas() {
           id,
           label: name,
         }))}
-        edges={edges.map(({ id, sourceId, targetId, cost }) => ({
-          id,
-          label: String(cost),
-          source: sourceId,
-          target: targetId,
-        }))}
+        edges={
+          edges?.map(({ id, sourceId, targetId, cost }) => ({
+            id,
+            label: String(cost),
+            source: sourceId,
+            target: targetId,
+          })) ?? []
+        }
         onCanvasClick={onCanvasClick}
         onNodeClick={onNodeClick}
         onEdgeClick={onEdgeClick}

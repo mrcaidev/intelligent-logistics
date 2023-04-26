@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from "react";
 import { InternalGraphEdge, InternalGraphNode } from "reagraph";
 
 export function useCanvas() {
-  const [actives, setActives] = useState<string[]>([]);
-
   const [menuStatus, setMenuStatus] = useState(0);
+
+  const [actives, setActives] = useState<string[]>([]);
 
   const [clickedNodeId, setClickedNodeId] = useState("");
   const [clickedEdgeId, setClickedEdgeId] = useState("");
@@ -27,13 +27,23 @@ export function useCanvas() {
     setClickedEdgeId(edge.id);
   };
 
-  const { activePath } = useGlobalState();
+  const { currentGraphId, activePath } = useGlobalState();
+
+  useEffect(() => {
+    if (!currentGraphId) {
+      setMenuStatus(0);
+      setActives([]);
+      setClickedEdgeId("");
+    }
+  }, [currentGraphId]);
+
   const currentPathIndexRef = useRef(0);
 
   useEffect(() => {
+    currentPathIndexRef.current = 0;
+
     const change = () => {
       if (currentPathIndexRef.current >= activePath.length) {
-        currentPathIndexRef.current = 0;
         setTimeout(() => setActives([]), 1500);
         return;
       }
