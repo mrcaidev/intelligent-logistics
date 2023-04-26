@@ -12,7 +12,7 @@ export function Ready() {
           variant="link"
           onClick={() => dispatch({ type: "OPEN_SIDEBAR" })}
         >
-          选择一张物流图
+          选择一种方案
         </Button>
         以开始
       </p>

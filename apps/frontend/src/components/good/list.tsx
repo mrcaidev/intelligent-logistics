@@ -26,7 +26,7 @@ export function GoodList({ openForm }: Props) {
         <p className="text-gray-600">
           请先
           <Button variant="link" onClick={() => setTab("方案")}>
-            选择一张物流图
+            选择一种方案
           </Button>
         </p>
       </div>
