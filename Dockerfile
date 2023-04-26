@@ -5,4 +5,6 @@ COPY pnpm-lock.yaml .
 RUN pnpm fetch
 COPY . .
 RUN pnpm i --offline
-CMD ["pnpm", "run", "start", "--filter=backend"]
+RUN pnpm run build --filter=\!frontend
+RUN cd apps/backend
+CMD ["pnpm", "run", "start"]
