@@ -9,7 +9,7 @@ import { nodeRouter } from "node/router";
 import { rootRouter } from "root/router";
 import { bootstrap } from "./bootstrap";
 
-await bootstrap();
+bootstrap();
 
 export const app: Express = express();
 
