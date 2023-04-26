@@ -20,7 +20,7 @@ export function DeliverGoodButton() {
       return;
     }
     await mutate();
-    dispatch({ type: "SET_ACTIVE_IDS", payload: data.path });
+    dispatch({ type: "ACTIVATE_PATH", payload: data.path });
     toast.success("成功发送物品：" + data.good.name);
   };
 
