@@ -9,6 +9,7 @@ import {
   UpdateNodeButton,
 } from "components/node";
 import { useEdges } from "hooks/use-edges";
+import { useGraphs } from "hooks/use-graphs";
 import { useNodes } from "hooks/use-nodes";
 import { Loader } from "react-feather";
 import { GraphCanvas } from "reagraph";
@@ -17,6 +18,7 @@ import { theme } from "./theme";
 import { useCanvas } from "./use-canvas";
 
 export function Canvas() {
+  const { graphs, isLoading: isGraphsLoading } = useGraphs();
   const { nodes, isLoading: isNodesLoading } = useNodes();
   const { edges, isLoading: isEdgesLoading } = useEdges();
 
@@ -30,7 +32,7 @@ export function Canvas() {
     onEdgeClick,
   } = useCanvas();
 
-  if (isNodesLoading || isEdgesLoading) {
+  if (isGraphsLoading || !graphs || isNodesLoading || isEdgesLoading) {
     return (
       <div className="grid place-items-center h-full">
         <Loader size={36} className="animate-spin" />
@@ -38,7 +40,7 @@ export function Canvas() {
     );
   }
 
-  if (!nodes || !edges) {
+  if (graphs.length === 0 || !nodes || !edges) {
     return <Ready />;
   }
 
