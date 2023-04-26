@@ -1,15 +1,18 @@
 import useSWRMutation from "swr/mutation";
 import { fetcher } from "utils/fetch";
 
-export function useMutation<Arg, Result>(key: string, method: string) {
+export function useMutation<Arg = unknown, Result = unknown>(
+  key: string,
+  method: string
+) {
   return useSWRMutation(key, mutator(method)<Arg, Result>);
 }
 
-export function usePost<Arg, Result>(key: string) {
+export function usePost<Arg = unknown, Result = unknown>(key: string) {
   return useMutation<Arg, Result>(key, "POST");
 }
 
-export function usePatch<Arg, Result = never>(key: string) {
+export function usePatch<Arg = unknown, Result = never>(key: string) {
   return useMutation<Arg, Result>(key, "PATCH");
 }
 
