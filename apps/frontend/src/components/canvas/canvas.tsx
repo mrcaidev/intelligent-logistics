@@ -44,9 +44,15 @@ export function Canvas() {
 
   if (nodes.length === 0) {
     return (
-      <div className="grid place-items-center h-full">
-        <p className="text-gray-600">暂时没有节点</p>
-      </div>
+      <>
+        <div className="space-x-4 fixed top-6 left-6 z-10">
+          <CreateNodeButton />
+          <CreateEdgeButton />
+        </div>
+        <div className="grid place-items-center h-full">
+          <p className="text-gray-600">暂时没有节点</p>
+        </div>
+      </>
     );
   }
 
