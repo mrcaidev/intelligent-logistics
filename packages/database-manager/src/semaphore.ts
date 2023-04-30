@@ -1,39 +1,69 @@
 /**
- * A synchronization primitive that allows
- * multiple concurrent operations to proceed,
- * but limits the number of operations
- * that can proceed concurrently.
+ * A synchronization primitive that controls access
+ * to a common resource shared by multiple processes,
+ * in order to avoid critical section problems.
+ *
+ * @see https://en.wikipedia.org/wiki/Semaphore_(programming)
  */
 export class Semaphore {
   /**
-   * The queue of pending operations.
+   * The queue of pending processes.
    */
   private queue: (() => void)[] = [];
 
-  constructor(private count = 1) {}
+  constructor(
+    /**
+     * The maximum number of processes that
+     * can access the critical resource concurrently.
+     */
+    private count = 1
+  ) {}
+
+  /**
+   * The number of vacancies that is currently
+   * available for concurrent operation.
+   */
+  public get availableCount() {
+    return Math.max(0, this.count);
+  }
+
+  /**
+   * The number of processes that is currently
+   * blocked and queued on this semaphore.
+   */
+  public get blockedCount() {
+    return Math.max(0, -this.count);
+  }
 
   /**
    * Acquires a vacancy for concurrent operation.
-   * If none are available, the process will be blocked and queued.
+   *
+   * If there is none available,
+   * the requesting process will be blocked and queued.
    */
   public async acquire() {
     return new Promise<void>((resolve) => {
-      if (this.count <= 0) {
-        this.queue.push(resolve);
-        return;
+      this.count--;
+
+      if (this.count >= 0) {
+        return resolve();
       }
 
-      this.count--;
-      resolve();
+      this.queue.push(resolve);
     });
   }
 
   /**
-   * Releases a vacancy. If there are pending operations,
-   * the first one will be unqueued, unblocked and resolved.
+   * Releases an acquired vacancy.
+   *
+   * If there are pending processes in the queue,
+   * the first one will be unblocked and resolved.
    */
   public release() {
     this.count++;
-    this.queue.shift()?.();
+
+    if (this.count <= 0) {
+      this.queue.shift()?.();
+    }
   }
 }
