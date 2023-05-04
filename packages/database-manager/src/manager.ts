@@ -1,3 +1,4 @@
+import { LockManager } from "lock";
 import {
   Assignment,
   AST,
@@ -13,20 +14,19 @@ import {
   UpdateAST,
 } from "shared-types";
 import { DatabaseManagerError } from "./error";
-import { Guard } from "./guard";
 import { Validator } from "./validator";
 
 /**
- * An abstract database manager, which provides an API to run ASTs,
- * controls concurrency, but leaves the implementation of
- * reading and writing the database to its subclasses.
+ * An implementation of database manager,
+ * which can provide database-level concurrency control,
+ * validate an AST, and run it against a JSON database.
  */
 export abstract class Manager {
   /**
    * The guards of every table, used to control
    * the concurrency of reading and writing on every table.
    */
-  private guards: Record<string, Guard> = {};
+  private lockManager = new LockManager();
 
   constructor(protected databaseName: string) {}
 
@@ -73,8 +73,7 @@ export abstract class Manager {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    const guard = this.getGuard(tableName);
-    await guard.waitToRead();
+    await this.lockManager.acquireSharedLock();
 
     const validator = new Validator(table.schema);
     validator.validate(ast);
@@ -83,7 +82,7 @@ export abstract class Manager {
     const selector = Manager.buildSelector(fields);
     const rows = table.rows.filter(filter).map(selector);
 
-    guard.finishReading();
+    this.lockManager.releaseSharedLock();
 
     return rows as T[];
   }
@@ -101,8 +100,7 @@ export abstract class Manager {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    const guard = this.getGuard(tableName);
-    await guard.waitToWrite();
+    await this.lockManager.acquireExclusiveLock();
 
     const validator = new Validator(table.schema);
     validator.validate(ast);
@@ -114,7 +112,7 @@ export abstract class Manager {
 
     await this.writeDatabase(database);
 
-    guard.finishWriting();
+    this.lockManager.releaseExclusiveLock();
 
     if (Array.isArray(returning) && returning.length === 0) {
       return [] as T[];
@@ -137,8 +135,7 @@ export abstract class Manager {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    const guard = this.getGuard(tableName);
-    await guard.waitToWrite();
+    await this.lockManager.acquireExclusiveLock();
 
     const validator = new Validator(table.schema);
     validator.validate(ast);
@@ -150,7 +147,7 @@ export abstract class Manager {
 
     await this.writeDatabase(database);
 
-    guard.finishWriting();
+    this.lockManager.releaseExclusiveLock();
 
     if (Array.isArray(returning) && returning.length === 0) {
       return [] as T[];
@@ -173,8 +170,7 @@ export abstract class Manager {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    const guard = this.getGuard(tableName);
-    await guard.waitToWrite();
+    await this.lockManager.acquireExclusiveLock();
 
     const validator = new Validator(table.schema);
     validator.validate(ast);
@@ -185,7 +181,7 @@ export abstract class Manager {
 
     await this.writeDatabase(database);
 
-    guard.finishWriting();
+    this.lockManager.releaseExclusiveLock();
 
     if (Array.isArray(returning) && returning.length === 0) {
       return [] as T[];
@@ -237,14 +233,13 @@ export abstract class Manager {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    const guard = this.getGuard(tableName);
-    await guard.waitToWrite();
+    await this.lockManager.acquireExclusiveLock();
 
     delete database[tableName];
 
     await this.writeDatabase(database);
 
-    guard.finishWriting();
+    this.lockManager.releaseExclusiveLock();
 
     return [] as T[];
   }
@@ -337,21 +332,5 @@ export abstract class Manager {
       default:
         throw new DatabaseManagerError(`Invalid operator: ${operator}`);
     }
-  }
-
-  /**
-   * Gets the guard for a table. If it does not yet exist,
-   * creates and returns a new guard for the table.
-   */
-  private getGuard(table: string) {
-    const guard = this.guards[table];
-
-    if (guard) {
-      return guard;
-    }
-
-    const newGuard = new Guard();
-    this.guards[table] = newGuard;
-    return newGuard;
   }
 }

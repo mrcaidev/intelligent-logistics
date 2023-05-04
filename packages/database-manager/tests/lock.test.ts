@@ -1,31 +1,27 @@
-import { Guard } from "guard";
+import { LockManager } from "lock";
 import { afterAll, beforeAll, beforeEach, expect, it, vi } from "vitest";
-
-async function sleep(ms: number) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 const items: string[] = [];
 
-function createRead(guard: Guard) {
+function createRead(manager: LockManager) {
   return async (item: string) => {
-    await guard.waitToRead();
+    await manager.acquireSharedLock();
 
-    await sleep(1000);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     items.push(item);
 
-    guard.finishReading();
+    manager.releaseSharedLock();
   };
 }
 
-function createWrite(guard: Guard) {
+function createWrite(manager: LockManager) {
   return async (item: string) => {
-    await guard.waitToWrite();
+    await manager.acquireExclusiveLock();
 
-    await sleep(1000);
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     items.push(item);
 
-    guard.finishWriting();
+    manager.releaseExclusiveLock();
   };
 }
 
@@ -42,9 +38,9 @@ beforeEach(() => {
   vi.clearAllTimers();
 });
 
-it("readers read concurrently", async () => {
-  const guard = new Guard();
-  const read = createRead(guard);
+it("S-S locks are compatible", async () => {
+  const manager = new LockManager();
+  const read = createRead(manager);
   read("a");
   read("b");
   read("c");
@@ -55,9 +51,43 @@ it("readers read concurrently", async () => {
   expect(items).toEqual(["a", "b", "c"]);
 });
 
-it("writers write sequentially", async () => {
-  const guard = new Guard();
-  const write = createWrite(guard);
+it("S-X locks are incompatible", async () => {
+  const manager = new LockManager();
+  const read = createRead(manager);
+  const write = createWrite(manager);
+  read("a");
+  read("b");
+  write("c");
+
+  expect(items).toEqual([]);
+
+  await vi.advanceTimersByTimeAsync(1000);
+  expect(items).toEqual(["a", "b"]);
+
+  await vi.advanceTimersByTimeAsync(1000);
+  expect(items).toEqual(["a", "b", "c"]);
+});
+
+it("X-S locks are incompatible", async () => {
+  const manager = new LockManager();
+  const read = createRead(manager);
+  const write = createWrite(manager);
+  write("a");
+  read("b");
+  read("c");
+
+  expect(items).toEqual([]);
+
+  await vi.advanceTimersByTimeAsync(1000);
+  expect(items).toEqual(["a"]);
+
+  await vi.advanceTimersByTimeAsync(1000);
+  expect(items).toEqual(["a", "b", "c"]);
+});
+
+it("X-X locks are incompatible", async () => {
+  const manager = new LockManager();
+  const write = createWrite(manager);
   write("a");
   write("b");
   write("c");
@@ -74,44 +104,10 @@ it("writers write sequentially", async () => {
   expect(items).toEqual(["a", "b", "c"]);
 });
 
-it("writers wait for readers to finish", async () => {
-  const guard = new Guard();
-  const read = createRead(guard);
-  const write = createWrite(guard);
-  read("a");
-  read("b");
-  write("c");
-
-  expect(items).toEqual([]);
-
-  await vi.advanceTimersByTimeAsync(1000);
-  expect(items).toEqual(["a", "b"]);
-
-  await vi.advanceTimersByTimeAsync(1000);
-  expect(items).toEqual(["a", "b", "c"]);
-});
-
-it("readers wait for writers to finish", async () => {
-  const guard = new Guard();
-  const read = createRead(guard);
-  const write = createWrite(guard);
-  write("a");
-  read("b");
-  read("c");
-
-  expect(items).toEqual([]);
-
-  await vi.advanceTimersByTimeAsync(1000);
-  expect(items).toEqual(["a"]);
-
-  await vi.advanceTimersByTimeAsync(1000);
-  expect(items).toEqual(["a", "b", "c"]);
-});
-
-it("readers and writers are treated equally", async () => {
-  const guard = new Guard();
-  const read = createRead(guard);
-  const write = createWrite(guard);
+it("uses fair read-write policy", async () => {
+  const manager = new LockManager();
+  const read = createRead(manager);
+  const write = createWrite(manager);
   read("a");
   write("b");
   read("c");
