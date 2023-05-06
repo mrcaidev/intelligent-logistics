@@ -17,26 +17,23 @@ import { DatabaseManagerError } from "./error";
 import { Validator } from "./validator";
 
 /**
- * An implementation of database manager,
+ * An implementation of database management system,
  * which can provide database-level concurrency control,
- * validate an AST, and run it against a JSON database.
+ * validate ASTs, and run them against an underlying JSON database.
  */
 export abstract class Manager {
   /**
-   * The guards of every table, used to control
-   * the concurrency of reading and writing on every table.
+   * Controls concurrent I/O operations on database level.
    */
   private lockManager = new LockManager();
 
-  constructor(protected databaseName: string) {}
-
   /**
-   * Reads a database and returns the object.
+   * Delegates reading implementation to subclasses.
    */
   protected abstract readDatabase(): Promise<Database>;
 
   /**
-   * Writes an object to the database.
+   * Delegates writing implementation to subclasses.
    */
   protected abstract writeDatabase(database: Database): Promise<void>;
 
@@ -46,24 +43,24 @@ export abstract class Manager {
   public async run<T extends Row>(ast: AST) {
     switch (ast.type) {
       case "select":
-        return this.select<T>(ast);
+        return this.safeRead<T>(() => this.select(ast));
       case "insert":
-        return this.insert<T>(ast);
+        return this.safeWrite<T>(() => this.insert(ast));
       case "update":
-        return this.update<T>(ast);
+        return this.safeWrite<T>(() => this.update(ast));
       case "delete":
-        return this.delete<T>(ast);
+        return this.safeWrite<T>(() => this.delete(ast));
       case "create":
-        return this.create<T>(ast);
+        return this.safeWrite<T>(() => this.create(ast));
       case "drop":
-        return this.drop<T>(ast);
+        return this.safeWrite<T>(() => this.drop(ast));
     }
   }
 
   /**
    * Runs the AST of a SELECT statement.
    */
-  private async select<T extends Row>(ast: SelectAST) {
+  private async select(ast: SelectAST) {
     const { table: tableName, fields, conditions } = ast;
 
     const database = await this.readDatabase();
@@ -73,24 +70,17 @@ export abstract class Manager {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    await this.lockManager.acquireSharedLock();
-
-    const validator = new Validator(table.schema);
-    validator.validate(ast);
+    new Validator(table.schema).validate(ast);
 
     const filter = Manager.buildFilter(conditions);
     const selector = Manager.buildSelector(fields);
-    const rows = table.rows.filter(filter).map(selector);
-
-    this.lockManager.releaseSharedLock();
-
-    return rows as T[];
+    return table.rows.filter(filter).map(selector);
   }
 
   /**
    * Runs the AST of an INSERT statement.
    */
-  private async insert<T extends Row>(ast: InsertAST) {
+  private async insert(ast: InsertAST) {
     const { table: tableName, fields, values, returning } = ast;
 
     const database = await this.readDatabase();
@@ -100,10 +90,7 @@ export abstract class Manager {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    await this.lockManager.acquireExclusiveLock();
-
-    const validator = new Validator(table.schema);
-    validator.validate(ast);
+    new Validator(table.schema).validate(ast);
 
     const insertedRows = values.map((value) =>
       Manager.buildRow(fields, value, table.schema)
@@ -112,20 +99,18 @@ export abstract class Manager {
 
     await this.writeDatabase(database);
 
-    this.lockManager.releaseExclusiveLock();
-
     if (Array.isArray(returning) && returning.length === 0) {
-      return [] as T[];
+      return [];
     }
 
     const selector = Manager.buildSelector(returning);
-    return insertedRows.map(selector) as T[];
+    return insertedRows.map(selector);
   }
 
   /**
    * Runs the AST of an UPDATE statement.
    */
-  private async update<T extends Row>(ast: UpdateAST) {
+  private async update(ast: UpdateAST) {
     const { table: tableName, assignments, conditions, returning } = ast;
 
     const database = await this.readDatabase();
@@ -135,10 +120,7 @@ export abstract class Manager {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    await this.lockManager.acquireExclusiveLock();
-
-    const validator = new Validator(table.schema);
-    validator.validate(ast);
+    new Validator(table.schema).validate(ast);
 
     const filter = Manager.buildFilter(conditions);
     const updater = Manager.buildUpdater(assignments);
@@ -147,20 +129,18 @@ export abstract class Manager {
 
     await this.writeDatabase(database);
 
-    this.lockManager.releaseExclusiveLock();
-
     if (Array.isArray(returning) && returning.length === 0) {
-      return [] as T[];
+      return [];
     }
 
     const selector = Manager.buildSelector(returning);
-    return updatedRows.map(selector) as T[];
+    return updatedRows.map(selector);
   }
 
   /**
    * Runs the AST of a DELETE statement.
    */
-  private async delete<T extends Row>(ast: DeleteAST) {
+  private async delete(ast: DeleteAST) {
     const { table: tableName, conditions, returning } = ast;
 
     const database = await this.readDatabase();
@@ -170,10 +150,7 @@ export abstract class Manager {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    await this.lockManager.acquireExclusiveLock();
-
-    const validator = new Validator(table.schema);
-    validator.validate(ast);
+    new Validator(table.schema).validate(ast);
 
     const filter = Manager.buildFilter(conditions);
     const deletedRows = table.rows.filter(filter);
@@ -181,67 +158,86 @@ export abstract class Manager {
 
     await this.writeDatabase(database);
 
-    this.lockManager.releaseExclusiveLock();
-
     if (Array.isArray(returning) && returning.length === 0) {
-      return [] as T[];
+      return [];
     }
 
     const selector = Manager.buildSelector(returning);
-    return deletedRows.map(selector) as T[];
+    return deletedRows.map(selector);
   }
 
   /**
    * Runs the AST of a CREATE statement.
    */
-  private async create<T extends Row>(ast: CreateAST) {
+  private async create(ast: CreateAST) {
     const { table: tableName, ifNotExists, definitions } = ast;
 
     const database = await this.readDatabase();
 
     if (database[tableName] && ifNotExists) {
-      return [] as T[];
+      return [];
     }
 
     if (database[tableName] && !ifNotExists) {
       throw new DatabaseManagerError(`Table ${tableName} already exists`);
     }
 
-    const validator = new Validator([]);
-    validator.validate(ast);
+    new Validator().validate(ast);
 
     database[tableName] = { schema: definitions, rows: [] };
 
     await this.writeDatabase(database);
 
-    return [] as T[];
+    return [];
   }
 
   /**
    * Runs the AST of a DROP statement.
    */
-  private async drop<T extends Row>(ast: DropAST) {
+  private async drop(ast: DropAST) {
     const { table: tableName, ifExists } = ast;
 
     const database = await this.readDatabase();
 
     if (!database[tableName] && ifExists) {
-      return [] as T[];
+      return [];
     }
 
     if (!database[tableName] && !ifExists) {
       throw new DatabaseManagerError(`Table ${tableName} does not exist`);
     }
 
-    await this.lockManager.acquireExclusiveLock();
-
     delete database[tableName];
 
     await this.writeDatabase(database);
 
-    this.lockManager.releaseExclusiveLock();
+    return [];
+  }
 
-    return [] as T[];
+  /**
+   * Acquire S lock before reading the database,
+   * and release it on completion or error.
+   */
+  private safeRead<T>(readFn: () => Promise<Row[]>) {
+    try {
+      this.lockManager.acquireSharedLock();
+      return readFn() as Promise<T[]>;
+    } finally {
+      this.lockManager.releaseSharedLock();
+    }
+  }
+
+  /**
+   * Acquire X lock before writing the database,
+   * and release it on completion or error.
+   */
+  private safeWrite<T>(writeFn: () => Promise<Row[]>) {
+    try {
+      this.lockManager.acquireExclusiveLock();
+      return writeFn() as Promise<T[]>;
+    } finally {
+      this.lockManager.releaseExclusiveLock();
+    }
   }
 
   /**

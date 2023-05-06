@@ -16,7 +16,7 @@ import { DatabaseManagerError } from "./error";
  * Validates an AST against its target table.
  */
 export class Validator {
-  constructor(private schema: Schema) {}
+  constructor(private schema: Schema = []) {}
 
   /**
    * Validates an AST.

@@ -6,10 +6,6 @@ import { describe, expect, it } from "vitest";
 class TestManager extends Manager {
   private _database: Database = {};
 
-  constructor() {
-    super("test");
-  }
-
   protected async readDatabase() {
     return this._database;
   }
