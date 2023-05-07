@@ -11,21 +11,17 @@ const fileName = import.meta.env.TEST
   : "database.json";
 
 class FsManager extends Manager {
-  constructor() {
-    super(fileName);
-  }
-
   protected async readDatabase() {
-    if (!existsSync(this.databaseName)) {
+    if (!existsSync(fileName)) {
       return {} as Database;
     }
 
-    const text = await readFile(this.databaseName, "utf-8");
+    const text = await readFile(fileName, "utf-8");
     return JSON.parse(text) as Database;
   }
 
   protected async writeDatabase(database: Database) {
-    await writeFile(this.databaseName, JSON.stringify(database), "utf-8");
+    await writeFile(fileName, JSON.stringify(database), "utf-8");
   }
 }
 
