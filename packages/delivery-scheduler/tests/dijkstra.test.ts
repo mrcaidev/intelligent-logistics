@@ -1,4 +1,4 @@
-import { getShortestPath } from "graph";
+import { getShortestPath } from "dijkstra";
 import { expect, it } from "vitest";
 
 it("finds the shortest path in graph #1", () => {

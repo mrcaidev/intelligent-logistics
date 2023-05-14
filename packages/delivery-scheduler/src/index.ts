@@ -1,2 +1,2 @@
-export { getMostPrior } from "./good";
-export { getShortestPath } from "./graph";
+export { getShortestPath } from "./dijkstra";
+export { getMostPrior } from "./priority";

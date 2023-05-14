@@ -1,38 +1,39 @@
 import { Edge } from "shared-types";
 
 /**
- * Returns a list of IDs of every node or edge
- * on the shortest path by order,
+ * Returns the IDs of every node or edge on the shortest path by order,
  * using Dijkstra's algorithm.
- *
- * @param edges The edges of a graph.
- * @param sourceId The ID of the source node.
- * @param targetId The ID of the target node.
  */
 export function getShortestPath(
   edges: Edge[],
   sourceId: string,
   targetId: string
 ) {
+  // Mark all nodes as unvisited.
   const unvisitedNodeIds = new Set<string>();
   for (const { sourceId, targetId } of edges) {
     unvisitedNodeIds.add(sourceId);
     unvisitedNodeIds.add(targetId);
   }
 
+  // If either the source or the target does not exist, return an empty list.
   if (!unvisitedNodeIds.has(sourceId) || !unvisitedNodeIds.has(targetId)) {
     return [];
   }
 
+  // Initialize the distance from the source to every node.
   const distances: Record<string, number> = {};
   for (const nodeId of unvisitedNodeIds) {
     distances[nodeId] = Infinity;
   }
   distances[sourceId] = 0;
 
+  // Record the previous node of every node on the shortest path to it.
   const previousNodeIds: Record<string, string> = {};
 
+  // Keep exploring until all nodes are visited.
   while (unvisitedNodeIds.size > 0) {
+    // Find the nearest unvisited node to the source.
     let minDistance = Infinity;
     let nearestNodeId = "";
     for (const nodeId of unvisitedNodeIds) {
@@ -42,12 +43,15 @@ export function getShortestPath(
       }
     }
 
+    // If this node is the target, terminate the searching process.
     if (nearestNodeId === targetId) {
       break;
     }
 
+    // Otherwise, mark this node as visited.
     unvisitedNodeIds.delete(nearestNodeId);
 
+    // Find all the neighbors of this node.
     const neighbors: [string, number][] = [];
     for (const { sourceId, targetId, cost } of edges) {
       if (sourceId === nearestNodeId && unvisitedNodeIds.has(targetId)) {
@@ -57,6 +61,7 @@ export function getShortestPath(
       }
     }
 
+    // Update the shortest paths to its neighbors.
     for (const [neighborId, cost] of neighbors) {
       const newDistance = distances[nearestNodeId]! + cost;
       if (newDistance < distances[neighborId]!) {
@@ -66,10 +71,7 @@ export function getShortestPath(
     }
   }
 
-  if (unvisitedNodeIds.size === 0) {
-    return [];
-  }
-
+  // Rewind from the target to the source, and record the IDs along the way.
   const pathIds = [targetId];
   let currentNodeId = targetId;
   let previousNodeId = previousNodeIds[targetId];
@@ -79,10 +81,7 @@ export function getShortestPath(
         (sourceId === currentNodeId && targetId === previousNodeId) ||
         (sourceId === previousNodeId && targetId === currentNodeId)
     );
-    if (!edge) {
-      return [];
-    }
-    pathIds.unshift(edge.id);
+    pathIds.unshift(edge!.id);
     pathIds.unshift(previousNodeId);
     currentNodeId = previousNodeId;
     previousNodeId = previousNodeIds[previousNodeId];

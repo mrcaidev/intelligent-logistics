@@ -1,4 +1,4 @@
-import { getMostPrior } from "good";
+import { getMostPrior } from "priority";
 import { Good } from "shared-types";
 import { expect, it } from "vitest";
 
