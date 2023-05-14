@@ -1,23 +1,11 @@
 {
   "files": [],
   "references": [
-    {
-      "path": "packages/database-manager"
-    },
-    {
-      "path": "packages/delivery-scheduler"
-    },
-    {
-      "path": "packages/shared-types"
-    },
-    {
-      "path": "packages/sql-parser"
-    },
-    {
-      "path": "apps/backend"
-    },
-    {
-      "path": "apps/frontend"
-    }
+    { "path": "packages/database-manager" },
+    { "path": "packages/delivery-scheduler" },
+    { "path": "packages/shared-types" },
+    { "path": "packages/sql-parser" },
+    { "path": "apps/backend" },
+    { "path": "apps/frontend" }
   ]
 }
