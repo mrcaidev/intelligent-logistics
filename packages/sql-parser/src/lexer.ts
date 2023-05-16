@@ -67,7 +67,7 @@ export class Lexer extends Cursor<string> {
 
       const keywordType = getKeywordType(value);
       if (keywordType !== undefined) {
-        return { type: keywordType };
+        return { type: keywordType, value: value.toUpperCase() };
       }
 
       return { type: TokenType.IDENTIFIER, value };
@@ -85,13 +85,13 @@ export class Lexer extends Cursor<string> {
     }
 
     if (initial === "=") {
-      return { type: TokenType.EQUAL };
+      return { type: TokenType.EQUAL, value: "=" };
     }
 
     if (initial === "!") {
       if (this.current === "=") {
         this.consume();
-        return { type: TokenType.NOT_EQUAL };
+        return { type: TokenType.NOT_EQUAL, value: "!=" };
       }
 
       throw new SqlParserError(`Invalid character: ${initial}`);
@@ -100,28 +100,28 @@ export class Lexer extends Cursor<string> {
     if (initial === "<") {
       if (this.current === "=") {
         this.consume();
-        return { type: TokenType.LESS_THAN_OR_EQUAL };
+        return { type: TokenType.LESS_THAN_OR_EQUAL, value: "<=" };
       }
 
-      return { type: TokenType.LESS_THAN };
+      return { type: TokenType.LESS_THAN, value: "<" };
     }
 
     if (initial === ">") {
       if (this.current === "=") {
         this.consume();
-        return { type: TokenType.GREATER_THAN_OR_EQUAL };
+        return { type: TokenType.GREATER_THAN_OR_EQUAL, value: ">=" };
       }
 
-      return { type: TokenType.GREATER_THAN };
+      return { type: TokenType.GREATER_THAN, value: ">" };
     }
 
     if (initial === "+") {
-      return { type: TokenType.ADD };
+      return { type: TokenType.ADD, value: "+" };
     }
 
     if (initial === "-") {
       if (!isDigit(this.current)) {
-        return { type: TokenType.SUBTRACT };
+        return { type: TokenType.SUBTRACT, value: "-" };
       }
 
       const value = initial + this.consumeAsLongAs(isDigitOrDot);
@@ -135,27 +135,27 @@ export class Lexer extends Cursor<string> {
     }
 
     if (initial === "*") {
-      return { type: TokenType.MULTIPLY };
+      return { type: TokenType.MULTIPLY, value: "*" };
     }
 
     if (initial === "/") {
-      return { type: TokenType.DIVIDE };
+      return { type: TokenType.DIVIDE, value: "/" };
     }
 
     if (initial === "(") {
-      return { type: TokenType.LEFT_PARENTHESIS };
+      return { type: TokenType.LEFT_PARENTHESIS, value: "(" };
     }
 
     if (initial === ")") {
-      return { type: TokenType.RIGHT_PARENTHESIS };
+      return { type: TokenType.RIGHT_PARENTHESIS, value: ")" };
     }
 
     if (initial === ",") {
-      return { type: TokenType.COMMA };
+      return { type: TokenType.COMMA, value: "," };
     }
 
     if (initial === ".") {
-      return { type: TokenType.DOT };
+      return { type: TokenType.DOT, value: "." };
     }
 
     throw new SqlParserError(`Invalid character: ${this.current}`);

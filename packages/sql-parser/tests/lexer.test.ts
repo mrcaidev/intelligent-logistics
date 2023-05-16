@@ -6,164 +6,168 @@ import { describe, expect, it } from "vitest";
 describe("keyword", () => {
   it("parses SELECT", () => {
     const result = new Lexer("SELECT").tokenize();
-    expect(result).toEqual([{ type: TokenType.SELECT }]);
+    expect(result).toEqual([{ type: TokenType.SELECT, value: "SELECT" }]);
   });
 
   it("parses FROM", () => {
     const result = new Lexer("FROM").tokenize();
-    expect(result).toEqual([{ type: TokenType.FROM }]);
+    expect(result).toEqual([{ type: TokenType.FROM, value: "FROM" }]);
   });
 
   it("parses WHERE", () => {
     const result = new Lexer("WHERE").tokenize();
-    expect(result).toEqual([{ type: TokenType.WHERE }]);
+    expect(result).toEqual([{ type: TokenType.WHERE, value: "WHERE" }]);
   });
 
   it("parses AND", () => {
     const result = new Lexer("AND").tokenize();
-    expect(result).toEqual([{ type: TokenType.AND }]);
+    expect(result).toEqual([{ type: TokenType.AND, value: "AND" }]);
   });
 
   it("parses OR", () => {
     const result = new Lexer("OR").tokenize();
-    expect(result).toEqual([{ type: TokenType.OR }]);
+    expect(result).toEqual([{ type: TokenType.OR, value: "OR" }]);
   });
 
   it("parses NOT", () => {
     const result = new Lexer("NOT").tokenize();
-    expect(result).toEqual([{ type: TokenType.NOT }]);
+    expect(result).toEqual([{ type: TokenType.NOT, value: "NOT" }]);
   });
 
   it("parses INSERT", () => {
     const result = new Lexer("INSERT").tokenize();
-    expect(result).toEqual([{ type: TokenType.INSERT }]);
+    expect(result).toEqual([{ type: TokenType.INSERT, value: "INSERT" }]);
   });
 
   it("parses INTO", () => {
     const result = new Lexer("INTO").tokenize();
-    expect(result).toEqual([{ type: TokenType.INTO }]);
+    expect(result).toEqual([{ type: TokenType.INTO, value: "INTO" }]);
   });
 
   it("parses VALUES", () => {
     const result = new Lexer("VALUES").tokenize();
-    expect(result).toEqual([{ type: TokenType.VALUES }]);
+    expect(result).toEqual([{ type: TokenType.VALUES, value: "VALUES" }]);
   });
 
   it("parses UPDATE", () => {
     const result = new Lexer("UPDATE").tokenize();
-    expect(result).toEqual([{ type: TokenType.UPDATE }]);
+    expect(result).toEqual([{ type: TokenType.UPDATE, value: "UPDATE" }]);
   });
 
   it("parses SET", () => {
     const result = new Lexer("SET").tokenize();
-    expect(result).toEqual([{ type: TokenType.SET }]);
+    expect(result).toEqual([{ type: TokenType.SET, value: "SET" }]);
   });
 
   it("parses DELETE", () => {
     const result = new Lexer("DELETE").tokenize();
-    expect(result).toEqual([{ type: TokenType.DELETE }]);
+    expect(result).toEqual([{ type: TokenType.DELETE, value: "DELETE" }]);
   });
 
   it("parses CREATE", () => {
     const result = new Lexer("CREATE").tokenize();
-    expect(result).toEqual([{ type: TokenType.CREATE }]);
+    expect(result).toEqual([{ type: TokenType.CREATE, value: "CREATE" }]);
   });
 
   it("parses TABLE", () => {
     const result = new Lexer("TABLE").tokenize();
-    expect(result).toEqual([{ type: TokenType.TABLE }]);
+    expect(result).toEqual([{ type: TokenType.TABLE, value: "TABLE" }]);
   });
 
   it("parses IF", () => {
     const result = new Lexer("IF").tokenize();
-    expect(result).toEqual([{ type: TokenType.IF }]);
+    expect(result).toEqual([{ type: TokenType.IF, value: "IF" }]);
   });
 
   it("parses EXISTS", () => {
     const result = new Lexer("EXISTS").tokenize();
-    expect(result).toEqual([{ type: TokenType.EXISTS }]);
+    expect(result).toEqual([{ type: TokenType.EXISTS, value: "EXISTS" }]);
   });
 
   it("parses DROP", () => {
     const result = new Lexer("DROP").tokenize();
-    expect(result).toEqual([{ type: TokenType.DROP }]);
+    expect(result).toEqual([{ type: TokenType.DROP, value: "DROP" }]);
   });
 
   it("parses RETURNING", () => {
     const result = new Lexer("RETURNING").tokenize();
-    expect(result).toEqual([{ type: TokenType.RETURNING }]);
+    expect(result).toEqual([{ type: TokenType.RETURNING, value: "RETURNING" }]);
   });
 
   it("parses NUMERIC", () => {
     const result = new Lexer("NUMERIC").tokenize();
-    expect(result).toEqual([{ type: TokenType.NUMERIC }]);
+    expect(result).toEqual([{ type: TokenType.NUMERIC, value: "NUMERIC" }]);
   });
 
   it("parses TEXT", () => {
     const result = new Lexer("TEXT").tokenize();
-    expect(result).toEqual([{ type: TokenType.TEXT }]);
+    expect(result).toEqual([{ type: TokenType.TEXT, value: "TEXT" }]);
   });
 
   it("parses BOOLEAN", () => {
     const result = new Lexer("BOOLEAN").tokenize();
-    expect(result).toEqual([{ type: TokenType.BOOLEAN }]);
+    expect(result).toEqual([{ type: TokenType.BOOLEAN, value: "BOOLEAN" }]);
   });
 
   it("ignores case", () => {
     const result = new Lexer("select").tokenize();
-    expect(result).toEqual([{ type: TokenType.SELECT }]);
+    expect(result).toEqual([{ type: TokenType.SELECT, value: "SELECT" }]);
   });
 });
 
 describe("operator", () => {
   it("parses =", () => {
     const result = new Lexer("=").tokenize();
-    expect(result).toEqual([{ type: TokenType.EQUAL }]);
+    expect(result).toEqual([{ type: TokenType.EQUAL, value: "=" }]);
   });
 
   it("parses !=", () => {
     const result = new Lexer("!=").tokenize();
-    expect(result).toEqual([{ type: TokenType.NOT_EQUAL }]);
+    expect(result).toEqual([{ type: TokenType.NOT_EQUAL, value: "!=" }]);
   });
 
   it("parses >", () => {
     const result = new Lexer(">").tokenize();
-    expect(result).toEqual([{ type: TokenType.GREATER_THAN }]);
+    expect(result).toEqual([{ type: TokenType.GREATER_THAN, value: ">" }]);
   });
 
   it("parses >=", () => {
     const result = new Lexer(">=").tokenize();
-    expect(result).toEqual([{ type: TokenType.GREATER_THAN_OR_EQUAL }]);
+    expect(result).toEqual([
+      { type: TokenType.GREATER_THAN_OR_EQUAL, value: ">=" },
+    ]);
   });
 
   it("parses <", () => {
     const result = new Lexer("<").tokenize();
-    expect(result).toEqual([{ type: TokenType.LESS_THAN }]);
+    expect(result).toEqual([{ type: TokenType.LESS_THAN, value: "<" }]);
   });
 
   it("parses <=", () => {
     const result = new Lexer("<=").tokenize();
-    expect(result).toEqual([{ type: TokenType.LESS_THAN_OR_EQUAL }]);
+    expect(result).toEqual([
+      { type: TokenType.LESS_THAN_OR_EQUAL, value: "<=" },
+    ]);
   });
 
   it("parses +", () => {
     const result = new Lexer("+").tokenize();
-    expect(result).toEqual([{ type: TokenType.ADD }]);
+    expect(result).toEqual([{ type: TokenType.ADD, value: "+" }]);
   });
 
   it("parses -", () => {
     const result = new Lexer("-").tokenize();
-    expect(result).toEqual([{ type: TokenType.SUBTRACT }]);
+    expect(result).toEqual([{ type: TokenType.SUBTRACT, value: "-" }]);
   });
 
   it("parses *", () => {
     const result = new Lexer("*").tokenize();
-    expect(result).toEqual([{ type: TokenType.MULTIPLY }]);
+    expect(result).toEqual([{ type: TokenType.MULTIPLY, value: "*" }]);
   });
 
   it("parses /", () => {
     const result = new Lexer("/").tokenize();
-    expect(result).toEqual([{ type: TokenType.DIVIDE }]);
+    expect(result).toEqual([{ type: TokenType.DIVIDE, value: "/" }]);
   });
 
   it("throws error when '!' is not followed by '='", () => {
@@ -288,22 +292,22 @@ describe("identifier", () => {
 describe("boundary", () => {
   it("parses (", () => {
     const result = new Lexer("(").tokenize();
-    expect(result).toEqual([{ type: TokenType.LEFT_PARENTHESIS }]);
+    expect(result).toEqual([{ type: TokenType.LEFT_PARENTHESIS, value: "(" }]);
   });
 
   it("parses )", () => {
     const result = new Lexer(")").tokenize();
-    expect(result).toEqual([{ type: TokenType.RIGHT_PARENTHESIS }]);
+    expect(result).toEqual([{ type: TokenType.RIGHT_PARENTHESIS, value: ")" }]);
   });
 
   it("parses ,", () => {
     const result = new Lexer(",").tokenize();
-    expect(result).toEqual([{ type: TokenType.COMMA }]);
+    expect(result).toEqual([{ type: TokenType.COMMA, value: "," }]);
   });
 
   it("parses .", () => {
     const result = new Lexer(".").tokenize();
-    expect(result).toEqual([{ type: TokenType.DOT }]);
+    expect(result).toEqual([{ type: TokenType.DOT, value: "." }]);
   });
 });
 

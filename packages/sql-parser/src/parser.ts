@@ -29,64 +29,64 @@ export class Parser extends Cursor<Token> {
     const ast = this.parseStatement();
 
     if (this.isOpen()) {
-      throw new SqlParserError(`Invalid syntax: ${formatToken(this.current)}`);
+      throw new SqlParserError(`Unexpected token: ${this.current.value}`);
     }
 
     return ast;
   }
 
   private parseStatement(): AST {
-    if (this.match(TokenType.SELECT)) {
+    if (this.hasType(TokenType.SELECT)) {
       return this.parseSelect();
     }
 
-    if (this.match(TokenType.INSERT)) {
+    if (this.hasType(TokenType.INSERT)) {
       return this.parseInsert();
     }
 
-    if (this.match(TokenType.UPDATE)) {
+    if (this.hasType(TokenType.UPDATE)) {
       return this.parseUpdate();
     }
 
-    if (this.match(TokenType.DELETE)) {
+    if (this.hasType(TokenType.DELETE)) {
       return this.parseDelete();
     }
 
-    if (this.match(TokenType.CREATE)) {
+    if (this.hasType(TokenType.CREATE)) {
       return this.parseCreate();
     }
 
-    if (this.match(TokenType.DROP)) {
+    if (this.hasType(TokenType.DROP)) {
       return this.parseDrop();
     }
 
-    throw new SqlParserError(`Invalid syntax: ${formatToken(this.current)}`);
+    throw new SqlParserError(`Unexpected token: ${this.current.value}`);
   }
 
   private parseSelect(): SelectAST {
-    this.consumeToken(TokenType.SELECT);
+    this.match(TokenType.SELECT);
     const fields = this.parseFields();
-    this.consumeToken(TokenType.FROM);
+    this.match(TokenType.FROM);
     const table = this.parseIdentifier();
     const conditions = this.parseWhere();
     return { type: "select", fields, table, conditions };
   }
 
   private parseInsert(): InsertAST {
-    this.consumeToken(TokenType.INSERT);
-    this.consumeToken(TokenType.INTO);
+    this.match(TokenType.INSERT);
+    this.match(TokenType.INTO);
     const table = this.parseIdentifier();
     const fields = this.parseInsertFields();
-    this.consumeToken(TokenType.VALUES);
+    this.match(TokenType.VALUES);
     const values = this.parseValues();
     const returning = this.parseReturning();
     return { type: "insert", table, fields, values, returning };
   }
 
   private parseUpdate(): UpdateAST {
-    this.consumeToken(TokenType.UPDATE);
+    this.match(TokenType.UPDATE);
     const table = this.parseIdentifier();
-    this.consumeToken(TokenType.SET);
+    this.match(TokenType.SET);
     const assignments = this.parseAssignments();
     const conditions = this.parseWhere();
     const returning = this.parseReturning();
@@ -94,8 +94,8 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseDelete(): DeleteAST {
-    this.consumeToken(TokenType.DELETE);
-    this.consumeToken(TokenType.FROM);
+    this.match(TokenType.DELETE);
+    this.match(TokenType.FROM);
     const table = this.parseIdentifier();
     const conditions = this.parseWhere();
     const returning = this.parseReturning();
@@ -103,29 +103,29 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseCreate(): CreateAST {
-    this.consumeToken(TokenType.CREATE);
-    this.consumeToken(TokenType.TABLE);
+    this.match(TokenType.CREATE);
+    this.match(TokenType.TABLE);
     const ifNotExists = this.parseIfNotExists();
     const table = this.parseIdentifier();
-    this.consumeToken(TokenType.LEFT_PARENTHESIS);
+    this.match(TokenType.LEFT_PARENTHESIS);
     const definitions = this.parseDefinitions();
-    this.consumeToken(TokenType.RIGHT_PARENTHESIS);
+    this.match(TokenType.RIGHT_PARENTHESIS);
     return { type: "create", table, ifNotExists, definitions };
   }
 
   private parseDrop(): DropAST {
-    this.consumeToken(TokenType.DROP);
-    this.consumeToken(TokenType.TABLE);
+    this.match(TokenType.DROP);
+    this.match(TokenType.TABLE);
     const ifExists = this.parseIfExists();
     const table = this.parseIdentifier();
     return { type: "drop", table, ifExists };
   }
 
   private parseInsertFields() {
-    if (this.match(TokenType.LEFT_PARENTHESIS)) {
-      this.consumeToken(TokenType.LEFT_PARENTHESIS);
+    if (this.hasType(TokenType.LEFT_PARENTHESIS)) {
+      this.match(TokenType.LEFT_PARENTHESIS);
       const fields = this.parseIdentifiers();
-      this.consumeToken(TokenType.RIGHT_PARENTHESIS);
+      this.match(TokenType.RIGHT_PARENTHESIS);
       return fields;
     }
 
@@ -139,8 +139,8 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseValues_(): unknown[][] {
-    if (this.match(TokenType.COMMA)) {
-      this.consumeToken(TokenType.COMMA);
+    if (this.hasType(TokenType.COMMA)) {
+      this.match(TokenType.COMMA);
       const value = this.parseValue();
       const values = this.parseValues_();
       return [value, ...values];
@@ -150,9 +150,9 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseValue() {
-    this.consumeToken(TokenType.LEFT_PARENTHESIS);
+    this.match(TokenType.LEFT_PARENTHESIS);
     const value = this.parseLiterals();
-    this.consumeToken(TokenType.RIGHT_PARENTHESIS);
+    this.match(TokenType.RIGHT_PARENTHESIS);
     return value;
   }
 
@@ -163,8 +163,8 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseAssignments_(): Assignment[] {
-    if (this.match(TokenType.COMMA)) {
-      this.consumeToken(TokenType.COMMA);
+    if (this.hasType(TokenType.COMMA)) {
+      this.match(TokenType.COMMA);
       const assignment = this.parseAssignment();
       const assignments = this.parseAssignments_();
       return [assignment, ...assignments];
@@ -175,7 +175,7 @@ export class Parser extends Cursor<Token> {
 
   private parseAssignment(): Assignment {
     const field = this.parseIdentifier();
-    this.consumeToken(TokenType.EQUAL);
+    this.match(TokenType.EQUAL);
     const value = this.parseLiteral();
     return { field, value };
   }
@@ -187,8 +187,8 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseDefinitions_(): Definition[] {
-    if (this.match(TokenType.COMMA)) {
-      this.consumeToken(TokenType.COMMA);
+    if (this.hasType(TokenType.COMMA)) {
+      this.match(TokenType.COMMA);
       const definition = this.parseDefinition();
       const definitions = this.parseDefinitions_();
       return [definition, ...definitions];
@@ -204,9 +204,9 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseIfExists() {
-    if (this.match(TokenType.IF)) {
-      this.consumeToken(TokenType.IF);
-      this.consumeToken(TokenType.EXISTS);
+    if (this.hasType(TokenType.IF)) {
+      this.match(TokenType.IF);
+      this.match(TokenType.EXISTS);
       return true;
     }
 
@@ -214,10 +214,10 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseIfNotExists() {
-    if (this.match(TokenType.IF)) {
-      this.consumeToken(TokenType.IF);
-      this.consumeToken(TokenType.NOT);
-      this.consumeToken(TokenType.EXISTS);
+    if (this.hasType(TokenType.IF)) {
+      this.match(TokenType.IF);
+      this.match(TokenType.NOT);
+      this.match(TokenType.EXISTS);
       return true;
     }
 
@@ -225,8 +225,8 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseWhere() {
-    if (this.match(TokenType.WHERE)) {
-      this.consumeToken(TokenType.WHERE);
+    if (this.hasType(TokenType.WHERE)) {
+      this.match(TokenType.WHERE);
       const conditions = this.parseConditions();
       return conditions;
     }
@@ -249,8 +249,8 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseConditions_(): [TokenType | undefined, Condition[][]] {
-    if (this.match(TokenType.AND)) {
-      this.consumeToken(TokenType.AND);
+    if (this.hasType(TokenType.AND)) {
+      this.match(TokenType.AND);
       const condition = this.parseCondition();
       const [type, conditions] = this.parseConditions_();
 
@@ -264,8 +264,8 @@ export class Parser extends Cursor<Token> {
       }
     }
 
-    if (this.match(TokenType.OR)) {
-      this.consumeToken(TokenType.OR);
+    if (this.hasType(TokenType.OR)) {
+      this.match(TokenType.OR);
       const condition = this.parseCondition();
       const [type, conditions] = this.parseConditions_();
 
@@ -290,8 +290,8 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseReturning() {
-    if (this.match(TokenType.RETURNING)) {
-      this.consumeToken(TokenType.RETURNING);
+    if (this.hasType(TokenType.RETURNING)) {
+      this.match(TokenType.RETURNING);
       const fields = this.parseFields();
       return fields;
     }
@@ -300,8 +300,8 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseFields() {
-    if (this.match(TokenType.MULTIPLY)) {
-      this.consumeToken(TokenType.MULTIPLY);
+    if (this.hasType(TokenType.MULTIPLY)) {
+      this.match(TokenType.MULTIPLY);
       return "*";
     }
 
@@ -316,8 +316,8 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseIdentifiers_(): string[] {
-    if (this.match(TokenType.COMMA)) {
-      this.consumeToken(TokenType.COMMA);
+    if (this.hasType(TokenType.COMMA)) {
+      this.match(TokenType.COMMA);
       const identifier = this.parseIdentifier();
       const identifiers = this.parseIdentifiers_();
       return [identifier, ...identifiers];
@@ -327,7 +327,7 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseIdentifier() {
-    return this.consumeToken(TokenType.IDENTIFIER).value as string;
+    return this.match(TokenType.IDENTIFIER).value as string;
   }
 
   private parseLiterals() {
@@ -337,8 +337,8 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseLiterals_(): unknown[] {
-    if (this.match(TokenType.COMMA)) {
-      this.consumeToken(TokenType.COMMA);
+    if (this.hasType(TokenType.COMMA)) {
+      this.match(TokenType.COMMA);
       const literal = this.parseLiteral();
       const literals = this.parseLiterals_();
       return [literal, ...literals];
@@ -348,11 +348,11 @@ export class Parser extends Cursor<Token> {
   }
 
   private parseLiteral() {
-    return this.consumeToken(TokenType.LITERAL).value as unknown;
+    return this.match(TokenType.LITERAL).value as unknown;
   }
 
   private parseOperator() {
-    return this.consumeToken([
+    return this.match([
       TokenType.AND,
       TokenType.OR,
       TokenType.EQUAL,
@@ -365,22 +365,19 @@ export class Parser extends Cursor<Token> {
       TokenType.SUBTRACT,
       TokenType.MULTIPLY,
       TokenType.DIVIDE,
-    ]).type;
+    ]).value as string;
   }
 
   private parseDataType() {
-    return this.consumeToken([
-      TokenType.NUMERIC,
-      TokenType.TEXT,
-      TokenType.BOOLEAN,
-    ]).type;
+    return this.match([TokenType.NUMERIC, TokenType.TEXT, TokenType.BOOLEAN])
+      .value as string;
   }
 
   /**
    * Returns true if the current token type matches the expectation,
    * or false otherwise.
    */
-  private match(expectation: TokenType | TokenType[]) {
+  private hasType(expectation: TokenType | TokenType[]) {
     if (!this.isOpen()) {
       return false;
     }
@@ -397,21 +394,15 @@ export class Parser extends Cursor<Token> {
    * returns its value and moves to the next one.
    * Otherwise, throws an error.
    */
-  private consumeToken(expectation: TokenType | TokenType[]) {
-    const isMatched = this.match(expectation);
+  private match(expectation: TokenType | TokenType[]) {
+    if (!this.isOpen()) {
+      throw new SqlParserError("Unexpected end of statement");
+    }
 
-    if (isMatched) {
+    if (this.hasType(expectation)) {
       return this.consume();
     }
 
-    if (this.isOpen()) {
-      throw new SqlParserError(`Invalid syntax: ${formatToken(this.current)}`);
-    }
-
-    throw new SqlParserError("Unexpected end of statement");
+    throw new SqlParserError(`Unexpected token: ${this.current.value}`);
   }
-}
-
-function formatToken(token: Token) {
-  return token.value === undefined ? token.type : token.value;
 }
