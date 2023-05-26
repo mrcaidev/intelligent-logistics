@@ -18,11 +18,11 @@
     "coverage": "vitest run --coverage"
   },
   "devDependencies": {
-    "@vitest/coverage-c8": "^0.31.0",
+    "@vitest/coverage-c8": "^0.31.1",
     "shared-types": "workspace:^",
-    "vite": "^4.3.6",
+    "vite": "^4.3.8",
     "vite-plugin-dts": "^2.3.0",
     "vite-tsconfig-paths": "^4.2.0",
-    "vitest": "^0.31.0"
+    "vitest": "^0.31.1"
   }
 }
